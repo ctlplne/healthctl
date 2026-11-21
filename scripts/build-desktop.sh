@@ -14,14 +14,17 @@ if [[ -n "${HEALTHCTL_TESTED_DESKTOP_APP:-}" ]]; then
 else
   mkdir -p "$bin" "$res"
   cp desktop/Info.plist "$app/Contents/Info.plist"
-  cp compose.yaml desktop/desktop.yaml desktop/manage.sh LICENSE "$res/"
+  cp compose.yaml desktop/desktop.yaml desktop/manage.sh LICENSE THIRD_PARTY_NOTICES.md "$res/"
   swiftc -O -module-cache-path "$dest/swift-cache" desktop/Launcher.swift -o "$bin/healthctl"
   go build -trimpath -ldflags="-s -w" -o "$res/archive" ./cmd/healthctl-archive
   if [[ -n "${HEALTHCTL_DESKTOP_IMAGES:-}" ]]; then
+    cp -R "$HEALTHCTL_DESKTOP_IMAGES/notices" "$res/"
     cp "$HEALTHCTL_DESKTOP_IMAGES/images.txt" "$HEALTHCTL_DESKTOP_IMAGES/images.tar.gz" "$res/"
   else
     ./scripts/bundle-desktop-images.sh "$res"
   fi
+  sh scripts/go-notices.sh "$res/notices/archive-go" "$res/archive"
+  python3 scripts/desktop-sbom.py "$app"
 fi
 identity="${HEALTHCTL_SIGN_IDENTITY:--}"
 sign=(--force --sign "$identity")

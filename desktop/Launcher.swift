@@ -10,13 +10,14 @@ final class Launcher: NSObject, NSApplicationDelegate {
     private var working = false
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        window.title = "healthctl"
+        window.title = "healthctl · a ctlplne studio product"
         let heading = NSTextField(labelWithString: "healthctl")
         heading.font = NSFont.systemFont(ofSize: 29, weight: .semibold)
         stack.orientation = .vertical
         stack.alignment = .leading
         stack.spacing = 12
         stack.addArrangedSubview(heading)
+        stack.addArrangedSubview(NSTextField(wrappingLabelWithString: "a ctlplne studio product · Free public preview (beta) for visit preparation. Verify findings with a qualified healthcare professional."))
         for (label, action) in [("Open journal or try the demo", #selector(openJournal)), ("Connect a model", #selector(settings)),
                                 ("Set or clear an OpenAI API key…", #selector(platformKey)), ("Back up workspace…", #selector(backup)), ("Restore a backup into a new workspace…", #selector(restore)),
                                 ("Get Docker Desktop", #selector(dockerLink))] {

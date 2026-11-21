@@ -157,6 +157,7 @@ export function Auth({
           </form>
           <div className="auth-notice">
             <Notice text={session.notice} />
+            <a href="/privacy.html" target="_blank" rel="noreferrer">Where your data goes</a>
           </div>
         </section>
       </main>
@@ -348,6 +349,7 @@ export function ProviderEditor({
         title="Model settings"
         description="Choose where new encounters send interview content."
       />
+      <p><a href="/privacy.html" target="_blank" rel="noreferrer">Where your data goes when you connect a model</a></p>
       <div className="settings-layout">
         <section className="panel form-panel">
           <h2>

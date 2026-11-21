@@ -6,7 +6,7 @@ Open **Report** to preview the clinician brief, full appendix, or a structured e
 
 For inbound laboratory results, the owner can authorize an optional patient portal under Source reports. That permission is separate from the short-lived local grant below. [Patient portal configuration and scope](ehr.md)
 
-The full JSON export and scoped brief both expose the current recommendation in `modelGuidance`. The FHIR Composition carries it in the human-readable narrative. The encounter’s original medical notice, consent version and recorded review status retain their historical values.
+The full JSON export and scoped brief both expose the current recommendation in `modelGuidance` and the current beta and product notice in `previewNotice`. The FHIR Composition carries it in the human-readable narrative. The encounter’s original medical notice, consent version and recorded review status retain their historical values.
 
 Use the report's access panel to grant access to the current confirmed encounter. The application shows a randomly generated token once. Store it only in the local consumer that needs the brief. A new grant replaces the prior token. The grant expires in 24 hours, on any subsequent encounter revision, on explicit revocation, or when the owner recovers their password or deletes the record. A downloaded copy stays with its recipient.
 

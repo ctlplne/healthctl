@@ -162,6 +162,7 @@ function PlanWelcome({ done }: { done: () => void }) {
         done()
       }}
     >
+      <p>{document.getElementById('preview-notice')?.textContent}</p>
       <aside role="note" aria-label="Model guidance" className="modal-guidance">
         {document.getElementById('model-guidance')?.textContent}
       </aside>

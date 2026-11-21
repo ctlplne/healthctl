@@ -3,5 +3,6 @@ WORKDIR /ui
 COPY web/package*.json ./
 RUN npm ci --no-fund --no-audit
 COPY web/ ./
-COPY internal/clinical/model-guidance.txt /internal/clinical/model-guidance.txt
+COPY internal/clinical/model-guidance.txt internal/clinical/preview.txt /internal/clinical/
+COPY PRIVACY.md /PRIVACY.md
 CMD ["npm","run","test:e2e"]

@@ -8,7 +8,7 @@ The scoped MVP is implemented. The original check used the default Compose loopb
 
 All race-enabled software and PostgreSQL integration checks passed. Eight desktop/mobile browser journeys passed. Four printed reports were checked for warnings, review status and pagination. A fresh-volume encrypted backup/restore drill passed, as did the 38-run deterministic synthetic evaluation. The per-case results and reproduction commands are linked in docs/verification.md.
 
-The live remote check was skipped because there was no configured remote model and credential combination. Real local model inference was outside this milestone's live-test scope. Clinical and jurisdiction-specific review, operator deployment decisions, and the licensor's BUSL release parameters remain open before real-world distribution.
+The live remote check was skipped because there was no configured remote model and credential combination. Real local model inference was outside this milestone's live-test scope. Clinical and jurisdiction-specific review and operator deployment decisions remain open before real-world distribution. The subsequent [preview release record](docs/release.md) identifies the licensor and BUSL parameters.
 
 ## Combined iteration 2 and 3
 

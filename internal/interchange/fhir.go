@@ -38,14 +38,14 @@ func entry(id string, r resource) resource {
 // FHIR maps a patient-authored history to an R4 document Bundle. Local labels,
 // verbatim qualifiers and institutional units stay text unless coding is verified.
 func FHIR(b Brief) resource {
-	key := fmt.Sprintf("%s/%d/%d/%s/%s", b.ID, b.HistoryRevision, b.AssessmentVersion, b.UpdatedAt.UTC().Format("20060102T150405.000000000Z"), b.ModelGuidance)
+	key := fmt.Sprintf("%s/%d/%d/%s/%s", b.ID, b.HistoryRevision, b.AssessmentVersion, b.UpdatedAt.UTC().Format("20060102T150405.000000000Z"), b.ModelGuidance+"/"+b.PreviewNotice)
 	docID, patID, deviceID, compID := uuid(key+"/document"), uuid(b.ID+"/patient"), uuid("clinical-history/software"), uuid(key+"/composition")
 	when := b.UpdatedAt.UTC().Format("2006-01-02T15:04:05Z")
 	profiles := func(name string) resource {
 		return resource{"profile": []string{"http://hl7.org/fhir/StructureDefinition/" + name}}
 	}
 	subject, device := ref(patID), ref(deviceID)
-	sections := []resource{section("Patient concern and review status", []string{b.Concern, b.Notice, b.ModelGuidance, fmt.Sprintf("Age %d at intake. History revision %d, patient confirmed: %t. %s", b.Age, b.HistoryRevision, b.Confirmed, b.ScopeReason)})}
+	sections := []resource{section("Patient concern and review status", []string{b.Concern, b.PreviewNotice, b.Notice, b.ModelGuidance, fmt.Sprintf("Age %d at intake. History revision %d, patient confirmed: %t. %s", b.Age, b.HistoryRevision, b.Confirmed, b.ScopeReason)})}
 	if b.Agenda != "" {
 		sections = append(sections, section("Patient question", []string{b.Agenda}))
 	}
@@ -189,7 +189,7 @@ func FHIR(b Brief) resource {
 		issues = append(issues, resource{"severity": "information", "code": "informational", "details": resource{"text": s}})
 	}
 	sections = append(sections, resource{"title": "Mapping and omissions", "text": narrative(losses), "entry": []resource{ref(lossID)}})
-	summary := []string{b.Concern, b.Notice}
+	summary := []string{b.Concern, b.PreviewNotice, b.Notice}
 	for _, w := range b.Warnings {
 		if w.Active {
 			summary = append(summary, w.Message)

@@ -20,6 +20,7 @@ type Brief struct {
 	Age               int                          `json:"age"`
 	UpdatedAt         time.Time                    `json:"updatedAt"`
 	Notice            string                       `json:"notice"`
+	PreviewNotice     string                       `json:"previewNotice"`
 	ModelGuidance     string                       `json:"modelGuidance"`
 	ReviewStatus      string                       `json:"reviewStatus"`
 	Demo              bool                         `json:"demo"`
@@ -38,7 +39,7 @@ func FromEncounter(e *clinical.Encounter) Brief {
 	b := Brief{
 		Agenda: e.Agenda, Feedback: e.Feedback, Format: "clinical-history/brief-1", ID: e.ID, HistoryRevision: e.HistoryRevision,
 		Confirmed: e.ConfirmedRevision == e.HistoryRevision, Concern: e.Concern, Age: e.Age, UpdatedAt: e.UpdatedAt,
-		Notice: e.Notice, ModelGuidance: clinical.ModelGuidance(), ReviewStatus: e.ReviewStatus, Demo: e.Demo, Warnings: e.HandoffWarnings(),
+		Notice: e.Notice, PreviewNotice: clinical.PreviewNotice(), ModelGuidance: clinical.ModelGuidance(), ReviewStatus: e.ReviewStatus, Demo: e.Demo, Warnings: e.HandoffWarnings(),
 		Facts: []clinical.Fact{}, ReportFindings: []clinical.ReportExtract{},
 		Outstanding: e.Outstanding, Contradictions: e.Contradictions, ScopeReason: e.ScopeReason,
 		Outcomes: append([]clinical.VisitOutcome{}, e.Outcomes...), Priorities: []string{},

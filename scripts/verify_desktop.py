@@ -2,6 +2,7 @@
 
 import argparse
 from contextlib import ExitStack
+import hashlib
 import io
 import json
 import os
@@ -33,6 +34,21 @@ def verify(package, wav_source, resources_only=False):
             app = mount / "healthctl.app"
             subprocess.run(["codesign", "--verify", "--deep", "--strict", app], check=True)
             res = app / "Contents/Resources"
+        notices = res / "notices"
+        for name, required in (("app", {"poppler-utils", "tesseract-ocr", "whisper.cpp", "ggml-tiny.en-q5_1.bin", "nih-adult-reference", "react"}),
+                               ("db", {"postgresql", "musl"})):
+            inventory = json.loads((notices / (name + ".spdx.json")).read_bytes())
+            components = {p["name"] for p in inventory["packages"]}
+            if inventory["spdxVersion"] != "SPDX-2.3" or required - components:
+                raise ValueError(f"Incomplete {name} SBOM: {required - components}")
+        if not resources_only:
+            native = json.loads((notices / "desktop.spdx.json").read_bytes())
+            refs = {r["externalDocumentId"]: r["checksum"]["checksumValue"] for r in native["externalDocumentRefs"]}
+            for name in ("app", "db"):
+                if refs["DocumentRef-" + name] != hashlib.sha256((notices / (name + ".spdx.json")).read_bytes()).hexdigest():
+                    raise ValueError("Desktop SBOM does not match embedded " + name + " inventory")
+            if not (notices / "archive-go/go-LICENSE").is_file() or not (res / "THIRD_PARTY_NOTICES.md").is_file():
+                raise ValueError("Missing native distribution notices")
         env = dict(os.environ, HEALTHCTL_DESKTOP_STATE=str(state))
         password = secrets.token_urlsafe(26).encode() + b"\n"
 

@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Private security or clinical-safety report
+    url: https://github.com/ctlplne/healthctl/security/advisories/new
+    about: Use invented details to describe a software problem. Never submit records or credentials.

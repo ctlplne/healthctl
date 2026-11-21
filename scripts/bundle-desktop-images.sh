@@ -13,4 +13,17 @@ docker image inspect "$dbref" >/dev/null 2>&1 || docker pull "$dbref"
 dbimage="healthctl-local/db:${dbref#*@sha256:}"; dbimage="${dbimage:0:35}"
 docker tag healthctl:desktop-build "$appimage"; docker tag "$dbref" "$dbimage"
 printf '%s %s\n' "$appimage" "$dbimage" > "$res/images.txt"
+# Capture notices from the exact app image and catalog the database archive.
+res="$(cd "$res" && pwd)"
+mkdir -p "$res/notices/application"
+container=$(docker create "$appimage")
+trap 'docker rm "$container" >/dev/null; rm -rf "$temp"' EXIT
+docker cp "$container:/usr/share/licenses/clinical-history/." "$res/notices/application/"
+docker cp "$container:/usr/share/healthctl/app.spdx.json" "$res/notices/app.spdx.json"
+docker save -o "$temp/database.tar" "$dbimage"
+chmod a+r "$temp/database.tar"
+scanner=$(sed -n 's/^ARG SYFT_IMAGE=//p' Dockerfile)
+docker run --rm --network none -e SYFT_CHECK_FOR_APP_UPDATE=false \
+    -v "$temp/database.tar:/database.tar:ro" "$scanner" scan docker-archive:/database.tar \
+    --source-name healthctl-postgres -o spdx-json > "$res/notices/db.spdx.json"
 docker save "$appimage" "$dbimage" | gzip -1 > "$res/images.tar.gz"

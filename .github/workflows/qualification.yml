@@ -96,6 +96,7 @@ jobs:
           path: |
             build/resources/images.tar.gz
             build/resources/images.txt
+            build/resources/notices/
           if-no-files-found: error
           retention-days: 1
           compression-level: 0
@@ -148,6 +149,9 @@ jobs:
           codesign --verify --deep --strict "$app"
           cmp build/verified-images/images.txt "$app/Contents/Resources/images.txt"
           cmp build/verified-images/images.tar.gz "$app/Contents/Resources/images.tar.gz"
+          for sbom in app db desktop; do
+            jq -e '.spdxVersion == "SPDX-2.3" and (.packages | length > 1)' "$app/Contents/Resources/notices/$sbom.spdx.json"
+          done
           cmp desktop/manage.sh "$app/Contents/Resources/manage.sh"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:

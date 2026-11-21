@@ -1,8 +1,12 @@
 # healthctl
 
+**a ctlplne studio product · Free public preview (beta)**
+
 healthctl is a self-hosted tool for taking a medical history before a visit. Start with a symptom in your own words or bring a lab report. The interview asks one question at a time. You can see the words or report entries behind a finding, correct what was misunderstood, and take a concise history to your clinician.
 
-The symptom interview is designed for English-speaking adults. After you confirm your history, you can ask the model for possible explanations. It generates an experimental estimate without clinician review. If you may be having a medical emergency, seek local emergency care immediately.
+Use healthctl to organize your own account, spot misunderstandings and prepare questions for a medical visit. The symptom interview is designed for English-speaking adults. If you request possible explanations, the model can suggest them before a clinician reviews your history. Suggestions and urgency warnings can be wrong or miss serious illness. Take the findings to a qualified healthcare professional for verification. Do not use the tool to diagnose yourself, change treatment or decide it is safe to wait. If you may be having a medical emergency, seek local emergency care immediately.
+
+Your installation sends no encounters to ctlplne studio. Optional remote models and cloud transcription receive data you choose to send. Those providers may charge separately. [Public preview and limitations](docs/use-notice.md) · [Where your data goes](PRIVACY.md) · [Report a software or safety problem using fictional details](SECURITY.md)
 
 [![Watch Your first encounter, a walkthrough from local setup to a saved clinician brief](docs/media/walkthrough-cover.jpg)](docs/media/healthctl-walkthrough.mp4?raw=true)
 
@@ -89,4 +93,4 @@ After running the setup script, run `python3 scripts/verify.py` from the checkou
 
 healthctl is a [ctlplne](https://github.com/ctlplne) project maintained by [@imfeelingtheagi](https://github.com/imfeelingtheagi). For clinical scope and limitations, see the [intended use notes](docs/release.md). The [evaluation guide](evaluation/README.md) explains how the synthetic cases test history capture and safety warnings.
 
-healthctl is source-available under the Business Source License 1.1. Each version converts to the Mozilla Public License 2.0 four years after its first public distribution. The licensor and any additional production-use grant are pending. [License](LICENSE) · [Release parameters](docs/release.md#source-available-license)
+healthctl is source-available under the Business Source License 1.1. Each version converts to the Mozilla Public License 2.0 four years after its first public distribution. The free grant covers personal use and internal use, including by clinics. Third-party hosting or embedding in a commercial service requires separate permission during the BUSL period. [License](LICENSE) · [Release parameters](docs/release.md#source-available-license)

@@ -22,7 +22,7 @@ body {
   margin: 0;
   line-height: 1.55;
 }
-#model-guidance {
+#installation-guidance {
   position: sticky;
   top: 0;
   z-index: 15;
@@ -1681,7 +1681,7 @@ summary {
     vertical-align: middle;
   }
   @bottom-left {
-    content: 'Experimental · Not reviewed by a healthcare professional';
+    content: 'healthctl · a ctlplne studio product · Beta · Verify findings with a qualified healthcare professional';
     font:
       8pt Arial,
       sans-serif;
@@ -1703,7 +1703,7 @@ summary {
   }
 }
 @media print {
-  #model-guidance {
+  #installation-guidance {
     position: static;
     padding: 0 0 2mm;
     margin: 0 0 2mm;

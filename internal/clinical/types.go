@@ -15,9 +15,14 @@ var modelGuidanceText string
 // ModelGuidance is current operator advice. Historical patient consent is versioned separately.
 func ModelGuidance() string { return strings.TrimSpace(modelGuidanceText) }
 
+//go:embed preview.txt
+var previewText string
+
+func PreviewNotice() string { return strings.TrimSpace(previewText) }
+
 const (
-	NoticeVersion = "2026-11-v1"
-	Notice        = "Experimental AI assessment — not reviewed by a healthcare professional. This application collects your history and estimates possible explanations for your symptoms. It can be wrong or miss serious illness. This is not a confirmed diagnosis. Discuss the report with a qualified healthcare professional, and do not use it as the sole reason to delay care or start, stop, or change treatment. If you believe you have an emergency, seek local emergency care immediately. Use at your own discretion."
+	NoticeVersion = "2026-11-v2"
+	Notice        = "Free public preview (beta). Use healthctl to organize your history and questions for a visit. AI suggestions are experimental and not reviewed by a healthcare professional. They can be wrong or miss serious illness. Ask a qualified healthcare professional to verify the findings before making care decisions. Do not use healthctl to diagnose yourself, change treatment, or decide it is safe to wait. For a possible emergency, seek local emergency care immediately."
 	ReviewStatus  = "not_clinician_reviewed"
 	PolicyVersion = "development-2"
 	DemoConcern   = "My nose is runny and I keep sneezing."
@@ -312,13 +317,14 @@ type Report struct {
 	OutdatedAssessmentVersions []int `json:"outdatedAssessmentVersions"`
 	CurrentAssessmentVersion   int   `json:"currentAssessmentVersion,omitempty"`
 	Encounter
+	PreviewNotice string    `json:"previewNotice"`
 	ModelGuidance string    `json:"modelGuidance"`
 	ExportVersion string    `json:"exportVersion"`
 	ExportedAt    time.Time `json:"exportedAt"`
 }
 
 func (e *Encounter) Report() Report {
-	r := Report{Encounter: *e, ModelGuidance: ModelGuidance(), ExportVersion: "clinical-history/1", ExportedAt: time.Now().UTC(), OutdatedAssessmentVersions: []int{}}
+	r := Report{Encounter: *e, PreviewNotice: PreviewNotice(), ModelGuidance: ModelGuidance(), ExportVersion: "clinical-history/1", ExportedAt: time.Now().UTC(), OutdatedAssessmentVersions: []int{}}
 	for _, a := range e.Assessments {
 		if a.HistoryRevision != e.HistoryRevision {
 			r.OutdatedAssessmentVersions = append(r.OutdatedAssessmentVersions, a.Version)

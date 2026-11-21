@@ -52,6 +52,8 @@ def check_printed_reports():
             ).stdout.decode()
             pages = [" ".join(page.split()) for page in data.rstrip("\f\n").split("\f")]
             for index, page in enumerate(pages, 1):
+                if "ctlplne studio" not in page or "beta" not in page.lower():
+                    raise RuntimeError(f"{viewport} {filename} page {index} is missing the preview attribution")
                 if guidance not in page:
                     raise RuntimeError(f"{viewport} {filename} page {index} is missing the model recommendation")
             if filename.endswith("-brief.pdf") and len(pages) != 1:

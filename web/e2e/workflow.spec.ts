@@ -22,7 +22,9 @@ async function guidanceVisible(page: Page, scroll = false) {
       window.scrollTo(0, document.documentElement.scrollHeight),
     )
   await expect(banner).toHaveText(guidance)
-  await expect(banner).toBeInViewport({ ratio: 1 })
+  await expect(page.locator('#preview-notice')).toContainText('Free public preview (beta)')
+  const header = page.locator('#installation-guidance')
+  await expect(header).toBeInViewport({ ratio: 1 })
   await expect
     .poll(() =>
       banner.evaluate((el) => {
@@ -31,7 +33,8 @@ async function guidanceVisible(page: Page, scroll = false) {
           b.x + b.width / 2,
           b.y + b.height / 2,
         )
-        return Math.abs(b.top) <= 1 && el.contains(top)
+        const header = el.closest('#installation-guidance')!
+        return Math.abs(header.getBoundingClientRect().top) <= 1 && el.contains(top)
       }),
     )
     .toBe(true)
@@ -213,7 +216,8 @@ test('Owner setup and synthetic encounter through correction, print, export, res
   expect(first.exportVersion).toBe('clinical-history/1')
   expect(first.modelGuidance).toBe(guidance)
   expect(first.reviewStatus).toBe('not_clinician_reviewed')
-  expect(first.notice).toContain('do not use it as the sole reason')
+  expect(first.notice).toContain('verify the findings before making care decisions')
+  expect(first.previewNotice).toContain('a ctlplne studio product')
   expect(first.assessments.at(-1).items).toHaveLength(2)
   await page.emulateMedia({ media: 'print' })
   await expect(page.locator('.print-only')).toContainText('Nasal allergies')
@@ -1015,6 +1019,9 @@ test('Model guidance is present before JavaScript and remains visible during loa
     await expect(
       startup.getByRole('note', { name: 'Model guidance' }),
     ).toHaveText(guidance)
+    await expect(startup.locator('#preview-notice')).toContainText('a ctlplne studio product')
+    await startup.goto(new URL('/privacy.html', baseURL).href)
+    await expect(startup.getByRole('heading', {name: 'Where your healthctl data goes'})).toBeVisible()
   } finally {
     await plain.close()
   }

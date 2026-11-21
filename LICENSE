@@ -3,6 +3,26 @@ Business Source License 1.1
 License text copyright © 2017 MariaDB Corporation Ab, All Rights Reserved.
 "Business Source License" is a trademark of MariaDB Corporation Ab.
 
+Parameters
+
+Licensor: Certctl LLC
+Licensed Work: healthctl 0.2.0 public preview, including the source revision
+distributed with this notice. Copyright © 2026 Certctl LLC.
+
+Additional Use Grant: You may make production use of the Licensed Work at
+no charge for your personal use or your organization's internal operations,
+including internal use by clinics and their personnel. You may use it in
+your own work with patients and share the resulting reports. This grant
+does not include providing access to the software as a hosted or managed
+service for third parties, or embedding the software in a commercial
+service offered to third parties. Either use requires separate permission
+from the Licensor during the Business Source License period.
+
+Change Date: November 21, 2030 for this 0.2.0 preview. The earlier-date
+provision in the Terms applies separately to each version.
+Change License: Mozilla Public License, version 2.0 (MPL-2.0), without
+the Exhibit B designation of incompatibility with secondary licenses.
+
 Terms
 
 The Licensor hereby grants you the right to copy, modify, create derivative

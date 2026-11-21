@@ -603,14 +603,14 @@ function App() {
           </main>
           <footer className="workspace-footer">
             <span>{session.displayName}</span>
-            <span>Personal clinical workspace</span>
+            <a href="/privacy.html" target="_blank" rel="noreferrer">Where your data goes</a>
           </footer>
         </div>
       </div>
     </ChatGPTConnections>
   )
 }
-const banner = document.getElementById('model-guidance')!
+const banner = document.getElementById('installation-guidance')!
 const measureBanner = () => {
   document.documentElement.style.setProperty(
     '--guidance-height',
