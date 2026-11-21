@@ -87,5 +87,5 @@ func (u *Usage) add(kind string, raw []byte) {
 	u.Reported++
 }
 func Budgets() map[string]int {
-	return map[string]int{"maxOutputTokens": maxOutputTokens, "maxInputBytes": maxInputBytes, "timeoutSeconds": int(requestDeadline.Seconds()), "maxRequestsPerOperation": 3}
+	return map[string]int{"maxOutputTokens": maxOutputTokens, "maxInputBytes": maxInputBytes, "timeoutSeconds": int(requestDeadline.Seconds()), "chatgptClinicalTimeoutSeconds": int(PlanClinicalDeadline.Seconds()), "maxRequestsPerOperation": 3}
 }

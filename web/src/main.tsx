@@ -59,6 +59,7 @@ function App() {
   const [page, setPage] = useState<Page>('journal'),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(''),
+    [pollError, setPollError] = useState(''),
     [notice, setNotice] = useState(false),
     [message, setMessage] = useState('')
   const [reportFirst, setReportFirst] = useState(false),
@@ -173,6 +174,67 @@ function App() {
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [page])
+  useEffect(() => {
+    setPollError('')
+    if (page !== 'record' || !session?.authenticated || !e?.pending) return
+    const { id, revision } = e
+    const controller = new AbortController()
+    let timer: number
+    const check = async () => {
+      let delay = 1200
+      try {
+        const next = await api<Encounter>(
+          '/encounters/' + id,
+          'GET',
+          undefined,
+          {
+            signal: AbortSignal.any([
+              controller.signal,
+              AbortSignal.timeout(10000),
+            ]),
+          },
+        )
+        if (controller.signal.aborted) return
+        setPollError('')
+        if (next.revision > revision || !next.pending) {
+          setEncounter((current) =>
+            current?.id === id && current.revision === revision
+              ? next
+              : current,
+          )
+          return
+        }
+      } catch (err) {
+        if (controller.signal.aborted) return
+        if (err instanceof RequestError && err.status === 401) {
+          setEncounter(null)
+          setPage('journal')
+          setRecords([])
+          setSettings(null)
+          lastSubmission.current = null
+          await syncSession().catch(() => setSession(null))
+          return
+        }
+        if (err instanceof RequestError && err.status === 404) {
+          setEncounter(null)
+          setPage('journal')
+          setError('This encounter is no longer available.')
+          void reloadWorkspace().catch(() => {})
+          return
+        }
+        setPollError(
+          'The status check failed. Reconnecting to your installation…',
+        )
+        delay = 3500
+      }
+      if (!controller.signal.aborted) timer = window.setTimeout(check, delay)
+    }
+    timer = window.setTimeout(check, 300)
+    return () => {
+      controller.abort()
+      clearTimeout(timer)
+    }
+  }, [page, session?.authenticated, e?.id, e?.revision, e?.pending])
   const leaveSources = () => {
     if (sourceEncounter || portalReturn)
       window.history.replaceState(null, '', '/')
@@ -194,10 +256,15 @@ function App() {
     return lastSubmission.current!.id
   }
   const save = async (path: string, body: Fields) => {
-    const next = await api<Encounter>(path, 'POST', {
-      ...body,
-      requestId: requestId(path, body),
-    })
+    const next = await api<Encounter>(
+      path,
+      'POST',
+      {
+        ...body,
+        requestId: requestId(path, body),
+      },
+      { asyncModel: true, signal: AbortSignal.timeout(20000) },
+    )
     lastSubmission.current = null
     setEncounter(next)
     setPage('record')
@@ -482,6 +549,7 @@ function App() {
                 <EncounterPage
                   key={e.id}
                   e={e}
+                  pollError={pollError}
                   startAtSources={sourceEncounter === e.id}
                   name={session.displayName}
                   emergency={session.emergency}
@@ -489,7 +557,13 @@ function App() {
                   busy={busy}
                   run={run}
                   onAction={action}
-                  onUpdate={setEncounter}
+                  onUpdate={(next) =>
+                    setEncounter((current) =>
+                      current?.id === next.id && next.revision >= current.revision
+                        ? next
+                        : current,
+                    )
+                  }
                   careDestination={region?.careDestination || ''}
                   onLeave={() => move('journal')}
                   onDelete={remove}

@@ -28,6 +28,9 @@ func validSubscriptionSlug(s string) bool { return subscriptionSlug.MatchString(
 func NewWithChatGPT(resolve func(context.Context, string) (string, error)) *Client {
 	c := New()
 	c.chatGPTToken = resolve
+	plan := networkClient(false, false)
+	plan.Transport.(*http.Transport).ResponseHeaderTimeout = PlanClinicalDeadline
+	c.httpClients["plan"] = plan
 	return c
 }
 
@@ -156,7 +159,7 @@ func (c *Client) chatGPTRequest(ctx context.Context, cfg Config, p *call, usage 
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+token)
 	usage.Requests++
-	res, err := c.httpClients["official"].Do(req)
+	res, err := c.httpClients["plan"].Do(req)
 	if err != nil {
 		return nil, "", &ChatGPTError{message: "The ChatGPT inference connection failed. The saved history is available to retry."}
 	}

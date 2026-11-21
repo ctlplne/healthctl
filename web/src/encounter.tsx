@@ -42,7 +42,7 @@ type Tab =
 const defaultTab = (e: Encounter): Tab =>
   e.state === 'history_review'
     ? 'history'
-    : e.state === 'assessment_ready' || e.state === 'needs_clarification'
+    : e.state === 'assessing' || e.state === 'assessment_ready' || e.state === 'needs_clarification'
       ? 'estimate'
       : 'interview'
 type Props = {
@@ -57,6 +57,7 @@ type Props = {
   onDelete: () => Promise<void>
   onUpdate: (e: Encounter) => void
   careDestination: string
+  pollError: string
   startAtSources?: boolean
 }
 export function EncounterPage({
@@ -71,6 +72,7 @@ export function EncounterPage({
   onDelete,
   onUpdate,
   careDestination,
+  pollError,
   startAtSources = false,
 }: Props) {
   const [tab, setTab] = useState<Tab>(() =>
@@ -131,6 +133,15 @@ export function EncounterPage({
     setBrief(null)
     setFormat('patient')
   }, [e.revision])
+  const wasPending = useRef(e.pending)
+  useEffect(() => {
+    if (wasPending.current && !e.pending) {
+      setTab((t) =>
+        ['interview', 'history', 'estimate'].includes(t) ? defaultTab(e) : t,
+      )
+    }
+    wasPending.current = e.pending
+  }, [e.pending, e.state])
   const act = async (cmd: Fields): Promise<boolean> => {
     const next = await onAction(cmd)
     if (!next) return false
@@ -163,6 +174,7 @@ export function EncounterPage({
   }
   const readHistory = () => {
     if (
+      e.pending ||
       e.scopeReason ||
       e.state === 'history_review' ||
       e.state === 'assessment_ready' ||
@@ -176,6 +188,7 @@ export function EncounterPage({
   const openReport = () =>
     run(async () => {
       const doc = await api<Report>('/encounters/' + e.id + '/export')
+      if (doc.revision > e.revision) onUpdate(doc)
       setReport(doc)
       setFormat('patient')
       setTab('report')
@@ -216,6 +229,22 @@ export function EncounterPage({
           <p className="callout alert">
             Local care information · {careDestination}
           </p>
+        )}
+        {e.pending && (
+          <div role="status">
+            <Callout
+              title={
+                e.pending === 'assessment'
+                  ? 'Preparing your provisional estimate'
+                  : e.state === 'history_review'
+                    ? 'Preparing your history for review'
+                    : 'Preparing your next interview question'
+              }
+            >
+              {pollError ||
+                `Your history is saved. Waiting for ${kinds[e.provider.kind]} to respond. You can pause and reopen this encounter while it runs.`}
+            </Callout>
+          </div>
         )}
         {failure && (
           <Callout title="The provider could not finish this request" alert>
@@ -329,7 +358,35 @@ export function EncounterPage({
                       ? 'Interview question'
                       : 'Interview'}
                 </div>
-                {e.state === 'interrupted_for_safety' ? (
+                {e.pending ? (
+                  <div className="actions">
+                    <button
+                      className="secondary"
+                      disabled={busy}
+                      onClick={onLeave}
+                    >
+                      Pause and return to journal
+                    </button>
+                    {e.state !== 'history_review' && (
+                      <button
+                        className="secondary"
+                        disabled={busy}
+                        onClick={readHistory}
+                      >
+                        Review saved history now
+                      </button>
+                    )}
+                    {!activeWarnings.length && (
+                      <button
+                        className="text-button"
+                        disabled={busy}
+                        onClick={() => void act({ action: 'report_emergency' })}
+                      >
+                        I may be having a medical emergency right now
+                      </button>
+                    )}
+                  </div>
+                ) : e.state === 'interrupted_for_safety' ? (
                   <>
                     <h2>Routine questions are paused</h2>
                     <p>
@@ -381,12 +438,6 @@ export function EncounterPage({
                         You can record additional information for your visit
                         report.
                       </p>
-                    )}
-                    {e.pending && (
-                      <Callout title="Request in progress">
-                        The submitted history is saved. Reopen the encounter to
-                        check for an updated question or result.
-                      </Callout>
                     )}
                     <form
                       onSubmit={(ev) => {
@@ -536,7 +587,7 @@ export function EncounterPage({
                 )}
                 <History
                   e={e}
-                  busy={busy}
+                  busy={busy || !!e.pending}
                   onAction={act}
                   focusFact={focusFact}
                   onSource={viewFact}
@@ -551,7 +602,7 @@ export function EncounterPage({
                 <h2>Provisional explanations</h2>
                 <Notice text={e.notice} />
                 <UrgencyReminder warnings={e.warnings} />
-                {current ? (
+                {e.pending === 'assessment' ? null : current ? (
                   <>
                     <Estimate a={current} facts={e.facts} onFact={viewFact} />
                     <div className="actions">

@@ -49,6 +49,8 @@ func New(encounterID string, intake Intake, provider ProviderRef, emergency stri
 	e.routeInterview()
 	if intake.ReportFirst {
 		e.reportState()
+	} else if e.GuidedHistory && e.Provider.Kind == "chatgpt" && e.Pending == "interview" {
+		e.askPlanOpening()
 	}
 	return e, nil
 }
@@ -244,7 +246,8 @@ func (e *Encounter) Apply(c Command, emergency string) error {
 		if len(e.Outstanding) != previousGaps && e.ConfirmedRevision == e.HistoryRevision {
 			e.changed()
 		}
-		extract := e.State == "interrupted_for_safety" && e.ExtractedRevision != e.HistoryRevision
+		localOpening := e.QuestionSource != nil && e.QuestionSource.Key == "symptom_story"
+		extract := e.ExtractedRevision != e.HistoryRevision && (e.State == "interrupted_for_safety" || localOpening)
 		e.State = "history_review"
 		e.Question = ""
 		e.QuestionSource = nil

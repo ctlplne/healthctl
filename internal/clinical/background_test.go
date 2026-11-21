@@ -15,6 +15,48 @@ func guided(t *testing.T, concern string) *Encounter {
 	return e
 }
 
+func TestGuidedPlanOpeningIsAnswerableBeforeInference(t *testing.T) {
+	for _, tc := range []struct{ concern, question string }{
+		{"My shoulder aches.", "When did you first notice this change?"},
+		{"My shoulder started aching three days ago.", "How has this changed since you first noticed it?"},
+		{"My shoulder started aching three days ago and is getting worse.", "How is this affecting what you can usually do?"},
+		{"Since Monday my shoulder is getting worse and it is hard to lift a bag.", "What concerns you most about this change?"},
+	} {
+		in := Intake{GuidedHistory: true, Age: 38, Concern: tc.concern, NoticeVersion: NoticeVersion}
+		e, err := New("synthetic", in, ProviderRef{Kind: "chatgpt"}, "")
+		if err != nil || e.Question != tc.question || e.Pending != "" || len(e.Facts) != 0 || len(e.Turns) != 0 {
+			t.Fatalf("expected immediate question for %q", tc.concern)
+		}
+		apply(t, e, Command{Action: "answer", Text: "Skip"})
+		payload, err := e.ModelInput("interview")
+		last := e.Answers[len(e.Answers)-1]
+		if err != nil || payload.Concern != tc.concern || e.Pending != "interview" || last.Disposition != "skipped" || last.Question != tc.question {
+			t.Fatal("opening evidence or skipped response lost before model follow-up")
+		}
+	}
+	in := Intake{GuidedHistory: true, Age: 38, Concern: "My shoulder aches.", NoticeVersion: NoticeVersion}
+	cfg := ProviderRef{Kind: "chatgpt"}
+	e, _ := New("synthetic", in, cfg, "")
+	apply(t, e, Command{Action: "review"})
+	if !e.ReviewExtraction || e.Pending != "interview" {
+		t.Fatal("early review missed opening extraction")
+	}
+	for _, change := range []func(*Intake){
+		func(i *Intake) { i.UrgentNow = true },
+		func(i *Intake) { i.Concern = "I cannot breathe." },
+		func(i *Intake) { i.Age = 12 },
+		func(i *Intake) { i.PregnancyRelated = true },
+		func(i *Intake) { i.ReportFirst = true },
+	} {
+		i := in
+		change(&i)
+		e, err := New("synthetic", i, cfg, "")
+		if err != nil || e.Question != "" || e.Pending != "" || e.State == "interviewing" {
+			t.Fatal("routine opening overrode scope, urgency or report-first flow")
+		}
+	}
+}
+
 func TestGuidedHistoryFromSparseConcernToCorrectedExport(t *testing.T) {
 	e := guided(t, "I feel dizzy")
 	turn(t, e, Proposal{Action: "review"})

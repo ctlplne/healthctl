@@ -115,6 +115,27 @@ func (e *Encounter) askBackground(t backgroundTopic) {
 // their own flows. Any prior symptom question, including a skip, counts.
 var openingTiming = regexp.MustCompile(`(?i)\b(today|yesterday|tonight|since|ago|morning|afternoon|evening|last|minutes?|hours?|days?|weeks?|months?|years?|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b`)
 
+var openingCourse = regexp.MustCompile(`(?i)\b(better|worse|worsen(?:ed|ing)?|improv(?:ed|ing)|unchanged|same|comes and goes)\b`)
+var openingImpact = regexp.MustCompile(`(?i)\b(can't|cannot|can't do|hard to|harder to|unable to|stopped|usual activities|limits my|affects my)\b`)
+
+// The local scope and urgency checks have already run. The first answer and
+// opening reach the plan together, or review requests extraction immediately.
+func (e *Encounter) askPlanOpening() {
+	e.setStoryQuestion()
+	if !openingTiming.MatchString(e.Concern) {
+		return
+	}
+	if !openingCourse.MatchString(e.Concern) {
+		e.Question = "How has this changed since you first noticed it?"
+		e.Choices = []string{"Getting better", "About the same", "Getting worse", "It comes and goes"}
+		e.QuestionSource.Reason = "The way this is changing helps guide the next question."
+	} else if openingImpact.MatchString(e.Concern) {
+		e.Question = "What concerns you most about this change?"
+		e.Choices = []string{"How it feels", "How long it has lasted", "How it affects my day"}
+		e.QuestionSource.Reason = "Your main concern helps focus the interview."
+	}
+}
+
 func (e *Encounter) askOpeningDetail(in Input) bool {
 	if !e.GuidedHistory || e.ReportFirst || len(in.Pathways) == 0 || len(in.ReportEntries) > 0 || len(strings.Fields(in.Concern)) > 12 {
 		return false
@@ -124,10 +145,15 @@ func (e *Encounter) askOpeningDetail(in Input) bool {
 			return false
 		}
 	}
+	e.setStoryQuestion()
+	return true
+}
+
+func (e *Encounter) setStoryQuestion() {
 	q := QuestionSource{Key: "symptom_story", Reason: "When this first changed helps establish the course of your symptoms."}
 	e.Question = "When did you first notice this change?"
 	e.Choices = []string{"Today", "Yesterday", "2 to 7 days ago", "More than a week ago"}
-	if openingTiming.MatchString(in.Concern) {
+	if openingTiming.MatchString(e.Concern) {
 		q.Reason = "How this affects your usual activities helps describe its impact."
 		e.Question = "How is this affecting what you can usually do?"
 		e.Choices = []string{"I can do my usual activities", "Some activities are harder", "I have stopped my usual activities"}
@@ -135,7 +161,6 @@ func (e *Encounter) askOpeningDetail(in Input) bool {
 	e.QuestionSource = &q
 	e.QuestionReviewIDs = nil
 	e.State, e.Pending = "interviewing", ""
-	return true
 }
 
 func (e *Encounter) askNextBackground() bool {

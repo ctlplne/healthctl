@@ -118,6 +118,7 @@ func TestChatGPTPlanSocketModelCatalogAndInference(t *testing.T) {
 		local.URL.Scheme, local.URL.Host = fixtureURL.Scheme, fixtureURL.Host
 		return wire.RoundTrip(local)
 	})}
+	c.httpClients["plan"] = c.httpClients["official"]
 	cfg := planCfg()
 	models, err := c.ChatGPTModels(t.Context(), accountOne)
 	if err != nil || len(models) != 2 || models[0].Slug != "plan-second" || len(models[0].ReasoningLevels) != 0 || models[1].DisplayName != "Test model" || strings.Join(models[1].ReasoningLevels, " ") != "medium high" {
@@ -199,6 +200,8 @@ func TestChatGPTSubscriptionStreamsFailClosed(t *testing.T) {
 		{"oversized answer", planEvent("response.output_text.delta", map[string]any{"delta": strings.Repeat("x", maxProposalBytes+1)})},
 		{"too many output tokens", planCompletion(proposal, maxOutputTokens+1)},
 		{"oversized ignored data", ":" + strings.Repeat("a", maxEnvelopeBytes) + "\n\n" + planCompletion(proposal, 10)},
+		{"oversized stream", strings.Repeat(":"+strings.Repeat("a", 1022)+"\n", maxPlanStreamBytes/1024) + planCompletion(proposal, 10)},
+		{"oversized multiline event", "data: " + strings.Repeat(" ", maxEnvelopeBytes/2) + "\ndata: " + strings.Repeat(" ", maxEnvelopeBytes/2) + "\n\n"},
 		{"event type mismatch", "event: response.completed\ndata: {\"type\":\"response.failed\"}\n\n"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -214,6 +217,26 @@ func TestChatGPTSubscriptionStreamsFailClosed(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestChatGPTReasoningStreamKeepsFullUsageAndBoundsAnswer(t *testing.T) {
+	reasoning := planEvent("response.output_item.done", map[string]any{"item": map[string]string{"type": "reasoning", "encrypted_content": strings.Repeat("x", 96<<10)}})
+	for _, tc := range []struct {
+		reasoning int
+		wantOK    bool
+	}{{8192, true}, {0, false}, {-1, false}, {10000, false}} {
+		var w map[string]any
+		if err := json.Unmarshal([]byte(envelope("openai", proposal)), &w); err != nil {
+			t.Fatal(err)
+		}
+		w["usage"] = map[string]any{"input_tokens": 21, "output_tokens": 8200, "output_tokens_details": map[string]int{"reasoning_tokens": tc.reasoning}}
+		stream := strings.Repeat(reasoning, 3) + planEvent("response.completed", map[string]any{"response": w})
+		var usage Usage
+		result, _, err := readPlanStream(strings.NewReader(stream), "", maxOutputTokens, &usage)
+		if (err == nil) != tc.wantOK || tc.wantOK && string(result) != proposal || usage.OutputTokens != 8200 {
+			t.Fatalf("reasoning=%d result accepted=%t reported=%d", tc.reasoning, err == nil, usage.OutputTokens)
+		}
 	}
 }
 

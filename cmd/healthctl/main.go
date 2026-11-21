@@ -124,8 +124,8 @@ func main() {
 		plan = server.NewChatGPTIntegration(db)
 		models = provider.NewWithChatGPT(plan.Token)
 	}
-	app := &server.Server{Store: db, Models: models, ChatGPT: plan, EHR: portal, Name: env("CLINICAL_DISPLAY_NAME", "healthctl"), Emergency: os.Getenv("CLINICAL_EMERGENCY_CONTACT"), Locale: locale.String(), Units: units, CareDestination: os.Getenv("CLINICAL_CARE_DESTINATION"), Assets: env("CLINICAL_ASSETS", "web/dist"), PublicOrigin: origin, Secure: secure, Logger: logger}
-	httpd := &http.Server{Addr: env("CLINICAL_LISTEN", "127.0.0.1:8437"), Handler: app.Handler(), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 15 * time.Second, WriteTimeout: 180 * time.Second, IdleTimeout: 90 * time.Second, MaxHeaderBytes: 16384}
+	app := &server.Server{Lifetime: ctx, Store: db, Models: models, ChatGPT: plan, EHR: portal, Name: env("CLINICAL_DISPLAY_NAME", "healthctl"), Emergency: os.Getenv("CLINICAL_EMERGENCY_CONTACT"), Locale: locale.String(), Units: units, CareDestination: os.Getenv("CLINICAL_CARE_DESTINATION"), Assets: env("CLINICAL_ASSETS", "web/dist"), PublicOrigin: origin, Secure: secure, Logger: logger}
+	httpd := &http.Server{Addr: env("CLINICAL_LISTEN", "127.0.0.1:8437"), Handler: app.Handler(), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 15 * time.Second, WriteTimeout: provider.PlanClinicalDeadline + 30*time.Second, IdleTimeout: 90 * time.Second, MaxHeaderBytes: 16384}
 	go func() {
 		<-ctx.Done()
 		deadline, cancel := context.WithTimeout(context.Background(), 10*time.Second)

@@ -14,11 +14,12 @@ import (
 )
 
 const (
-	maxInputBytes    = 48 << 10
-	maxProposalBytes = 32 << 10
-	maxEnvelopeBytes = 256 << 10
-	maxOutputTokens  = 4096
-	requestDeadline  = 75 * time.Second
+	maxInputBytes        = 48 << 10
+	maxProposalBytes     = 32 << 10
+	maxEnvelopeBytes     = 256 << 10
+	maxOutputTokens      = 4096
+	requestDeadline      = 75 * time.Second
+	PlanClinicalDeadline = 4 * time.Minute
 )
 
 func (c *Client) Test(ctx context.Context, cfg Config) error {
@@ -75,7 +76,11 @@ func (c *Client) run(parent context.Context, cfg Config, p call, validate func([
 		}
 		meta.Settings["usage"] = usage
 	}()
-	ctx, cancel := context.WithTimeout(parent, requestDeadline)
+	deadline := requestDeadline
+	if cfg.Kind == "chatgpt" && mayRepair {
+		deadline = PlanClinicalDeadline
+	}
+	ctx, cancel := context.WithTimeout(parent, deadline)
 	defer cancel()
 	key, err := c.credential(cfg)
 	if err != nil {
@@ -116,9 +121,9 @@ func (c *Client) run(parent context.Context, cfg Config, p call, validate func([
 			settings := map[string]any{"outputFormat": format, "maxOutputTokens": p.maxTokens, "requests": usage.Requests}
 			if cfg.Kind == "chatgpt" {
 				delete(settings, "maxOutputTokens")
-				settings["maxAcceptedOutputTokens"] = p.maxTokens
+				settings["maxAcceptedAnswerTokens"] = p.maxTokens
 				settings["maxOutputBytes"] = maxProposalBytes
-				settings["maxStreamBytes"] = maxEnvelopeBytes
+				settings["maxStreamBytes"] = maxPlanStreamBytes
 				settings["billing"] = "chatgpt_plan"
 				if p.reasoningEffort != "" {
 					settings["reasoningEffort"] = p.reasoningEffort

@@ -24,6 +24,7 @@ import (
 )
 
 type Server struct {
+	Lifetime                              context.Context
 	Store                                 *store.Store
 	Models                                *provider.Client
 	ChatGPT                               *ChatGPTIntegration

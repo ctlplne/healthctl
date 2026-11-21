@@ -15,6 +15,7 @@ export async function api<T>(
   path: string,
   method = 'GET',
   body?: Fields | FormData,
+  options: { asyncModel?: boolean; signal?: AbortSignal } = {},
 ): Promise<T> {
   let response: Response
   try {
@@ -22,8 +23,10 @@ export async function api<T>(
       method,
       credentials: 'same-origin',
       cache: 'no-store',
+      signal: options.signal,
       headers: {
         Accept: 'application/json',
+        ...(options.asyncModel ? { Prefer: 'respond-async' } : {}),
         ...(body && !(body instanceof FormData)
           ? { 'Content-Type': 'application/json' }
           : {}),

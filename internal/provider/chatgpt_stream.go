@@ -8,10 +8,12 @@ import (
 	"strings"
 )
 
+const maxPlanStreamBytes = 2 << 20
+
 // Consume a complete Responses SSE event. No tokens, fragments, reasoning, or
 // remote error messages become patient-visible output before validation.
 func readPlanStream(r io.Reader, requestID string, budget int, usage *Usage) ([]byte, string, error) {
-	reader := &io.LimitedReader{R: r, N: maxEnvelopeBytes + 1}
+	reader := &io.LimitedReader{R: r, N: maxPlanStreamBytes + 1}
 	buffered := bufio.NewReader(reader)
 	if prefix, _ := buffered.Peek(3); bytes.Equal(prefix, []byte{0xef, 0xbb, 0xbf}) {
 		buffered.Discard(3)
@@ -58,6 +60,9 @@ func readPlanStream(r io.Reader, requestID string, budget int, usage *Usage) ([]
 			case "event":
 				eventType = value
 			case "data":
+				if len(value)+data.Len()+1 > maxEnvelopeBytes {
+					return nil, "", errIncomplete
+				}
 				if data.Len() > 0 {
 					data.WriteByte('\n')
 				}
@@ -116,9 +121,8 @@ func readPlanStream(r io.Reader, requestID string, budget int, usage *Usage) ([]
 			usage.add("chatgpt", event.Response)
 			return nil, "", planError(200, event.Type, issue.Code, issue.Param, requestID)
 		case "response.completed":
-			previous := usage.OutputTokens
 			usage.add("chatgpt", event.Response)
-			if usage.OutputTokens-previous > int64(budget) {
+			if !withinPlanAnswerBudget(event.Response, budget) {
 				return nil, "", errIncomplete
 			}
 			out, model, err := unpack("openai", event.Response)
@@ -131,4 +135,22 @@ func readPlanStream(r io.Reader, requestID string, budget int, usage *Usage) ([]
 	// A dropped connection, malformed/unterminated event, [DONE] without a
 	// completed response, and a bare delta cannot produce a clinical proposal.
 	return nil, "", errIncomplete
+}
+
+// Responses counts reasoning in output_tokens. Apply the answer budget to
+// the remaining tokens while Usage records the provider's full reported total.
+func withinPlanAnswerBudget(raw []byte, budget int) bool {
+	var w struct {
+		Usage struct {
+			Output  int64 `json:"output_tokens"`
+			Details struct {
+				Reasoning int64 `json:"reasoning_tokens"`
+			} `json:"output_tokens_details"`
+		} `json:"usage"`
+	}
+	if json.Unmarshal(raw, &w) != nil {
+		return false
+	}
+	output, reasoning := w.Usage.Output, w.Usage.Details.Reasoning
+	return output >= 0 && output <= 1e9 && reasoning >= 0 && reasoning <= output && output-reasoning <= int64(budget)
 }

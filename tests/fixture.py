@@ -1,5 +1,6 @@
 """Synthetic compatible API used only in the isolated Compose verification project."""
 import json
+import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from threading import Lock
 
@@ -20,6 +21,8 @@ class Fixture(BaseHTTPRequestHandler):
             proposal = {"status": "ready"}
         else:
             history = json.loads(message)
+            if body["model"] == "fixture-slow-interview":
+                time.sleep(3)
             if body["model"] == "fixture-fail-once":
                 with lock:
                     first = history["concern"] not in attempted

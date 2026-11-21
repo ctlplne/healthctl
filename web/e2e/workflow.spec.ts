@@ -122,7 +122,7 @@ async function start(
     })
     .click()
   const creation = await response
-  expect(creation.status()).toBe(200)
+  expect([200, 202]).toContain(creation.status())
   const e = await creation.json()
   await expect(
     page.getByRole('heading', { name: 'Encounter record' }),
@@ -1119,5 +1119,36 @@ test('Patient adds medicine in their own words, resumes at allergies and flags a
   expect(exported.warnings.some((w: { active: boolean }) => w.active)).toBe(
     true,
   )
+  await remove(page)
+})
+
+test('A slow model leaves intake immediately and completes the same saved encounter after reopening', async ({
+  page,
+}, info) => {
+  const concern =
+    'Fictional slow-model check ' + info.project.name + ' ' + randomUUID()
+  await enter(page)
+  await configure(page, 'compatible', 'fixture-slow-interview')
+  const id = await start(page, { concern, age: 42 })
+  await expect(
+    page.getByText('Preparing your next interview question', { exact: true }),
+  ).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Save answer' })).toHaveCount(0)
+  await page.getByRole('button', { name: 'Review saved history now' }).click()
+  await expect(page.getByRole('button', { name: 'Confirm my history' })).toBeDisabled()
+  await page.getByRole('navigation', { name: 'Encounter sections' })
+    .getByRole('button', { name: 'Interview', exact: true }).click()
+  await page
+    .getByRole('button', { name: 'Pause and return to journal', exact: true })
+    .click()
+  await page.getByRole('button', { name: new RegExp(concern) }).click()
+  await expect(
+    page.getByRole('heading', {
+      name: 'When did you first notice the change?',
+    }),
+  ).toBeVisible({ timeout: 10000 })
+  expect(
+    (await (await page.request.get('/api/encounters/' + id)).json()).turns,
+  ).toHaveLength(1)
   await remove(page)
 })
