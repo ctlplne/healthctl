@@ -55,6 +55,13 @@ func (e *Encounter) Accept(task string, p Proposal, meta ModelMeta, emergency st
 		for _, f := range in.Facts {
 			factIDs = append(factIDs, f.ID)
 		}
+		if e.Focused {
+			for _, gap := range in.Outstanding {
+				if !contains(p.Outstanding, gap) {
+					p.Outstanding = append(p.Outstanding, gap)
+				}
+			}
+		}
 		e.Assessments = append(e.Assessments, Assessment{
 			Pathways: in.Pathways, PolicyVersion: PolicyVersion, FactIDs: factIDs, ReviewIDs: inputReviews(in),
 			Version: len(e.Assessments) + 1, HistoryRevision: e.HistoryRevision, CreatedAt: time.Now().UTC(),
@@ -79,7 +86,11 @@ func (e *Encounter) Accept(task string, p Proposal, meta ModelMeta, emergency st
 			if past && (f.TimeContext == "" || sameTime(f.TimeContext, "current")) {
 				f.TimeContext = a.EventDate
 			}
-			e.recordFinding(f, "patient_answer", "", false)
+			sourceType := "patient_answer"
+			if a.Kind == "witness" {
+				sourceType = "witness_observation"
+			}
+			e.recordFinding(f, sourceType, "", false)
 			source := a.Text
 			if !past && isCurrentPersonalFinding(f) && emergencySigns.MatchString(f.Concept) && contextualRisk(clauseAt(source, strings.Index(source, f.Quote))) {
 				e.addWarning(f.Evidence, "structured_finding", emergency)
@@ -95,6 +106,13 @@ func (e *Encounter) Accept(task string, p Proposal, meta ModelMeta, emergency st
 		e.OutstandingReviewIDs = inputReviews(in)
 		switch {
 		case e.ReviewExtraction:
+			if e.Focused {
+				for _, topic := range e.remainingBackground() {
+					if !contains(e.Outstanding, topic.question) {
+						e.Outstanding = append(e.Outstanding, topic.question)
+					}
+				}
+			}
 			e.State = "history_review"
 			e.ReviewExtraction = false
 		case e.hasWarning():
@@ -114,7 +132,7 @@ func (e *Encounter) Accept(task string, p Proposal, meta ModelMeta, emergency st
 					}
 				}
 			}
-		case p.Action == "review" && len(e.Answers) < 64 && (e.askOpeningDetail(in) || e.askNextBackground()):
+		case p.Action == "review" && !e.Focused && e.ReturnSource == "" && len(e.Answers) < 64 && (e.askOpeningDetail(in) || e.askNextBackground()):
 		default:
 			e.State = "history_review"
 		}
@@ -186,8 +204,11 @@ var vagueOnly = regexp.MustCompile(`(?i)^(?:i(?: am|'m|’m| feel) |i am feeling
 var uncertaintyOnly = regexp.MustCompile(`(?i)^\s*(?:i['’]m |i am |i )?(not sure|unsure|don't know|don’t know|do not know|can't remember|cannot remember|uncertain|maybe|rather not(?: say| answer)?|prefer not to (?:say|answer)|decline(?: to answer)?|skip)[\s.!?]*$`)
 var adviceOrCertainty = regexp.MustCompile(`(?i)([0-9]\s*%|https?://|www\.|\b(?:ruled out|definitively|definitely|confirmed diagnosis|no emergency|no need (?:for|to seek) (?:medical )?care|you (?:are safe|should (?:take|start|stop|increase|decrease|double)|can safely)|take [0-9]+|(?:start|stop|change) (?:your |taking |using )|you (?:have|are suffering from) (?:a |an )?(?:diagnosis|disease)|ignore (?:all |the )?(?:previous |prior )?instructions)\b)`)
 
+var explicitFaintDenial = regexp.MustCompile(`(?i)^(?:i )?(?:(?:have not|haven['’]t|have never) fainted|(?:did not|didn['’]t) faint)[.!]?$`)
+var faintConcept = regexp.MustCompile(`(?i)^(?:syncope|faint(?:ing|ed)?)(?: \(syncope\)| \(fainting\))?$`)
+
 func denies(s string) bool {
-	return negative.MatchString(s) || pureDenial.MatchString(strings.TrimSpace(s))
+	return negative.MatchString(s) || pureDenial.MatchString(strings.TrimSpace(s)) || explicitFaintDenial.MatchString(strings.TrimSpace(s))
 }
 func badOutput(s string, limit int) bool { return len(s) > limit || adviceOrCertainty.MatchString(s) }
 func listValid(items []string, maxN, maxLen int) bool {
@@ -383,6 +404,10 @@ var words = regexp.MustCompile(`[[:alnum:]]+`)
 func denialSupports(concept, quote string, a Answer) bool {
 	if !denies(quote) || uncertain.MatchString(quote) {
 		return false
+	}
+	if faintConcept.MatchString(strings.TrimSpace(concept)) && explicitFaintDenial.MatchString(strings.TrimSpace(quote)) {
+		at := strings.Index(a.Text, quote)
+		return at >= 0 && explicitFaintDenial.MatchString(strings.TrimSpace(clauseAt(a.Text, at)))
 	}
 	source := strings.ToLower(quote)
 	if pureDenial.MatchString(strings.TrimSpace(quote)) && len(strings.Fields(quote)) <= 4 {

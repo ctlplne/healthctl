@@ -1,3 +1,5 @@
+import { Diary, ReturnPicker, emptySelection } from './diary'
+import { ReadBack, VoiceInput } from './voice'
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import {
@@ -167,16 +169,20 @@ export function Journal({
   onOpen,
   onNew,
   onReport,
+  onReturn,
   onSettings,
   settings,
 }: {
   rows: EncounterRow[]
   onOpen: (id: string) => void
   onNew: () => void
+  onReturn: () => void
   onReport: () => void
   onSettings: () => void
   settings: Settings
 }) {
+  const [diary, setDiary] = useState(false)
+  if (diary) return <Diary onClose={() => setDiary(false)} />
   const p = settings.provider
   return (
     <>
@@ -206,6 +212,20 @@ export function Journal({
             >
               <FileText size={17} />
               Start with a report
+            </button>
+          )}
+          <button
+            className="secondary report-first-action"
+            onClick={() => setDiary(true)}
+          >
+            It happened again
+          </button>
+          {p && p.kind !== 'demo' && (
+            <button
+              className="secondary report-first-action"
+              onClick={onReturn}
+            >
+              Start a return visit
             </button>
           )}
         </div>
@@ -513,6 +533,8 @@ export function ProviderEditor({
 
 export function IntakeForm({
   reportFirst,
+  returnMode,
+  rows,
   provider,
   session,
   busy,
@@ -522,6 +544,8 @@ export function IntakeForm({
 }: Work & {
   provider: Provider
   session: Session
+  returnMode: boolean
+  rows: EncounterRow[]
   reportFirst: boolean
   onCreate: (body: Fields) => Promise<void>
   onBack: () => void
@@ -534,6 +558,10 @@ export function IntakeForm({
     [urgent, setUrgent] = useState(''),
     [pregnancy, setPregnancy] = useState(''),
     [ack, setAck] = useState(false)
+  const [selection, setSelection] = useState(emptySelection),
+    [narrativeFirst, setNarrativeFirst] = useState(!demo),
+    [focused, setFocused] = useState(false),
+    [agenda, setAgenda] = useState('')
   const submit = (e: FormEvent) => {
     e.preventDefault()
     run(() =>
@@ -541,6 +569,12 @@ export function IntakeForm({
         concern: concern.trim(),
         age: Number(age),
         guidedHistory: true,
+        focused,
+        narrativeFirst,
+        agenda,
+        ...(returnMode && (selection.source || selection.diaryIds.length)
+          ? { returnVisit: selection }
+          : {}),
         pregnancyRelated: pregnancy === 'yes',
         urgentNow: urgent === 'yes',
         noticeVersion: session.noticeVersion,
@@ -552,7 +586,13 @@ export function IntakeForm({
   return (
     <>
       <PageTitle
-        title={reportFirst ? 'Start with a report' : 'New encounter'}
+        title={
+          reportFirst
+            ? 'Start with a report'
+            : returnMode
+              ? 'Return visit'
+              : 'New encounter'
+        }
         parent="Encounter journal"
         onBack={onBack}
         description="Describe your concern in English. The symptom interview covers adults aged 18 and older. You can still save a history for a child or a pregnancy-related concern."
@@ -580,6 +620,49 @@ export function IntakeForm({
               }
             />
           </label>
+          {!demo && (
+            <>
+              <ReadBack words={concern} />
+              <VoiceInput onUse={setConcern} />
+              <label>
+                What question do you want this visit to answer?
+                <input
+                  maxLength={600}
+                  value={agenda}
+                  onChange={(ev) => setAgenda(ev.target.value)}
+                />
+              </label>
+              <label>
+                Interview length
+                <select
+                  value={focused ? 'short' : 'full'}
+                  onChange={(ev) => setFocused(ev.target.value === 'short')}
+                >
+                  <option value="full">Full interview</option>
+                  <option value="short">
+                    I have two minutes · up to two follow-up answers
+                  </option>
+                </select>
+              </label>
+              <label>
+                Answer style
+                <select
+                  value={narrativeFirst ? 'story' : 'choices'}
+                  onChange={(ev) =>
+                    setNarrativeFirst(ev.target.value === 'story')
+                  }
+                >
+                  <option value="story">My own words first</option>
+                  <option value="choices">
+                    Show answer choices immediately
+                  </option>
+                </select>
+              </label>
+            </>
+          )}
+          {returnMode && (
+            <ReturnPicker rows={rows} value={selection} change={setSelection} />
+          )}
           <label>
             Age in years
             <input

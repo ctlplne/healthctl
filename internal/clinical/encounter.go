@@ -22,11 +22,11 @@ func (e *Encounter) touch()              { e.Revision++; e.UpdatedAt = time.Now(
 func (e *Encounter) PendingTask() string { return e.Pending }
 
 func New(encounterID string, intake Intake, provider ProviderRef, emergency string) (*Encounter, error) {
-	if intake.Age < 1 || intake.Age > 125 || !validText(intake.Concern, 4000) || len(intake.Background) > 4000 || intake.NoticeVersion != NoticeVersion {
+	if len(intake.Agenda) > 600 || intake.Age < 1 || intake.Age > 125 || !validText(intake.Concern, 4000) || len(intake.Background) > 4000 || intake.NoticeVersion != NoticeVersion {
 		return nil, errors.New("Enter an age from 1 to 125, a chief concern and acknowledge the current notice")
 	}
 	e := &Encounter{
-		GuidedHistory: intake.GuidedHistory, ReportFirst: intake.ReportFirst, ID: encounterID, Concern: strings.TrimSpace(intake.Concern), Background: strings.TrimSpace(intake.Background),
+		Agenda: strings.TrimSpace(intake.Agenda), Focused: intake.Focused, NarrativeFirst: intake.NarrativeFirst, GuidedHistory: intake.GuidedHistory, ReportFirst: intake.ReportFirst, ID: encounterID, Concern: strings.TrimSpace(intake.Concern), Background: strings.TrimSpace(intake.Background),
 		Age: intake.Age, PregnancyRelated: intake.PregnancyRelated,
 		Provider: provider, Demo: provider.Kind == "demo", CreatedAt: time.Now().UTC(),
 		Notice: Notice, NoticeVersion: NoticeVersion, ReviewStatus: ReviewStatus, HistoryRevision: 1,
@@ -45,6 +45,9 @@ func New(encounterID string, intake Intake, provider ProviderRef, emergency stri
 		screenText = urgentYes
 	}
 	e.appendAnswer("screen", urgentQuestion, screenText, "", emergency)
+	if e.Agenda != "" {
+		e.appendAnswer("agenda", "What would you most like this visit to answer?", e.Agenda, "", emergency)
+	}
 	e.setScope()
 	e.routeInterview()
 	if intake.ReportFirst {
@@ -98,7 +101,15 @@ func (e *Encounter) routeInterview() {
 	case len(e.Answers) >= 64:
 		e.State = "history_review"
 		e.Outstanding = []string{"The interview reached its context limit. Review the saved history."}
+	case e.focusedLimitReached():
+		e.State = "history_review"
+		e.Pending = "interview"
+		e.ReviewExtraction = true
+	case e.askEventTiming():
+	case e.askSourceDifference():
 	case e.groundedQuestion():
+	case e.askEpisodeChange():
+	case e.askFocusedQuestion():
 	default:
 		e.State = "interviewing"
 		e.Pending = "interview"
@@ -181,6 +192,10 @@ func sameTime(a, b string) bool {
 
 func (e *Encounter) Apply(c Command, emergency string) error {
 	switch c.Action {
+	case "episode_log", "witness", "medication_use", "resolve_sources", "clinician_feedback":
+		if err := e.visitEntry(c, emergency); err != nil {
+			return err
+		}
 	case "set_episode":
 		if e.Pending != "" {
 			return errors.New("Finish or cancel the current request before changing the episode")
@@ -247,7 +262,7 @@ func (e *Encounter) Apply(c Command, emergency string) error {
 			e.changed()
 		}
 		localOpening := e.QuestionSource != nil && e.QuestionSource.Key == "symptom_story"
-		extract := e.ExtractedRevision != e.HistoryRevision && (e.State == "interrupted_for_safety" || localOpening)
+		extract := e.ExtractedRevision != e.HistoryRevision && (e.State == "interrupted_for_safety" || localOpening || e.Focused || e.ReturnSource != "")
 		e.State = "history_review"
 		e.Question = ""
 		e.QuestionSource = nil
@@ -304,7 +319,19 @@ func (e *Encounter) Apply(c Command, emergency string) error {
 		} else {
 			e.State = "interviewing"
 		}
+	case "focus_interview":
+		if e.Pending != "" || e.State != "interviewing" || e.Demo {
+			return errors.New("Choose a shorter interview while answering a question")
+		}
+		if !e.Focused {
+			e.Focused = true
+			e.FocusedFrom = len(e.Answers)
+			e.routeInterview()
+		}
 	case "continue":
+		if e.focusedLimitReached() {
+			e.Focused = false
+		} // The patient explicitly asked for more questions after the short interview.
 		if e.ScopeReason != "" {
 			return errors.New("This encounter is outside the interview scope")
 		}
@@ -358,6 +385,9 @@ func (e *Encounter) applyAnswer(c Command, emergency string) error {
 		if old == nil {
 			return errors.New("Choose an active answer to correct")
 		}
+		if old.Kind == "witness" {
+			return errors.New("Preserve the witness’s original words and add a separate clarification")
+		}
 		kind, question = old.Kind, old.Question
 		source, deps = old.QuestionSource, old.ReviewIDs
 		date = old.EventDate
@@ -370,6 +400,12 @@ func (e *Encounter) applyAnswer(c Command, emergency string) error {
 				text = urgentYes
 			}
 		}
+	}
+	if c.Action == "answer" && source != nil && source.Key == "medication_start" && c.Date != "" {
+		if !isoDay(c.Date) {
+			return errors.New("Choose a valid start date")
+		}
+		date = c.Date
 	}
 	if !validText(text, 4000) {
 		return errors.New("Enter a response of up to 4000 bytes")
@@ -388,6 +424,12 @@ func (e *Encounter) applyAnswer(c Command, emergency string) error {
 		}
 	}
 	a := e.appendDatedAnswer(kind, question, text, oldID, date, emergency)
+	if old != nil {
+		e.answer(a.ID).Detail = old.Detail
+	}
+	if kind == "agenda" {
+		e.Agenda = text
+	}
 	if old != nil && old.SourceOutdated {
 		e.Answers[len(e.Answers)-1].SourceOutdated = true
 	}
@@ -407,7 +449,7 @@ func (e *Encounter) applyAnswer(c Command, emergency string) error {
 	}
 	e.rebuildContradictions()
 	e.routeInterview()
-	if c.Action == "answer" && source != nil && source.Key == "background" && a.Disposition != "provided" && e.Pending == "interview" {
+	if c.Action == "answer" && !e.Focused && source != nil && source.Key == "background" && a.Disposition != "provided" && e.Pending == "interview" {
 		e.askNextBackground()
 	}
 	return nil
@@ -420,6 +462,9 @@ func (e *Encounter) correctFact(c Command, emergency string) error {
 	f := e.fact(c.FactID)
 	if f == nil {
 		return errors.New("Choose an active finding to correct")
+	}
+	if f.SourceType == "witness_observation" {
+		return errors.New("Add a separate account to clarify a witness observation")
 	}
 	if f.SourceType == "report_entry" {
 		return errors.New("Correct this transcription next to its original report row")

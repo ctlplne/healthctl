@@ -1,3 +1,4 @@
+import { detailLine } from './visitPrep'
 import { regionalMeasurement, RegionContext } from './region'
 import { useContext, useEffect, useState } from 'react'
 import { ClipboardList, Download, KeyRound } from 'lucide-react'
@@ -10,6 +11,9 @@ import { factDetail } from './report'
 import type { Outcome } from './records'
 import type { Run } from './forms'
 export type Brief = {
+  agenda?: string
+  changes?: Encounter['answers']
+  feedback?: Encounter['feedback']
   format: string
   id: string
   historyRevision: number
@@ -67,7 +71,11 @@ export function BriefBody({
 }) {
   const region = useContext(RegionContext)
   const facts = (b.facts || []).filter((f) => !f.sourceOutdated),
-    reported = facts.filter((f) => f.sourceType !== 'report_entry'),
+    reported = facts.filter(
+      (f) =>
+        f.sourceType !== 'report_entry' &&
+        f.sourceType !== 'witness_observation',
+    ),
     active = b.warnings?.filter((w) => w.active) || []
   const noticeHeading = b.notice.match(/^[^.]+\.(?:\s|$)/)?.[0] || b.notice
   const discuss = (b.priorities || []).filter(Boolean)
@@ -165,6 +173,44 @@ export function BriefBody({
       )}
       <h2>Concern and priorities</h2>
       <p>{b.concern}</p>
+      {b.agenda && (
+        <p>
+          <strong>Patient’s main question</strong> · {b.agenda}
+        </p>
+      )}
+      {!!b.changes?.length && (
+        <section>
+          <h3>What changed and who observed it</h3>
+          <CompactList
+            values={b.changes.map((a) =>
+              [a.question, a.text, detailLine(a)].filter(Boolean).join(' · '),
+            )}
+          />
+        </section>
+      )}
+      {(!!b.changes?.length || !!b.agenda || e.focused) &&
+        !!b.outstanding?.length && (
+          <p>
+            <strong>First unresolved question</strong> · {b.outstanding[0]}
+          </p>
+        )}
+      {!!b.feedback?.length && (
+        <section>
+          <h3>Patient-reviewed clinician feedback</h3>
+          <CompactList
+            values={b.feedback.map(
+              (f) =>
+                f.speaker +
+                ' · ' +
+                f.category +
+                ' · ' +
+                f.text +
+                ' · revision ' +
+                f.revision,
+            )}
+          />
+        </section>
+      )}
       {discuss.length > 0 && <CompactList values={discuss} />}{' '}
       {b.scopeReason && <p>{b.scopeReason}</p>}
       <div className="brief-grid">

@@ -1,3 +1,5 @@
+import { VisitPrep } from './visitPrep'
+import { ReadBack, VoiceInput } from './voice'
 import { useEffect, useRef, useState } from 'react'
 import {
   BookOpenCheck,
@@ -38,11 +40,19 @@ const isStandardOption = (s: string) =>
   )
 
 type Tab =
-  'interview' | 'history' | 'estimate' | 'report' | 'sources' | 'followup'
+  | 'interview'
+  | 'history'
+  | 'estimate'
+  | 'report'
+  | 'sources'
+  | 'followup'
+  | 'prep'
 const defaultTab = (e: Encounter): Tab =>
   e.state === 'history_review'
     ? 'history'
-    : e.state === 'assessing' || e.state === 'assessment_ready' || e.state === 'needs_clarification'
+    : e.state === 'assessing' ||
+        e.state === 'assessment_ready' ||
+        e.state === 'needs_clarification'
       ? 'estimate'
       : 'interview'
 type Props = {
@@ -84,6 +94,7 @@ export function EncounterPage({
         : defaultTab(e),
     ),
     [answer, setAnswer] = useState(''),
+    [eventDate, setEventDate] = useState(''),
     [answerMode, setAnswerMode] = useState<'choice' | 'text'>(),
     [urgentNow, setUrgentNow] = useState(false),
     [deleting, setDeleting] = useState(false),
@@ -117,9 +128,15 @@ export function EncounterPage({
     (c) => !isStandardOption(c),
   )
   const background = e.questionSource?.key === 'background' && !!e.question
+  const [revealedQuestion, setRevealedQuestion] = useState('')
+  const questionKey = e.historyRevision + '|' + e.question
+  const storyFirst =
+    e.narrativeFirst && !background && revealedQuestion !== questionKey
   const ownWords = answerMode === 'text'
   const writeAnswer =
-    ownWords || (!answerMode && !choices.length && !background)
+    ownWords ||
+    (!!storyFirst && answerMode !== 'choice') ||
+    (!answerMode && !choices.length && !background)
   useEffect(() => {
     if (ownWords) textarea.current?.focus()
   }, [ownWords])
@@ -147,6 +164,7 @@ export function EncounterPage({
     if (!next) return false
     if (next.question !== e.question) {
       setAnswer('')
+      setEventDate('')
       setAnswerMode(undefined)
       setUrgentNow(false)
     }
@@ -164,10 +182,14 @@ export function EncounterPage({
       await act({
         action: value ? 'answer' : 'report_emergency',
         text: value,
+        ...(value && e.questionSource?.key === 'medication_start' && eventDate
+          ? { date: eventDate }
+          : {}),
         ...(urgentNow ? { urgentNow: true } : {}),
       })
     ) {
       setAnswer('')
+      setEventDate('')
       setAnswerMode(undefined)
       setUrgentNow(false)
     }
@@ -307,6 +329,16 @@ export function EncounterPage({
                 icon: FileText,
                 open: openReport,
               },
+              ...(!e.demo
+                ? [
+                    {
+                      name: 'Visit preparation',
+                      icon: ClipboardList,
+                      key: 'prep',
+                      open: () => setTab('prep'),
+                    },
+                  ]
+                : []),
               {
                 key: 'followup',
                 name: 'Follow-up',
@@ -338,6 +370,14 @@ export function EncounterPage({
                 highlight={source}
                 act={async (c) => !!(await onAction(c))}
                 onInterview={() => void act({ action: 'continue' })}
+              />
+            )}
+            {tab === 'prep' && (
+              <VisitPrep
+                e={e}
+                busy={busy}
+                act={async (c) => !!(await onAction(c))}
+                onSources={() => setTab('sources')}
               />
             )}
             {tab === 'followup' && (
@@ -450,37 +490,58 @@ export function EncounterPage({
                         role="group"
                         aria-label="Answer options"
                       >
-                        {choices.map((choice) => (
+                        {storyFirst && choices.length > 0 && (
                           <button
                             type="button"
-                            key={choice}
-                            className={
-                              !ownWords && answer === choice ? 'chosen' : ''
-                            }
-                            aria-pressed={!ownWords && answer === choice}
-                            onClick={() => {
-                              setAnswerMode('choice')
-                              setAnswer(choice)
-                            }}
+                            onClick={() => setRevealedQuestion(questionKey)}
                           >
-                            {choice}
-                          </button>
-                        ))}
-                        {(background || choices.length > 0 || !writeAnswer) && (
-                          <button
-                            type="button"
-                            aria-pressed={ownWords}
-                            className={ownWords ? 'chosen' : ''}
-                            onClick={() => {
-                              if (!ownWords) setAnswer('')
-                              setAnswerMode('text')
-                              textarea.current?.focus()
-                            }}
-                          >
-                            {e.questionSource?.entryLabel || 'Use my own words'}
+                            Show answer choices
                           </button>
                         )}
+                        {!storyFirst &&
+                          choices.map((choice) => (
+                            <button
+                              type="button"
+                              key={choice}
+                              className={
+                                !ownWords && answer === choice ? 'chosen' : ''
+                              }
+                              aria-pressed={!ownWords && answer === choice}
+                              onClick={() => {
+                                setAnswerMode('choice')
+                                setAnswer(choice)
+                              }}
+                            >
+                              {choice}
+                            </button>
+                          ))}
+                        {!storyFirst &&
+                          (background ||
+                            choices.length > 0 ||
+                            !writeAnswer) && (
+                            <button
+                              type="button"
+                              aria-pressed={ownWords}
+                              className={ownWords ? 'chosen' : ''}
+                              onClick={() => {
+                                if (!ownWords) setAnswer('')
+                                setAnswerMode('text')
+                                textarea.current?.focus()
+                              }}
+                            >
+                              {e.questionSource?.entryLabel ||
+                                'Use my own words'}
+                            </button>
+                          )}
                       </div>
+                      {!e.demo && (
+                        <VoiceInput
+                          onUse={(value) => {
+                            setAnswerMode('text')
+                            setAnswer(value)
+                          }}
+                        />
+                      )}
                       {writeAnswer && (
                         <label>
                           Your answer
@@ -500,6 +561,17 @@ export function EncounterPage({
                           />
                         </label>
                       )}
+                      {e.questionSource?.key === 'medication_start' && (
+                        <label>
+                          Actual first dose date, if known
+                          <input
+                            type="date"
+                            value={eventDate}
+                            onChange={(ev) => setEventDate(ev.target.value)}
+                          />
+                        </label>
+                      )}
+                      {writeAnswer && <ReadBack words={answer} />}
                       <div
                         className="choices response-options"
                         role="group"
@@ -550,6 +622,18 @@ export function EncounterPage({
                             ? 'Save emergency warning'
                             : 'Save answer'}
                         </button>
+                        {!e.demo && !e.focused && (
+                          <button
+                            type="button"
+                            className="secondary"
+                            disabled={busy}
+                            onClick={() =>
+                              void act({ action: 'focus_interview' })
+                            }
+                          >
+                            I have two minutes
+                          </button>
+                        )}
                         {!e.scopeReason && (
                           <button
                             type="button"

@@ -53,10 +53,10 @@ func (e *Encounter) ReconcileFact(source *Encounter, c Command, emergency string
 		return errors.New("Choose a different encounter, a review date and how the earlier finding applies")
 	}
 	old := source.fact(factID)
-	if old == nil || !old.Confirmed {
+	if old == nil || old.SourceOutdated || !old.Confirmed {
 		return errors.New("Choose an active patient-confirmed source finding")
 	}
-	if a := source.answer(old.AnswerID); a != nil && len(a.ReviewIDs) > 0 {
+	if a := source.answer(old.AnswerID); a != nil && (len(a.ReviewIDs) > 0 || a.Kind == "witness") {
 		return errors.New("Review the report-dependent passage in this encounter before using it")
 	}
 	if old.SourceType == "report_entry" {

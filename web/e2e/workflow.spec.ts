@@ -1079,6 +1079,10 @@ test('Patient adds medicine in their own words, resumes at allergies and flags a
   await enter(page)
   await configure(page, 'compatible', 'fixture-ok')
   await start(page, { concern, age: 42 })
+  await expect(
+    page.getByRole('button', { name: 'Yesterday', exact: true }),
+  ).toHaveCount(0)
+  await page.getByRole('button', { name: 'Show answer choices' }).click()
   await page.getByRole('button', { name: 'Yesterday', exact: true }).click()
   await page.getByRole('button', { name: 'Save answer' }).click()
   await page
@@ -1135,9 +1139,13 @@ test('A slow model leaves intake immediately and completes the same saved encoun
   ).toBeVisible()
   await expect(page.getByRole('button', { name: 'Save answer' })).toHaveCount(0)
   await page.getByRole('button', { name: 'Review saved history now' }).click()
-  await expect(page.getByRole('button', { name: 'Confirm my history' })).toBeDisabled()
-  await page.getByRole('navigation', { name: 'Encounter sections' })
-    .getByRole('button', { name: 'Interview', exact: true }).click()
+  await expect(
+    page.getByRole('button', { name: 'Confirm my history' }),
+  ).toBeDisabled()
+  await page
+    .getByRole('navigation', { name: 'Encounter sections' })
+    .getByRole('button', { name: 'Interview', exact: true })
+    .click()
   await page
     .getByRole('button', { name: 'Pause and return to journal', exact: true })
     .click()
@@ -1151,4 +1159,208 @@ test('A slow model leaves intake immediately and completes the same saved encoun
     (await (await page.request.get('/api/encounters/' + id)).json()).turns,
   ).toHaveLength(1)
   await remove(page)
+})
+
+test('A patient records an episode, reviews dictated words and selectively includes it in a return visit with a witness', async ({
+  page,
+  context,
+}, info) => {
+  await enter(page)
+  await configure(page, 'compatible', 'fixture-ok')
+  const suffix = randomUUID()
+  const episode = 'My left hand shook for 15 minutes. ' + suffix
+  await page
+    .getByRole('button', { name: 'It happened again', exact: true })
+    .click()
+  await page
+    .getByRole('button', { name: 'Tell me what happened aloud' })
+    .click()
+  const mode = page.getByLabel('Transcription method')
+  await expect(mode.locator('option[value="openai"]')).toHaveJSProperty(
+    'disabled',
+    true,
+  )
+  await context.grantPermissions(['microphone'])
+  let posted = false
+  await page.route('**/api/voice?destination=local', async (route) => {
+    const pcm = route.request().postDataBuffer()
+    expect(pcm?.subarray(0, 4).toString()).toBe('RIFF')
+    expect(pcm!.length).toBeGreaterThan(44)
+    expect(route.request().headers()['x-audio-consent']).toBeUndefined()
+    posted = true
+    await route.fulfill({
+      json: { draft: 'My right hand shook for 15 minutes.' },
+    })
+  })
+  await page.getByRole('button', { name: 'Record up to 90 seconds' }).click()
+  await expect(
+    page.getByRole('button', { name: 'Stop recording' }),
+  ).toBeEnabled()
+  await page.waitForTimeout(350) // Accumulate PCM from the simulated microphone.
+  await page.getByRole('button', { name: 'Stop recording' }).click()
+  await page.getByRole('button', { name: 'Transcribe locally' }).click()
+  await expect(page.getByLabel('Transcript to review')).toHaveValue(
+    /right hand/,
+  )
+  expect(posted).toBe(true)
+  await expect(page.getByLabel('What happened?', { exact: true })).toHaveValue(
+    '',
+  )
+  await expect(
+    page.getByRole('button', { name: 'Use reviewed words' }),
+  ).toBeDisabled()
+  await page.getByLabel('Transcript to review').fill(episode)
+  await page.getByLabel('I checked names').check()
+  await page.getByRole('button', { name: 'Use reviewed words' }).click()
+  await page.getByLabel('These times are approximate').check()
+  await page.getByRole('button', { name: 'Save episode locally' }).click()
+  await expect(page.getByText(episode, { exact: true })).toBeVisible()
+  await page.getByRole('button', { name: 'Back to journal' }).click()
+  await page.getByRole('button', { name: 'Start a return visit' }).click()
+  await page.getByLabel('Chief concern').fill('Fictional repeated hand shaking')
+  await page
+    .getByLabel('What question do you want this visit to answer?')
+    .fill('When did the pattern change?')
+  await page.getByLabel('Interview length').selectOption('short')
+  await page.getByRole('checkbox', { name: new RegExp(suffix) }).check()
+  await page.getByLabel('Include my selections').check()
+  await page.getByLabel('Age in years').fill('48')
+  await page
+    .getByRole('group', { name: 'Is the concern related to pregnancy?' })
+    .getByLabel('No', { exact: true })
+    .check()
+  await page
+    .getByRole('group', {
+      name: 'Are you reporting a possible emergency right now?',
+    })
+    .getByLabel('No', { exact: true })
+    .check()
+  await page.getByLabel('I understand the experimental-use notice').check()
+  const creation = page.waitForResponse(
+    (r) =>
+      new URL(r.url()).pathname === '/api/encounters' &&
+      r.request().method() === 'POST',
+  )
+  await page
+    .getByRole('button', { name: 'Start interview', exact: true })
+    .click()
+  const created = await (await creation).json()
+  expect(
+    created.answers.find((a: { kind: string }) => a.kind === 'episode_log')
+      .text,
+  ).toBe(episode)
+  await page
+    .getByRole('button', { name: 'Visit preparation', exact: true })
+    .click()
+  await page
+    .getByLabel('What would you like to record?')
+    .selectOption('witness')
+  const sent = page.waitForEvent('download')
+  await page
+    .getByRole('button', { name: 'Download blank witness form' })
+    .click()
+  const invitation = await sent
+  await invitation.saveAs(info.outputPath('witness.html'))
+  const html = await readFile(info.outputPath('witness.html'), 'utf8')
+  expect(html).not.toContain(episode)
+  const offline = await context.newPage()
+  await offline.setContent(html)
+  await offline
+    .getByLabel('Your name or relationship')
+    .fill('Fictional observer')
+  await offline
+    .getByLabel('In your own words')
+    .fill('I saw their left hand move.')
+  const received = offline.waitForEvent('download')
+  await offline.getByRole('button', { name: 'Save response file' }).click()
+  await (await received).saveAs(info.outputPath('reply.json'))
+  await offline.close()
+  await page
+    .getByLabel('Open returned response')
+    .setInputFiles(info.outputPath('reply.json'))
+  await expect(page.getByLabel('Witness’s own words')).toHaveValue(
+    'I saw their left hand move.',
+  )
+  await page.getByLabel('Include this attributed account').check()
+  await page.getByRole('button', { name: 'Save reviewed entry' }).click()
+  await expect(page.getByText('Saved to this encounter.')).toBeVisible()
+  const after = await (
+    await page.request.get('/api/encounters/' + created.id + '/brief')
+  ).json()
+  expect(after.agenda).toBe('When did the pattern change?')
+  expect(
+    after.changes.some(
+      (a: { detail: { speaker?: string } }) =>
+        a.detail?.speaker === 'Fictional observer',
+    ),
+  ).toBe(true)
+})
+
+test('An unavailable local speech engine leaves cloud submission under per-recording control', async ({
+  page,
+  context,
+}) => {
+  await enter(page)
+  await context.grantPermissions(['microphone'])
+  await page.route('**/api/voice', (route) =>
+    route.fulfill({ json: { local: false, openai: true, chatgptPlan: false } }),
+  )
+  let attempts = 0
+  await page.route('**/api/voice?destination=openai', (route) => {
+    attempts++
+    expect(route.request().headers()['x-audio-consent']).toBe('openai-api')
+    expect(route.request().postDataBuffer()?.subarray(0, 4).toString()).toBe(
+      'RIFF',
+    )
+    return attempts === 1
+      ? route.fulfill({
+          status: 429,
+          json: { error: 'Synthetic busy service. Retry the recording.' },
+        })
+      : route.fulfill({
+          json: { draft: 'I took the fictional tablet on Friday.' },
+        })
+  })
+  await page
+    .getByRole('button', { name: 'It happened again', exact: true })
+    .click()
+  await page
+    .getByRole('button', { name: 'Tell me what happened aloud' })
+    .click()
+  await expect(
+    page.getByText('Whisper is unavailable on this installation.', {
+      exact: false,
+    }),
+  ).toBeVisible()
+  await expect(
+    page.getByRole('button', { name: 'Record up to 90 seconds' }),
+  ).toBeDisabled()
+  await page.getByLabel('Transcription method').selectOption('openai')
+  await page.getByRole('button', { name: 'Record up to 90 seconds' }).click()
+  await expect(
+    page.getByRole('button', { name: 'Stop recording' }),
+  ).toBeEnabled()
+  await page.waitForTimeout(300)
+  await page.getByRole('button', { name: 'Stop recording' }).click()
+  const send = page.getByRole('button', {
+    name: 'Send this recording to the OpenAI API',
+  })
+  await expect(send).toBeEnabled()
+  expect(attempts).toBe(0)
+  await send.click()
+  await expect(
+    page.getByRole('alert').filter({ hasText: 'Synthetic busy' }),
+  ).toBeVisible()
+  expect(attempts).toBe(1)
+  await send.click()
+  await expect(page.getByLabel('Transcript to review')).toHaveValue(
+    /tablet on Friday/,
+  )
+  await expect(
+    page.getByRole('button', { name: 'Use reviewed words' }),
+  ).toBeDisabled()
+  await expect(page.getByLabel('What happened?', { exact: true })).toHaveValue(
+    '',
+  )
+  expect(attempts).toBe(2)
 })

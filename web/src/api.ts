@@ -14,8 +14,12 @@ export class RequestError extends Error {
 export async function api<T>(
   path: string,
   method = 'GET',
-  body?: Fields | FormData,
-  options: { asyncModel?: boolean; signal?: AbortSignal } = {},
+  body?: Fields | FormData | Blob,
+  options: {
+    asyncModel?: boolean
+    signal?: AbortSignal
+    audioConsent?: boolean
+  } = {},
 ): Promise<T> {
   let response: Response
   try {
@@ -27,13 +31,20 @@ export async function api<T>(
       headers: {
         Accept: 'application/json',
         ...(options.asyncModel ? { Prefer: 'respond-async' } : {}),
-        ...(body && !(body instanceof FormData)
+        ...(options.audioConsent ? { 'X-Audio-Consent': 'openai-api' } : {}),
+        ...(body instanceof Blob ? { 'Content-Type': 'audio/wav' } : {}),
+        ...(body && !(body instanceof FormData) && !(body instanceof Blob)
           ? { 'Content-Type': 'application/json' }
           : {}),
         ...(method !== 'GET' ? { 'X-CSRF-Token': token } : {}),
       },
       ...(body
-        ? { body: body instanceof FormData ? body : JSON.stringify(body) }
+        ? {
+            body:
+              body instanceof FormData || body instanceof Blob
+                ? body
+                : JSON.stringify(body),
+          }
         : {}),
     })
   } catch {

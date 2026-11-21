@@ -42,10 +42,11 @@ func (s *Server) get(w http.ResponseWriter, r *http.Request, owner int) error {
 func (s *Server) create(w http.ResponseWriter, r *http.Request, owner int) error {
 	var in struct {
 		clinical.Intake
-		PregnancyAnswer *bool                `json:"pregnancyRelated"`
-		EmergencyAnswer *bool                `json:"urgentNow"`
-		RequestID       string               `json:"requestId"`
-		Disclosed       clinical.ProviderRef `json:"disclosedProvider"`
+		ReturnVisit     *clinical.ReturnVisit `json:"returnVisit,omitempty"`
+		PregnancyAnswer *bool                 `json:"pregnancyRelated"`
+		EmergencyAnswer *bool                 `json:"urgentNow"`
+		RequestID       string                `json:"requestId"`
+		Disclosed       clinical.ProviderRef  `json:"disclosedProvider"`
 	}
 	if err := decode(w, r, &in); err != nil {
 		return err
@@ -70,7 +71,7 @@ func (s *Server) create(w http.ResponseWriter, r *http.Request, owner int) error
 	if err != nil {
 		return err
 	}
-	e, fresh, err := s.Store.Create(r.Context(), owner, e, in.RequestID, digest, in.Disclosed)
+	e, fresh, err := s.Store.CreateVisit(r.Context(), owner, e, in.RequestID, digest, in.Disclosed, in.ReturnVisit, s.Emergency)
 	if err != nil {
 		return err
 	}

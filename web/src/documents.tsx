@@ -47,6 +47,7 @@ export function SourceReview({
   const docs = e.documents || []
   const [showUpload, setShowUpload] = useState(docs.length === 0),
     [inputMode, setInputMode] = useState('file'),
+    [labelPhoto, setLabelPhoto] = useState(false),
     [file, setFile] = useState<File | null>(null),
     [paste, setPaste] = useState(''),
     [belongs, setBelongs] = useState('unknown'),
@@ -66,6 +67,7 @@ export function SourceReview({
         : file
     if (!item) return
     const data = new FormData()
+    data.set('medicationLabel', String(labelPhoto))
     data.append('file', item)
     data.append('revision', String(e.revision))
     data.append('requestId', submission)
@@ -145,6 +147,17 @@ export function SourceReview({
                 </label>
               </div>
             </fieldset>
+            {inputMode === 'file' && labelPhoto && (
+              <label>
+                Take a new photo of the medicine label
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png"
+                  capture="environment"
+                  onChange={(ev) => setFile(ev.target.files?.[0] || null)}
+                />
+              </label>
+            )}
             {inputMode === 'file' ? (
               <label>
                 <span id="source-file-label">Report file</span>
@@ -152,7 +165,7 @@ export function SourceReview({
                   aria-labelledby="source-file-label"
                   aria-describedby="source-file-hint"
                   type="file"
-                  required
+                  required={!file}
                   accept=".pdf,.docx,.txt,.png,.jpg,.jpeg"
                   onChange={(ev) => setFile(ev.target.files?.[0] || null)}
                 />
@@ -172,6 +185,20 @@ export function SourceReview({
                   placeholder="Paste the original lines, including units and reference ranges."
                 />
               </label>
+            )}
+            <label>
+              <input
+                type="checkbox"
+                checked={labelPhoto}
+                onChange={(ev) => setLabelPhoto(ev.target.checked)}
+              />{' '}
+              This is a medicine box, bottle or blister pack
+            </label>
+            {labelPhoto && (
+              <p>
+                Review the printed name, strength and units beside the original.
+                Record actual use in Visit preparation after authorizing a row.
+              </p>
             )}
             <label>
               Whose report is this?
@@ -216,6 +243,7 @@ export function SourceReview({
                 <FileSearch size={17} />
                 Read report locally
               </button>
+
               {docs.length > 0 && (
                 <button
                   type="button"
@@ -248,6 +276,11 @@ export function SourceReview({
         )}
       </section>
       <EhrConnect e={e} busy={busy} run={run} />
+      {doc?.priorEncounter && (
+        <p>
+          Snapshot from earlier visit · history revision {doc.priorRevision}
+        </p>
+      )}
       {doc && (
         <DocumentReview
           key={doc.id}

@@ -85,7 +85,11 @@ func (e *Encounter) recordUrgentSign(a Answer, span []int, emergency string) {
 	if uncertain.MatchString(clauseAt(a.Text, span[0])) {
 		status = "uncertain"
 	}
-	e.recordFindingAt(FindingProposal{Evidence: ev, Concept: quote, Status: status, Subject: "self"}, "patient_answer", "", false, span[0])
+	sourceType := "patient_answer"
+	if a.Kind == "witness" {
+		sourceType = "witness_observation"
+	}
+	e.recordFindingAt(FindingProposal{Evidence: ev, Concept: quote, Status: status, Subject: "self"}, sourceType, "", false, span[0])
 	e.addWarning(ev, "reported_warning", emergency)
 }
 

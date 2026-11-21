@@ -16,6 +16,9 @@ export type ReportRow = {
   uncertain: boolean
 }
 export type DocumentSource = {
+  priorEncounter?: string
+  priorRevision?: number
+  medicationLabel?: boolean
   id: string
   title: string
   kind: string
@@ -85,6 +88,7 @@ export function latestReview(e: Encounter, docId: string, rowId: string) {
     .at(-1)
 }
 export function factSource(f: Fact) {
+  if (f.sourceType === 'witness_observation') return 'Witness observation'
   if (f.origin) return 'Reconciled from earlier history'
   if (f.sourceType === 'report_entry') return 'Reviewed report entry'
   if (f.sourceType === 'patient_correction') return 'Patient correction'

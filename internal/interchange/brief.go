@@ -8,37 +8,48 @@ import (
 )
 
 type Brief struct {
-	Format            string                   `json:"format"`
-	ID                string                   `json:"id"`
-	HistoryRevision   int                      `json:"historyRevision"`
-	AssessmentVersion int                      `json:"assessmentVersion"`
-	Confirmed         bool                     `json:"confirmed"`
-	Concern           string                   `json:"concern"`
-	Age               int                      `json:"age"`
-	UpdatedAt         time.Time                `json:"updatedAt"`
-	Notice            string                   `json:"notice"`
-	ModelGuidance     string                   `json:"modelGuidance"`
-	ReviewStatus      string                   `json:"reviewStatus"`
-	Demo              bool                     `json:"demo"`
-	Warnings          []clinical.Warning       `json:"warnings"`
-	Facts             []clinical.Fact          `json:"facts"`
-	ReportFindings    []clinical.ReportExtract `json:"reportFindings"`
-	Outstanding       []string                 `json:"outstanding"`
-	Contradictions    []clinical.Contradiction `json:"contradictions"`
-	Assessment        *clinical.Assessment     `json:"assessment,omitempty"`
-	Outcomes          []clinical.VisitOutcome  `json:"outcomes"`
-	Priorities        []string                 `json:"priorities"`
-	ScopeReason       string                   `json:"scopeReason"`
+	Agenda            string                       `json:"agenda,omitempty"`
+	Changes           []clinical.Answer            `json:"changes,omitempty"`
+	Feedback          []clinical.ClinicianFeedback `json:"feedback,omitempty"`
+	Format            string                       `json:"format"`
+	ID                string                       `json:"id"`
+	HistoryRevision   int                          `json:"historyRevision"`
+	AssessmentVersion int                          `json:"assessmentVersion"`
+	Confirmed         bool                         `json:"confirmed"`
+	Concern           string                       `json:"concern"`
+	Age               int                          `json:"age"`
+	UpdatedAt         time.Time                    `json:"updatedAt"`
+	Notice            string                       `json:"notice"`
+	ModelGuidance     string                       `json:"modelGuidance"`
+	ReviewStatus      string                       `json:"reviewStatus"`
+	Demo              bool                         `json:"demo"`
+	Warnings          []clinical.Warning           `json:"warnings"`
+	Facts             []clinical.Fact              `json:"facts"`
+	ReportFindings    []clinical.ReportExtract     `json:"reportFindings"`
+	Outstanding       []string                     `json:"outstanding"`
+	Contradictions    []clinical.Contradiction     `json:"contradictions"`
+	Assessment        *clinical.Assessment         `json:"assessment,omitempty"`
+	Outcomes          []clinical.VisitOutcome      `json:"outcomes"`
+	Priorities        []string                     `json:"priorities"`
+	ScopeReason       string                       `json:"scopeReason"`
 }
 
 func FromEncounter(e *clinical.Encounter) Brief {
 	b := Brief{
-		Format: "clinical-history/brief-1", ID: e.ID, HistoryRevision: e.HistoryRevision,
+		Agenda: e.Agenda, Feedback: e.Feedback, Format: "clinical-history/brief-1", ID: e.ID, HistoryRevision: e.HistoryRevision,
 		Confirmed: e.ConfirmedRevision == e.HistoryRevision, Concern: e.Concern, Age: e.Age, UpdatedAt: e.UpdatedAt,
 		Notice: e.Notice, ModelGuidance: clinical.ModelGuidance(), ReviewStatus: e.ReviewStatus, Demo: e.Demo, Warnings: e.HandoffWarnings(),
 		Facts: []clinical.Fact{}, ReportFindings: []clinical.ReportExtract{},
 		Outstanding: e.Outstanding, Contradictions: e.Contradictions, ScopeReason: e.ScopeReason,
 		Outcomes: append([]clinical.VisitOutcome{}, e.Outcomes...), Priorities: []string{},
+	}
+	for _, a := range e.Answers {
+		if !a.Active || a.SourceOutdated {
+			continue
+		}
+		if a.Detail != nil || a.Kind == "reconciliation" || a.QuestionSource != nil && a.QuestionSource.Key == "return_change" {
+			b.Changes = append(b.Changes, a)
+		}
 	}
 	for _, f := range e.Facts {
 		if f.Active {

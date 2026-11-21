@@ -72,6 +72,8 @@ func (s *Server) respondErr(w http.ResponseWriter, err error) {
 		emit(w, 404, object{"error": "This record could not be found."})
 	case errors.Is(err, store.ErrConflict):
 		emit(w, 409, object{"error": "The record has changed. Reload it before trying again."})
+	case errors.Is(err, store.ErrReturnVisit):
+		emit(w, 409, object{"error": "Review the current prior visit and selected findings before starting again."})
 	case errors.Is(err, store.ErrProviderChanged):
 		emit(w, 409, object{"error": "The default provider changed. Review its destination before starting."})
 	default:
@@ -123,6 +125,11 @@ func (s *Server) Handler() http.Handler {
 	s.route(m, "DELETE /api/encounters/{id}", true, s.remove)
 	s.route(m, "POST /api/encounters/{id}/actions", true, s.action)
 	s.route(m, "GET /api/encounters/{id}/export", true, s.export)
+	s.route(m, "GET /api/voice", true, s.voice)
+	s.route(m, "POST /api/voice", true, s.voice)
+	s.route(m, "GET /api/diary", true, s.diary)
+	s.route(m, "POST /api/diary", true, s.diary)
+	s.route(m, "DELETE /api/diary/{id}", true, s.diary)
 	s.documentRoutes(m)
 	s.ehrRoutes(m)
 	s.chatGPTRoutes(m)
@@ -164,7 +171,7 @@ func (s *Server) Handler() http.Handler {
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 		w.Header().Set("X-Frame-Options", "DENY")
 		w.Header().Set("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none'")
-		w.Header().Set("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+		w.Header().Set("Permissions-Policy", "camera=(), microphone=(self), geolocation=()")
 		if s.Secure {
 			w.Header().Set("Strict-Transport-Security", "max-age=31536000")
 		}

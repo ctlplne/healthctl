@@ -193,6 +193,12 @@ func (s *Store) List(ctx context.Context, owner int) ([]Entry, error) {
 // Create pins the exact disclosed provider in the same transaction as record creation.
 // A retry after a settings change still finds the original encounter.
 func (s *Store) Create(ctx context.Context, owner int, e *clinical.Encounter, key string, digest []byte, disclosed clinical.ProviderRef) (*clinical.Encounter, bool, error) {
+	return s.CreateVisit(ctx, owner, e, key, digest, disclosed, nil, "")
+}
+
+var ErrReturnVisit = errors.New("earlier confirmed visit or selected evidence changed")
+
+func (s *Store) CreateVisit(ctx context.Context, owner int, e *clinical.Encounter, key string, digest []byte, disclosed clinical.ProviderRef, v *clinical.ReturnVisit, emergency string) (*clinical.Encounter, bool, error) {
 	tx, err := s.DB.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, false, err
@@ -222,6 +228,27 @@ func (s *Store) Create(ctx context.Context, owner int, e *clinical.Encounter, ke
 	if cfg != disclosed {
 		return nil, false, ErrProviderChanged
 	}
+	if v != nil && (len(v.DiaryIDs) > 30 || !v.Consent || v.Source == "" && (len(v.DiaryIDs) == 0 || len(v.ReviewIDs)+len(v.Facts)+len(v.Entries)+len(v.Clarifications) > 0)) {
+		return nil, false, ErrReturnVisit
+	}
+	if v != nil && len(v.DiaryIDs) > 0 {
+		if err = s.attachDiary(ctx, tx, owner, e, v.DiaryIDs, emergency); err != nil {
+			return nil, false, err
+		}
+	}
+	if v != nil && v.Source != "" {
+		var sealed []byte
+		if err = tx.QueryRowContext(ctx, "SELECT payload FROM encounters WHERE id=$1 AND owner_id=$2 FOR SHARE", v.Source, owner).Scan(&sealed); err != nil {
+			return nil, false, err
+		}
+		prior, err := s.decode(owner, v.Source, sealed)
+		if err != nil {
+			return nil, false, err
+		}
+		if err = e.StartReturn(prior, *v, emergency); err != nil {
+			return nil, false, ErrReturnVisit
+		}
+	}
 	b, err := s.encode(owner, e)
 	if err != nil {
 		return nil, false, err
@@ -229,6 +256,24 @@ func (s *Store) Create(ctx context.Context, owner int, e *clinical.Encounter, ke
 	_, err = tx.ExecContext(ctx, "INSERT INTO encounters(id,owner_id,revision,payload,create_request,create_digest) VALUES($1,$2,$3,$4,$5,$6)", e.ID, owner, e.Revision, b, key, digest)
 	if err != nil {
 		return nil, false, err
+	}
+	for _, doc := range e.Documents {
+		if doc.PriorEncounter == "" {
+			continue
+		}
+		var original []byte
+		if err = tx.QueryRowContext(ctx, "SELECT original FROM encounter_documents WHERE encounter_id=$1 AND document_id=$2", doc.PriorEncounter, doc.ID).Scan(&original); err != nil {
+			return nil, false, err
+		}
+		plain, err := s.box.Open(nil, nil, original, documentAAD(owner, doc.PriorEncounter, doc.ID))
+		if err != nil {
+			return nil, false, err
+		}
+		sealed := s.box.Seal(nil, nil, plain, documentAAD(owner, e.ID, doc.ID))
+		clear(plain)
+		if _, err = tx.ExecContext(ctx, "INSERT INTO encounter_documents(encounter_id,document_id,original) VALUES($1,$2,$3)", e.ID, doc.ID, sealed); err != nil {
+			return nil, false, err
+		}
 	}
 	if err = tx.Commit(); err != nil {
 		return nil, false, err

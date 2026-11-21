@@ -5,15 +5,18 @@ import "time"
 // A SourceDocument identifies a local original. The file and full extraction are
 // outside the aggregate. A row is a candidate transcription, never a diagnosis.
 type SourceDocument struct {
-	ID        string      `json:"id"`
-	Title     string      `json:"title"`
-	Kind      string      `json:"kind"`
-	BelongsTo string      `json:"belongsTo"`
-	Purpose   string      `json:"purpose"`
-	Priority  string      `json:"priority"`
-	IssueDate string      `json:"issueDate"`
-	Rows      []ReportRow `json:"rows"`
-	CreatedAt time.Time   `json:"createdAt"`
+	PriorEncounter  string      `json:"priorEncounter,omitempty"`
+	PriorRevision   int         `json:"priorRevision,omitempty"`
+	MedicationLabel bool        `json:"medicationLabel,omitempty"`
+	ID              string      `json:"id"`
+	Title           string      `json:"title"`
+	Kind            string      `json:"kind"`
+	BelongsTo       string      `json:"belongsTo"`
+	Purpose         string      `json:"purpose"`
+	Priority        string      `json:"priority"`
+	IssueDate       string      `json:"issueDate"`
+	Rows            []ReportRow `json:"rows"`
+	CreatedAt       time.Time   `json:"createdAt"`
 }
 
 type ReportRow struct {
@@ -69,14 +72,15 @@ type ReportExtract struct {
 }
 
 type QuestionSource struct {
-	EntryLabel string `json:"entryLabel,omitempty"`
-	AnswerHint string `json:"answerHint,omitempty"`
-	DocumentID string `json:"documentId,omitempty"`
-	RowID      string `json:"rowId,omitempty"`
-	ReviewID   string `json:"reviewId,omitempty"`
-	Reason     string `json:"reason"`
-	Pathway    string `json:"pathway,omitempty"`
-	Key        string `json:"key,omitempty"`
+	VisitAnswerID string `json:"visitAnswerId,omitempty"`
+	EntryLabel    string `json:"entryLabel,omitempty"`
+	AnswerHint    string `json:"answerHint,omitempty"`
+	DocumentID    string `json:"documentId,omitempty"`
+	RowID         string `json:"rowId,omitempty"`
+	ReviewID      string `json:"reviewId,omitempty"`
+	Reason        string `json:"reason"`
+	Pathway       string `json:"pathway,omitempty"`
+	Key           string `json:"key,omitempty"`
 }
 
 type FactOrigin struct {

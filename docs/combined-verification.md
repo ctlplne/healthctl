@@ -101,3 +101,13 @@ The expanded benchmark used the same deterministic model for opening-only, stati
 MODEL_LIVE=1 go test -count=1 -v ./internal/provider -run '^TestLiveRemoteSynthetic$'
 go run ./cmd/evaluate -live -release -case nasal-symptoms -out /tmp/clinical-remote-case.json
 ```
+
+## Return visits, dictation and desktop verification
+
+The local November 21 build exercises the episode diary, exact-word review, short interview, selected earlier findings and original reports, medication-label reconciliation, witness response, patient-reviewed clinician feedback, and export. Selected earlier findings carry an explicit current status. The source contains clinical and PostgreSQL regressions for consent, idempotence, amended passages, original file recovery, historical attribution, the interview answer limit and retained warnings.
+
+A live focused case used entirely fictional dizziness and medication history with the linked GPT-6.2-Sol plan. Before the short-flow change, the first remote follow-up took 136 seconds. Preview questions now run locally. The two question-selection steps together took under one millisecond in the Go process. The remote review took 95.4 seconds and the assessment took 82.2 seconds. Each made one request. The resulting export contained a current differential and retained the unresolved questions. These timings exclude patient typing and do not measure browser rendering. An earlier live draft exposed an explicit fainting denial that the validator rejected. The regression preserves the exact patient clause and rejects a denial qualified by “until today.”
+
+The offline benchmark produced 84 runs over 28 authored cases plus six report comparisons. The run recorded zero fabricated findings, stale assessments or lost warnings. The adaptive fixture missed positional dizziness in the medication-change case. Run the release evaluator to inspect each case. The four-arm interview pilot rehearses allocation, timing and case-level failure reporting. Independent patients, clinicians and a practice baseline are needed to measure clinical usefulness.
+
+The macOS package drill uses an isolated installation and the bundled whisper.cpp reference clip. It verifies that offline speech returns an uncommitted draft, the original journal survives a failed restore, sessions require a fresh login, and the restored diary and complete demo assessment equal the originals. Browser tests exercise microphone capture, editable transcription, offline witness forms and clip-specific consent. Remote transcription is verification with a simulated platform endpoint. The linked plan is qualified for text inference only. See the [desktop recovery drill](desktop.md) and [transcription options](model-providers.md#dictation-and-account-billing).

@@ -56,12 +56,17 @@ function App() {
     [settings, setSettings] = useState<Settings | null>(null),
     [records, setRecords] = useState<EncounterRow[]>([]),
     [e, setEncounter] = useState<Encounter | null>(null)
-  const [page, setPage] = useState<Page>('journal'),
+  const [page, setPage] = useState<Page>(() =>
+      new URLSearchParams(location.search).get('desktop') === 'settings'
+        ? 'settings'
+        : 'journal',
+    ),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(''),
     [pollError, setPollError] = useState(''),
     [notice, setNotice] = useState(false),
     [message, setMessage] = useState('')
+  const [returnMode, setReturnMode] = useState(false)
   const [reportFirst, setReportFirst] = useState(false),
     [region, setRegion] = useState<Region | null>(null)
   const [planReturn, setPlanReturn] = useState(captureChatGPTReturn),
@@ -534,6 +539,8 @@ function App() {
               </>
             ) : page === 'intake' && settings.provider?.kind ? (
               <IntakeForm
+                rows={records}
+                returnMode={returnMode}
                 reportFirst={reportFirst}
                 provider={settings.provider}
                 session={session}
@@ -559,7 +566,8 @@ function App() {
                   onAction={action}
                   onUpdate={(next) =>
                     setEncounter((current) =>
-                      current?.id === next.id && next.revision >= current.revision
+                      current?.id === next.id &&
+                      next.revision >= current.revision
                         ? next
                         : current,
                     )
@@ -574,11 +582,18 @@ function App() {
                 rows={records}
                 settings={settings}
                 onOpen={open}
+                onReturn={() => {
+                  setReturnMode(true)
+                  setReportFirst(false)
+                  move('intake')
+                }}
                 onNew={() => {
+                  setReturnMode(false)
                   setReportFirst(false)
                   move('intake')
                 }}
                 onReport={() => {
+                  setReturnMode(false)
                   setReportFirst(true)
                   move('intake')
                 }}

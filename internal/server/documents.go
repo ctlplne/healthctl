@@ -82,8 +82,13 @@ func (s *Server) upload(w http.ResponseWriter, r *http.Request, owner int) error
 		belongs = "unknown"
 	}
 	doc := clinical.SourceDocument{ID: token(16), Title: title, BelongsTo: belongs, Purpose: r.FormValue("purpose"), Priority: r.FormValue("priority"), IssueDate: r.FormValue("issueDate"), CreatedAt: time.Now().UTC()}
+	doc.MedicationLabel = r.FormValue("medicationLabel") == "true"
 	sum := sha256.Sum256(data)
-	digest, err := s.Store.Digest([]any{revision, key, title, belongs, doc.Purpose, doc.Priority, doc.IssueDate, hex.EncodeToString(sum[:])})
+	parts := []any{revision, key, title, belongs, doc.Purpose, doc.Priority, doc.IssueDate, hex.EncodeToString(sum[:])}
+	if doc.MedicationLabel {
+		parts = append(parts, "medication_label")
+	}
+	digest, err := s.Store.Digest(parts)
 	if err != nil {
 		return err
 	}
@@ -106,6 +111,9 @@ func (s *Server) upload(w http.ResponseWriter, r *http.Request, owner int) error
 	doc.Kind, doc.Rows, err = documents.Read(ctx, title, data)
 	if err != nil {
 		return bad(err.Error())
+	}
+	if doc.MedicationLabel {
+		documents.LabelCandidates(doc.Rows)
 	}
 	e, err := s.Store.AttachDocument(r.Context(), owner, id, revision, key, digest, doc, data, s.Emergency)
 	if errors.Is(err, store.ErrDocumentInput) {

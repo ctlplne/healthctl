@@ -1,3 +1,4 @@
+import { detailLine } from './visitPrep'
 import { ClipboardList } from 'lucide-react'
 import { AttachedLiterature } from './evidence'
 import { factSource } from './records'
@@ -241,6 +242,7 @@ export function ReportBody({
           {answers.map((a) => (
             <div key={a.id}>
               <h4>{a.question}</h4>
+              {a.detail && <small>{detailLine(a)}</small>}
               <p>{a.text}</p>
               <small>Recorded {date(a.createdAt, true)}</small>
             </div>

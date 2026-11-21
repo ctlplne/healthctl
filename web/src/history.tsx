@@ -1,3 +1,4 @@
+import { detailLine } from './visitPrep'
 import { useState, useEffect } from 'react'
 import { Check, Pencil, Quote } from 'lucide-react'
 import type { Answer, Encounter, Fact, Fields } from './types'
@@ -285,17 +286,19 @@ export function History({
                     {f.corrected ? ' · Corrected' : ''}
                   </small>
                 </div>
-                <button
-                  className="icon-btn"
-                  aria-label={`Correct finding: ${f.concept}`}
-                  onClick={() =>
-                    f.sourceType === 'report_entry' && onSource
-                      ? onSource(f)
-                      : setEdit(edit === f.id ? '' : f.id)
-                  }
-                >
-                  <Pencil size={16} />
-                </button>
+                {f.sourceType !== 'witness_observation' && (
+                  <button
+                    className="icon-btn"
+                    aria-label={`Correct finding: ${f.concept}`}
+                    onClick={() =>
+                      f.sourceType === 'report_entry' && onSource
+                        ? onSource(f)
+                        : setEdit(edit === f.id ? '' : f.id)
+                    }
+                  >
+                    <Pencil size={16} />
+                  </button>
+                )}
               </div>
               <blockquote>
                 <Quote size={14} />
@@ -346,13 +349,16 @@ export function History({
             <div className="history-row" key={a.id}>
               <div className="row-heading">
                 <h3>{a.question}</h3>
-                <button
-                  className="icon-btn"
-                  aria-label={`Correct answer: ${a.question}`}
-                  onClick={() => setEdit(edit === a.id ? '' : a.id)}
-                >
-                  <Pencil size={16} />
-                </button>
+                {a.detail && <small>{detailLine(a)}</small>}
+                {a.kind !== 'witness' && (
+                  <button
+                    className="icon-btn"
+                    aria-label={`Correct answer: ${a.question}`}
+                    onClick={() => setEdit(edit === a.id ? '' : a.id)}
+                  >
+                    <Pencil size={16} />
+                  </button>
+                )}
               </div>
               <p>{a.text}</p>
               {edit === a.id && (
@@ -372,6 +378,7 @@ export function History({
           {earlierAnswers.map((a) => (
             <article key={a.id} className="history-row">
               <h3>{a.question}</h3>
+              {a.detail && <small>{detailLine(a)}</small>}
               <blockquote>{a.text}</blockquote>
               <small>
                 Earlier answer linked to a superseded report entry ·{' '}

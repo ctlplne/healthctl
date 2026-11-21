@@ -28,7 +28,29 @@ export type Session = {
   noticeVersion: string
   emergency: string
 }
+export type VisitDetail = {
+  feedbackFrom?: string
+  feedbackText?: string
+  speaker?: string
+  onset?: string
+  end?: string
+  approximate?: boolean
+  firstRecorded: string
+  priorEncounter?: string
+  printed?: string
+  prescribed?: string
+}
+export type Feedback = {
+  speaker: string
+  category: string
+  text: string
+  revision: number
+  at: string
+}
 export type Answer = {
+  detail?: VisitDetail
+  eventDate?: string
+  reviewIds?: string[]
   disposition?: string
   sourceOutdated?: boolean
   id: string
@@ -100,6 +122,11 @@ export type EncounterRow = {
   demo?: boolean
 }
 export type Encounter = EncounterRow & {
+  returnSource?: string
+  agenda?: string
+  narrativeFirst?: boolean
+  focused?: boolean
+  feedback?: Feedback[]
   episodeId?: string
   episodeTitle?: string
   reportFirst?: boolean

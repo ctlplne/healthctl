@@ -96,6 +96,11 @@ func (e *Encounter) remainingBackground() []backgroundTopic {
 			return a.Active && !a.SourceOutdated && allApproved(a.ReviewIDs, allowed) &&
 				topic.addressedBy(a)
 		})
+		if !addressed && e.ReturnSource != "" {
+			addressed = slices.ContainsFunc(e.Facts, func(f Fact) bool {
+				return f.Active && !f.SourceOutdated && f.Status == "explicitly_denied" && f.Origin != nil && f.Origin.ReconciliationStatus == "still_applies" && topic.acceptsDenial(f.Concept)
+			})
+		}
 		if !addressed {
 			remaining = append(remaining, topic)
 		}

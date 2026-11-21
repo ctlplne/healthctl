@@ -104,6 +104,28 @@ func (s *Store) Rotate(ctx context.Context, key []byte) error {
 	return s.maintenance(ctx, func(tx *sql.Tx) error {
 		// Keyset pages of one keep memory bounded even for large source documents
 		// and avoid parallel statements against an open cursor on one connection.
+		var lastOwner int
+		lastEntry := ""
+		for {
+			var owner int
+			var id string
+			var payload []byte
+			err := tx.QueryRowContext(ctx, "SELECT owner_id,id,payload FROM diary_entries WHERE (owner_id,id)>($1,$2) ORDER BY owner_id,id LIMIT 1 FOR UPDATE", lastOwner, lastEntry).Scan(&owner, &id, &payload)
+			if errors.Is(err, sql.ErrNoRows) {
+				break
+			}
+			if err != nil {
+				return err
+			}
+			raw, err := reseal(payload, diaryAAD(owner, id))
+			if err != nil {
+				return err
+			}
+			if _, err = tx.ExecContext(ctx, "UPDATE diary_entries SET payload=$3 WHERE owner_id=$1 AND id=$2", owner, id, raw); err != nil {
+				return err
+			}
+			lastOwner, lastEntry = owner, id
+		}
 		last := ""
 		for {
 			var id string

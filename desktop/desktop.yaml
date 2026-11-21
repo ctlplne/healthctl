@@ -1,0 +1,7 @@
+services:
+  app:
+    image: ${HEALTHCTL_APP_IMAGE:?}
+    pull_policy: never
+  db:
+    image: ${HEALTHCTL_DB_IMAGE:?}
+    pull_policy: never

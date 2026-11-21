@@ -427,3 +427,20 @@ func Preview(ctx context.Context, kind string, data []byte, number int) ([]byte,
 	}
 	return result.Bytes(), nil
 }
+
+// LabelCandidates preserves the entire printed line. Parsing a strength does
+// not establish a prescription, an equivalent product or the patient's dose.
+var labelStrength = regexp.MustCompile(`(?i)^(.{1,130}?)\s+([0-9]+(?:[.,][0-9]+)?)\s*((?:mcg|mg|g|mL|units?|IU|%)(?:\s*/\s*(?:[0-9]+(?:[.,][0-9]+)?\s*)?(?:mL|L|g|tablet|dose))?)(?:$|[^[:alnum:]])`)
+
+func LabelCandidates(rows []clinical.ReportRow) {
+	for i := range rows {
+		r := &rows[i]
+		m := labelStrength.FindStringSubmatch(r.Original)
+		if m != nil {
+			r.Name = strings.TrimSpace(m[1])
+			r.Value = m[2]
+			r.Units = m[3]
+		}
+		r.Uncertain = true
+	}
+}

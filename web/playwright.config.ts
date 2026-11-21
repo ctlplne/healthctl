@@ -13,6 +13,7 @@ export default defineConfig({
     headless: true,
     actionTimeout: 10000,
     launchOptions: {
+      args: ['--use-fake-device-for-media-stream'],
       executablePath:
         process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH ||
         process.env.CHROMIUM_PATH,

@@ -31,6 +31,9 @@ type ProviderRef struct {
 }
 
 type Intake struct {
+	NarrativeFirst   bool   `json:"narrativeFirst,omitempty"`
+	Focused          bool   `json:"focused,omitempty"`
+	Agenda           string `json:"agenda,omitempty"`
 	GuidedHistory    bool   `json:"guidedHistory,omitempty"`
 	ReportFirst      bool   `json:"reportFirst,omitempty"`
 	Concern          string `json:"concern"`
@@ -42,6 +45,13 @@ type Intake struct {
 }
 
 type Command struct {
+	Onset                string      `json:"onset,omitempty"`
+	End                  string      `json:"end,omitempty"`
+	Approximate          bool        `json:"approximate,omitempty"`
+	Speaker              string      `json:"speaker,omitempty"`
+	Prescribed           string      `json:"prescribed,omitempty"`
+	ReviewIDs            []string    `json:"reviewIds,omitempty"`
+	ForRevision          int         `json:"forRevision,omitempty"`
 	EpisodeTitle         string      `json:"episodeTitle,omitempty"`
 	Category             string      `json:"category,omitempty"`
 	ReconciliationStatus string      `json:"reconciliationStatus,omitempty"`
@@ -71,6 +81,7 @@ type Command struct {
 }
 
 type Answer struct {
+	Detail         *VisitDetail    `json:"detail,omitempty"`
 	Disposition    string          `json:"disposition,omitempty"`
 	SourceOutdated bool            `json:"sourceOutdated,omitempty"`
 	EventDate      string          `json:"eventDate,omitempty"`
@@ -177,6 +188,9 @@ type Assessment struct {
 }
 
 type Input struct {
+	ReturnVisit         bool            `json:"returnVisit,omitempty"`
+	Focused             bool            `json:"focused,omitempty"`
+	Agenda              string          `json:"agenda,omitempty"`
 	BackgroundQuestions []string        `json:"backgroundQuestions,omitempty"`
 	ReportEntries       []ReportExtract `json:"reportEntries,omitempty"`
 	Pathways            []Pathway       `json:"pathways,omitempty"`
@@ -239,6 +253,12 @@ type IntakeRevision struct {
 }
 
 type Encounter struct {
+	FocusedFrom           int                    `json:"focusedFrom,omitempty"`
+	NarrativeFirst        bool                   `json:"narrativeFirst,omitempty"`
+	ReturnSource          string                 `json:"returnSource,omitempty"`
+	Focused               bool                   `json:"focused,omitempty"`
+	Agenda                string                 `json:"agenda,omitempty"`
+	Feedback              []ClinicianFeedback    `json:"feedback,omitempty"`
 	GuidedHistory         bool                   `json:"guidedHistory,omitempty"`
 	ReportConsents        []ReportConsent        `json:"reportConsents,omitempty"`
 	ReportIdentityChanges []ReportIdentityChange `json:"reportIdentityChanges,omitempty"`

@@ -46,6 +46,51 @@ func FHIR(b Brief) resource {
 	}
 	subject, device := ref(patID), ref(deviceID)
 	sections := []resource{section("Patient concern and review status", []string{b.Concern, b.Notice, b.ModelGuidance, fmt.Sprintf("Age %d at intake. History revision %d, patient confirmed: %t. %s", b.Age, b.HistoryRevision, b.Confirmed, b.ScopeReason)})}
+	if b.Agenda != "" {
+		sections = append(sections, section("Patient question", []string{b.Agenda}))
+	}
+	var changes []string
+	for _, a := range b.Changes {
+		line := a.Question + " — " + a.Text
+		if a.Detail != nil {
+			d := a.Detail
+			if d.Onset != "" {
+				line += " · Began " + d.Onset
+			}
+			if d.End != "" {
+				line += " · Ended " + d.End
+			}
+			if d.Approximate {
+				line += " · Approximate times"
+			}
+			if !d.FirstRecorded.IsZero() {
+				line += " · Recorded " + d.FirstRecorded.Format(time.RFC3339)
+			}
+			if d.FeedbackFrom != "" {
+				line += " · Earlier feedback from " + d.FeedbackFrom + " · " + d.FeedbackText
+			}
+			if d.Printed != "" {
+				line += " · Printed: " + d.Printed
+			}
+			if d.Prescribed != "" {
+				line += " · Reported prescription: " + d.Prescribed
+			}
+		}
+		if a.EventDate != "" {
+			line += " · Event date " + a.EventDate
+		}
+		changes = append(changes, line)
+	}
+	if len(changes) > 0 {
+		sections = append(sections, section("Changes and attributed observations", changes))
+	}
+	if len(b.Feedback) > 0 {
+		var feedback []string
+		for _, f := range b.Feedback {
+			feedback = append(feedback, fmt.Sprintf("%s · %s · %s · history revision %d", f.Speaker, f.Category, f.Text, f.Revision))
+		}
+		sections = append(sections, section("Patient-approved clinician feedback", feedback))
+	}
 	if b.Demo {
 		sections = append(sections, section("Synthetic demonstration", []string{"Fictional case from the synthetic demo."}))
 	}

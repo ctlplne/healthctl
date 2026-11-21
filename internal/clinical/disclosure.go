@@ -27,13 +27,20 @@ func allApproved(ids []string, allowed map[string]ReportExtract) bool {
 // documents and locators outside the approved extracts are never serialized.
 func (e *Encounter) inputHistory(task string) Input {
 	allowed := e.disclosed()
-	in := Input{ReviewOnly: e.ReviewExtraction, Task: task, Age: e.Age, Concern: e.Concern, Background: e.Background, HistoryRevision: e.HistoryRevision, Answers: []Answer{}, Facts: []Fact{}, ActiveWarnings: []Warning{}, Contradictions: []Contradiction{}, Outstanding: []string{}}
+	in := Input{ReturnVisit: e.ReturnSource != "", Agenda: e.Agenda, Focused: e.Focused, ReviewOnly: e.ReviewExtraction, Task: task, Age: e.Age, Concern: e.Concern, Background: e.Background, HistoryRevision: e.HistoryRevision, Answers: []Answer{}, Facts: []Fact{}, ActiveWarnings: []Warning{}, Contradictions: []Contradiction{}, Outstanding: []string{}}
 	for _, topic := range e.remainingBackground() {
 		in.BackgroundQuestions = append(in.BackgroundQuestions, topic.question)
 	}
 	shownAnswers := map[string]bool{}
 	for _, a := range e.Answers {
 		if a.Active && !a.SourceOutdated && allApproved(a.ReviewIDs, allowed) {
+			if a.Detail != nil {
+				detail := *a.Detail
+				detail.DiaryID = ""
+				detail.PriorEncounter = ""
+				detail.PriorAnswer = ""
+				a.Detail = &detail
+			}
 			in.Answers = append(in.Answers, a)
 			shownAnswers[a.ID] = true
 		}

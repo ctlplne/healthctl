@@ -23,6 +23,14 @@ Open [healthctl on your computer](http://127.0.0.1:8437) and create the local ow
 
 To stop the installation, run `docker compose stop`. To resume it with your saved encounters, run `docker compose up -d`.
 
+## Keep track between visits
+
+Choose **It happened again** to record an episode while you remember it. You can type or dictate, review what was heard, and save the entry locally. A return visit lets you choose which diary entries, reviewed report passages, and earlier findings to bring forward. Mark findings as ongoing, changed, resolved, or uncertain. The shorter interview asks up to two follow-up questions and carries the remaining gaps into the handoff.
+
+In **Visit preparation**, you can compare records with what actually happened, record how you take a medicine alongside a photograph of its label, and invite a witness to contribute their own account. The clinician brief carries your main question, changes, warnings, and outstanding questions. [Voice input and transcription choices](docs/model-providers.md#dictation-and-account-billing)
+
+A local macOS launcher bundles the application, database images, and English speech model. It opens the browser journal, guides model setup, and can encrypt a backup and restore a separate workspace. [Desktop build and recovery](docs/desktop.md)
+
 ## Bring your records
 
 Choose **Start with a report** to add a PDF, Word document (.docx), image (JPEG or PNG), or plain text. healthctl extracts text locally, including English OCR for scans. Check dates, values, and units against the original, then choose which entries the model can use. For example, when a urine report includes a collection date, the interview can ask whether symptoms began before or after the sample.

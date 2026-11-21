@@ -25,7 +25,16 @@ COPY --from=evaluator-build /evaluate /evaluate
 USER 65532:65532
 ENTRYPOINT ["/evaluate"]
 
+FROM debian:bookworm-slim@sha256:734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d96a961d3376b179bc AS speech
+RUN apt-get update && apt-get install -y --no-install-recommends cmake g++ make ca-certificates curl
+RUN curl -fsSL --retry 3 https://codeload.github.com/ggml-org/whisper.cpp/tar.gz/refs/tags/v1.9.5 -o /tmp/source.tgz && echo "ff1a9053feb509ff9d7729703355541ae9690073a6b1c40eb692c962e0dc1720  /tmp/source.tgz" | sha256sum -c - && mkdir /src && tar -xzf /tmp/source.tgz --strip-components=1 -C /src
+RUN cmake -S /src -B /tmp/build -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DGGML_NATIVE=OFF -DGGML_OPENMP=OFF -DWHISPER_BUILD_TESTS=OFF && cmake --build /tmp/build --target whisper-cli -j 3
+RUN curl -fsSL --retry 3 https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.en-q5_1.bin -o /model.bin && echo "c77c5766f1cef09b6b7d47f21b546cbddd4157886b3b5d6d4f709e91e66c7c2b  /model.bin" | sha256sum -c -
 FROM readers AS application
+COPY --from=speech /tmp/build/bin/whisper-cli /usr/local/bin/whisper-cli
+COPY --from=speech /src/LICENSE /usr/share/licenses/clinical-history/whisper-cpp.txt
+COPY docs/licenses/whisper-model.txt /usr/share/licenses/clinical-history/whisper-model.txt
+COPY --from=speech /model.bin /usr/share/healthctl/whisper.bin
 COPY --from=server /app /app
 COPY --from=ui /ui/dist /ui
 COPY LICENSE docs/release.md /usr/share/licenses/clinical-history/
