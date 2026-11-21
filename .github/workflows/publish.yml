@@ -10,6 +10,7 @@ concurrency:
 
 jobs:
   publish:
+    if: ${{ !github.event.release.prerelease }}
     name: Promote attested archives to GHCR
     runs-on: ubuntu-24.04
     timeout-minutes: 20

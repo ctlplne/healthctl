@@ -41,8 +41,14 @@ final class Launcher: NSObject, NSApplicationDelegate {
         if working { NSSound.beep(); return .terminateCancel }
         return .terminateNow
     }
-    @objc private func openJournal() { run(["start"], message: "Starting the local workspace…") }
-    @objc private func settings() { run(["start"], message: "Opening model settings…", settings: true) }
+    private var startupMessage: String {
+        if Bundle.main.url(forResource: "healthctl-source.tar", withExtension: "gz") != nil {
+            return "Starting your workspace. The first launch downloads dependencies and builds the app. This can take several minutes."
+        }
+        return "Starting the local workspace…"
+    }
+    @objc private func openJournal() { run(["start"], message: startupMessage) }
+    @objc private func settings() { run(["start"], message: startupMessage, settings: true) }
     @objc private func dockerLink() { NSWorkspace.shared.open(URL(string: "https://www.docker.com/products/docker-desktop/")!) }
     private func passphrase(creating: Bool) -> String? {
         let prompt = NSAlert()

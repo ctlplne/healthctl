@@ -26,6 +26,8 @@ The first public GitHub source history runs from `32b5104` through `e9153cd` on 
 
 ### Public preview and release review
 
+The Apple silicon installer prerelease `macos-0.2.0-beta.1` distributes the native launcher, its backup helper and 0.2.0 build source. First launch builds the Linux services on the user's machine. Release assets include the native inventory and disk-image checksum. The software remains a public preview for visit preparation. The download is ad-hoc signed and unnotarized. The outstanding clinical and provider reviews below apply to this build.
+
 For each release keep a dated record with the commit, artifacts and digests, intended users and markets, enabled models, patient-visible claims, clinical reviewer, legal reviewer, known case failures, decision and responsible maintainer. Record outstanding reviews explicitly. Keep private legal records and contracts outside the repository.
 
 | November 21, 2026 · 0.2.0 preview | Current record |

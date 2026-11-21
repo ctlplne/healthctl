@@ -23,6 +23,7 @@ async function guidanceVisible(page: Page, scroll = false) {
     )
   await expect(banner).toHaveText(guidance)
   await expect(page.locator('#preview-notice')).toContainText('Free public preview (beta)')
+  await expect(page.locator('#preview-notice')).toContainText('Verify findings with a qualified healthcare professional')
   const header = page.locator('#installation-guidance')
   await expect(header).toBeInViewport({ ratio: 1 })
   await expect

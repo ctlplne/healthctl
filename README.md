@@ -6,7 +6,7 @@ healthctl is a self-hosted tool for taking a medical history before a visit. Sta
 
 Use healthctl to organize your own account, spot misunderstandings and prepare questions for a medical visit. The symptom interview is designed for English-speaking adults. If you request possible explanations, the model can suggest them before a clinician reviews your history. Suggestions and urgency warnings can be wrong or miss serious illness. Take the findings to a qualified healthcare professional for verification. Do not use the tool to diagnose yourself, change treatment or decide it is safe to wait. If you may be having a medical emergency, seek local emergency care immediately.
 
-Your installation sends no encounters to ctlplne studio. Optional remote models and cloud transcription receive data you choose to send. Those providers may charge separately. [Public preview and limitations](docs/use-notice.md) · [Where your data goes](PRIVACY.md) · [Report a software or safety problem using fictional details](SECURITY.md)
+healthctl stores your journal on your installation. The model you choose reads relevant parts of your history, suggests follow-up questions and generates possible explanations if you ask. With a cloud model, your installation sends that information directly to the provider for processing. ctlplne studio does not receive it. Cloud model and transcription providers may charge separately. [Public preview and limitations](docs/use-notice.md) · [Where your data goes](PRIVACY.md) · [Report a software or safety problem using fictional details](SECURITY.md)
 
 [![Watch Your first encounter, a walkthrough from local setup to a saved clinician brief](docs/media/walkthrough-cover.jpg)](docs/media/healthctl-walkthrough.mp4?raw=true)
 
@@ -21,7 +21,7 @@ There are two self-hosted installation paths. Both use Docker and keep the journ
 | Path | What you need | How to start |
 | --- | --- | --- |
 | Docker Compose from source | Git, Python 3 and a running Docker engine with Compose v2 | Run the commands below. |
-| macOS desktop launcher | An Apple silicon Mac and Docker Desktop. Building the disk image also requires Go 1.26 or later and Xcode Command Line Tools. | Build the image locally, drag healthctl to Applications and choose **Open journal or try the demo**. [Desktop installation](docs/desktop.md) |
+| macOS desktop launcher | An Apple silicon Mac and Docker Desktop. The beta download is unnotarized and macOS may block it. | [Download the beta DMG](https://github.com/ctlplne/healthctl/releases/download/macos-0.2.0-beta.1/healthctl-0.2.0-beta.1-macos-arm64.dmg), drag healthctl to Applications, then choose **Open journal or try the demo**. The first launch uses the internet to build the services. [Desktop installation](docs/desktop.md) |
 
 ### Docker Compose
 

@@ -78,6 +78,7 @@ export function Estimate({
 }) {
   return (
     <div className="estimate">
+      <p>Ask your healthcare provider to verify these findings before making care decisions.</p>
       <p className="metadata">
         Assessment {a.version} · History revision {a.historyRevision} ·{' '}
         {date(a.createdAt, true)}

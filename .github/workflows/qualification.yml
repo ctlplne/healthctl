@@ -160,3 +160,11 @@ jobs:
           if-no-files-found: error
           retention-days: 3
           compression-level: 0
+      - name: Build the first-launch installer from this revision
+        run: ./scripts/build-desktop.sh --build-on-first-use
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: macos-arm64-preview-adhoc
+          path: build/desktop/healthctl-arm64-preview.dmg
+          if-no-files-found: error
+          retention-days: 3

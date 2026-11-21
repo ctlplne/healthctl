@@ -54,6 +54,8 @@ def check_printed_reports():
             for index, page in enumerate(pages, 1):
                 if "ctlplne studio" not in page or "beta" not in page.lower():
                     raise RuntimeError(f"{viewport} {filename} page {index} is missing the preview attribution")
+                if "Verify findings with a qualified healthcare professional" not in page:
+                    raise RuntimeError(f"{viewport} {filename} page {index} is missing the clinician-verification reminder")
                 if guidance not in page:
                     raise RuntimeError(f"{viewport} {filename} page {index} is missing the model recommendation")
             if filename.endswith("-brief.pdf") and len(pages) != 1:

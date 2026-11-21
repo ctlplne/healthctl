@@ -347,7 +347,7 @@ export function ProviderEditor({
     <>
       <PageTitle
         title="Model settings"
-        description="Choose where new encounters send interview content."
+        description="Choose where AI processing happens for new encounters, or try the scripted demo."
       />
       <p><a href="/privacy.html" target="_blank" rel="noreferrer">Where your data goes when you connect a model</a></p>
       <div className="settings-layout">
@@ -499,6 +499,11 @@ export function ProviderEditor({
           {config.kind !== 'demo' && (
             <>
               <h4>Selected destination</h4>
+              <p>
+                Your installation sends relevant history directly to the model
+                here. The model suggests follow-up questions and can generate
+                possible explanations at your request.
+              </p>
               <code>
                 {!destination(normalized) ? (
                   'Enter a base URL'

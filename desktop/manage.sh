@@ -21,7 +21,12 @@ fi
 read -r appimage dbimage < "$resources/images.txt"
 export HEALTHCTL_APP_IMAGE="$appimage" HEALTHCTL_DB_IMAGE="$dbimage"
 unset CLINICAL_PORT CLINICAL_DATA_KEY POSTGRES_PASSWORD CLINICAL_PUBLIC_ORIGIN OPENAI_API_KEY
-if ! docker image inspect "$appimage" "$dbimage" >/dev/null 2>&1; then
+if [[ -f "$resources/healthctl-source.tar.gz" ]]; then
+ if ! docker image inspect "$appimage" >/dev/null 2>&1; then
+  docker build --tag "$appimage" - < "$resources/healthctl-source.tar.gz" >&2
+ fi
+ if ! docker image inspect "$dbimage" >/dev/null 2>&1; then docker pull "$dbimage" >&2; fi
+elif ! docker image inspect "$appimage" "$dbimage" >/dev/null 2>&1; then
  docker load -i "$resources/images.tar.gz" >/dev/null
 fi
 compose(){ docker compose --env-file "$folder/settings.env" -p "$instance" -f "$resources/compose.yaml" -f "$resources/desktop.yaml" "$@"; }

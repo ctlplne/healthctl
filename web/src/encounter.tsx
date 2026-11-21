@@ -244,6 +244,7 @@ export function EncounterPage({
         {activeWarnings.map((w) => (
           <Callout key={w.id} title="Urgent warning" alert>
             <p>{w.message}</p>
+            <p>Share these findings with the healthcare professional who evaluates you.</p>
             <small>Reported wording: “{w.quote}”</small>
           </Callout>
         ))}

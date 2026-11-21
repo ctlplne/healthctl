@@ -85,11 +85,14 @@ export function ContextBox({ p }: { p: Provider }) {
             'Use the fictional case to try the workflow. This mode uses scripted examples and sends no model requests.'
           ) : (
             <>
-              Your history will be sent to <b>{kinds[p.kind]}</b> at{' '}
+              Your installation sends relevant history and approved report extracts to{' '}
+              <b>{kinds[p.kind]}</b> at{' '}
               <span className="endpoint">
                 <Destination p={p} />
               </span>{' '}
-              using <b>{p.model}</b>.
+              for processing by <b>{p.model}</b>. The model suggests follow-up
+              questions and, if you ask, possible explanations. ctlplne studio
+              does not receive these requests.
             </>
           )}
         </p>

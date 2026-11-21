@@ -200,6 +200,7 @@ test('Plan consent, callback scrubbing, first-use confirmation and account-only 
   await page.getByRole('button', { name: 'Continue with ChatGPT' }).click()
   const welcome = page.getByRole('dialog')
   await expect(welcome).toContainText('You’re using your ChatGPT plan')
+  await expect(welcome).toContainText('Verify findings with a qualified healthcare professional')
   await expect(
     welcome.getByRole('note', { name: 'Model guidance' }),
   ).toBeVisible()

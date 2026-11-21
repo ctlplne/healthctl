@@ -1,10 +1,17 @@
 # healthctl for macOS
 
-The local desktop build packages healthctl, PostgreSQL, and the English whisper.cpp model for the architecture of the Mac that builds it. The tested package targets Apple silicon. Docker Desktop must be installed and running. The launcher can open Docker Desktop or its official download page.
+The public beta launcher runs on Apple silicon Macs with Docker Desktop. On first use, Docker fetches dependencies and builds healthctl from the source included in the download. PostgreSQL and the English speech model run locally. Subsequent launches reuse the local images.
 
-## Build and install
+## Download the Apple silicon beta
 
-The public repository currently distributes the source. To build the disk image, install Git, Go 1.26 or later and Xcode Command Line Tools, and start Docker Desktop. The first build downloads dependencies, images and the speech model. To start from source, run the following commands.
+1. Install and start Docker Desktop. Use a macOS version supported by your Docker Desktop installation.
+2. Download the [unnotarized beta disk image](https://github.com/ctlplne/healthctl/releases/download/macos-0.2.0-beta.1/healthctl-0.2.0-beta.1-macos-arm64.dmg). The [release page](https://github.com/ctlplne/healthctl/releases/tag/macos-0.2.0-beta.1) includes the SHA-256 checksum. This preview is ad-hoc signed. Apple has not verified its publisher or notarized it, and Gatekeeper may block opening it. The [Docker Compose installation](../README.md#docker-compose) is also available.
+3. Open the DMG, drag **healthctl** into **Applications**, and open healthctl. Choose **Open journal or try the demo**. Allow several minutes and keep Docker and your internet connection running during the first setup.
+4. When your browser opens the local journal, create your owner account. Choose the scripted demo to explore with fictional information, or configure your own model. A cloud model receives the relevant history directly from your installation.
+
+## Build the bundled installer from source
+
+The default source build bundles the Linux images inside the disk image for an offline first launch. To build it, install Git, Go 1.26 or later and Xcode Command Line Tools, and start Docker Desktop. The first build downloads dependencies, images and the speech model.
 
 ```sh
 git clone https://github.com/ctlplne/healthctl.git
@@ -15,7 +22,7 @@ open "build/desktop/healthctl-$(uname -m).dmg"
 
 Drag **healthctl** to **Applications**. Open it and choose **Open journal or try the demo**. Create the installation owner, open **Model settings**, select the synthetic demo, save it, and start a new encounter. **Connect a model** opens settings for a real connection. A ChatGPT plan can be linked through the browser. The optional **Set or clear an OpenAI API key** button configures separately billed platform features. The launcher stores the journal in its local workspace and binds the web server to loopback on its own persistent port. The provider you select receives the history approved for that destination.
 
-The installed launcher uses the images and speech model bundled in the disk image. Docker Desktop is the runtime requirement. Open the journal from the launcher to use its assigned address. A separate Compose checkout has its own port, owner and database.
+Open the journal from the launcher to use its assigned address. A separate Compose checkout has its own port, owner and database.
 
 ## Backup and recovery
 
@@ -25,7 +32,7 @@ Choose **Back up workspace**, a new filename and a passphrase of at least 12 cha
 
 ## Distribution and verification
 
-The default build has a local ad-hoc signature. For distribution use an Apple Developer ID Application identity and a configured notarytool keychain profile.
+The default build has a local ad-hoc signature. To reproduce the smaller public preview, check out its tagged revision and run `./scripts/build-desktop.sh --build-on-first-use`. For an Apple-notarized release use a Developer ID Application identity and a configured notarytool keychain profile.
 
 ```sh
 HEALTHCTL_SIGN_IDENTITY="Developer ID Application: YOUR REGISTERED NAME (TEAMID)" \

@@ -1,6 +1,6 @@
 # Where your healthctl data goes
 
-healthctl is a self-hosted, single-owner journal. Your browser talks to the installation you open. A default installation sends no encounter data, analytics or crash reports to ctlplne studio. The publisher has no account on your installation and no way to see your history through the app.
+Your healthctl installation stores your journal. When you use AI, your installation sends relevant parts of your history directly to the model you choose. That model reads your answers, identifies findings for you to review, suggests follow-up questions and, if you ask, generates possible explanations. The results come back to your installation. ctlplne studio does not receive your encounter or relay these requests. A default installation also sends no analytics or crash reports to the studio.
 
 ## Who can read the journal?
 
@@ -8,9 +8,9 @@ The installation owner can read the journal. Someone with administrator access t
 
 ## Trying the demo or connecting a model
 
-The synthetic demo uses scripted fictional answers on your installation. The local-model option sends interview context to the endpoint you select. An endpoint on a different machine receives that context, and its operator controls its logging. A truly offline workflow requires a local endpoint that operates offline.
+The synthetic demo runs a fictional script on your installation and makes no model requests. If you run a model offline on your own computer, the AI processing can stay on that computer. If you connect a model running on another machine, that machine receives the request and its operator controls its logging.
 
-With a remote API or a linked ChatGPT plan, the installation sends relevant interview information to the selected provider. This can include your concern, answers, reviewed findings and approved report extracts. A linked plan uses your selected OpenAI account and its applicable terms. The provider controls its logs, retention and account settings. Changing the provider or endpoint for an existing encounter requires confirmation. Disconnecting a provider cannot recall earlier requests.
+With a remote API or a linked ChatGPT plan, the provider processes the request on its servers. It can receive your concern, answers, findings gathered so far and any report extracts you approved for that destination. A linked plan uses your selected OpenAI account and its applicable terms. The provider controls its logs, retention and account settings. Changing the provider or endpoint for an existing encounter requires confirmation. Disconnecting a provider cannot recall earlier requests.
 
 ## Uploading a report or reading a patient portal
 

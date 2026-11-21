@@ -13,4 +13,6 @@ The healthctl software license covers the project's own work. Upstream licenses 
 
 ## Distributing binaries
 
+The Apple silicon download labeled `macos-0.2.0-beta.1` includes the native launcher, Go backup helper, and the tagged healthctl build source. Its native SPDX inventory, source checksum, Go license and linked module notices are in Contents/Resources/notices. The user's Docker installation obtains the Linux dependencies and builds the application on first use. The Linux package inventory and notices described above are available inside the resulting local image.
+
 Keep notices, licenses and inventories with the specific artifacts they describe. For packages that require corresponding source, prepare and retain the matching source, patches and build scripts, and provide them to recipients by a method the applicable license permits. The SPDX inventory and upstream links identify components. They do not fulfill a source-delivery obligation on their own. Verify Alpine container build recipes and Debian source revisions as well as the application code. Record the accessible delivery location, scope and review date in the release record before distributing a binary. Docker Desktop and macOS are separately installed prerequisites.

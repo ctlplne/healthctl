@@ -53,7 +53,15 @@ for line in linked.splitlines()[1:]:
     package(identifier, path, current or "NOASSERTION")
     relation(root, "DEPENDS_ON", identifier)
 
-for name in ("app", "db"):
+source = resources / "healthctl-source.tar.gz"
+if source.is_file():
+    revision = (resources / "images.txt").read_text().split()[0].split(":")[1]
+    package("SPDXRef-source", "healthctl build source", revision,
+            "https://github.com/ctlplne/healthctl/tree/" + revision, "BUSL-1.1")
+    packages[-1]["checksums"] = [dict(algorithm="SHA256", checksumValue=hashlib.sha256(source.read_bytes()).hexdigest())]
+    relation(root, "CONTAINS", "SPDXRef-source")
+
+for name in (() if source.is_file() else ("app", "db")):
     data = (notices / (name + ".spdx.json")).read_bytes()
     child = json.loads(data)
     doc = "DocumentRef-" + name
@@ -67,5 +75,7 @@ sbom = dict(spdxVersion="SPDX-2.3", dataLicense="CC0-1.0", SPDXID="SPDXRef-DOCUM
             name="healthctl-macOS-" + version, documentNamespace="https://spdx.org/spdxdocs/healthctl-" + str(uuid.uuid4()),
             creationInfo=dict(created=dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
                               creators=["Tool: healthctl-desktop-sbom"]), packages=packages,
-            relationships=relations, externalDocumentRefs=external)
+            relationships=relations)
+if external:
+    sbom["externalDocumentRefs"] = external
 (notices / "desktop.spdx.json").write_text(json.dumps(sbom, indent=2) + "\n")
