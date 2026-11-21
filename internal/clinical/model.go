@@ -105,6 +105,16 @@ func (e *Encounter) Accept(task string, p Proposal, meta ModelMeta, emergency st
 			e.QuestionReviewIDs = inputReviews(in)
 			e.QuestionSource = qsource
 			e.Choices = nonNil(p.Choices)
+			// A model can bring a core question forward when it matters to this concern.
+			if qsource != nil && qsource.ReviewID == "" {
+				for _, topic := range e.remainingBackground() {
+					if topic.matches(p.Question) {
+						e.askBackground(topic)
+						break
+					}
+				}
+			}
+		case p.Action == "review" && len(e.Answers) < 64 && (e.askOpeningDetail(in) || e.askNextBackground()):
 		default:
 			e.State = "history_review"
 		}
@@ -220,6 +230,15 @@ func validateFinding(in Input, f FindingProposal) error {
 	if !validText(f.Concept, 120) || badOutput(f.Concept, 120) || !validSubject(f.Subject) || !validStatus(f.Status) || len(f.TimeContext) > 180 || len(f.Value) > 120 || len(f.Units) > 64 {
 		return errors.New("Invalid finding attributes")
 	}
+	disposition := evidenceDisposition(a)
+	if disposition == "not_applicable" || disposition == "skipped" && f.Status != "declined" || disposition == "unknown" && f.Status != "uncertain" {
+		return errors.New("This response cannot establish the proposed clinical finding")
+	}
+	if disposition == "none" {
+		if topic := backgroundFor(a.Question); topic != nil && (f.Status != "explicitly_denied" || !topic.acceptsDenial(f.Concept)) {
+			return errors.New("A background denial applies only to the question the patient answered")
+		}
+	}
 	if a.Kind == "screen" {
 		return errors.New("The emergency screen cannot establish other clinical findings")
 	}
@@ -277,8 +296,12 @@ func Validate(in Input, p Proposal) error {
 			if !validText(p.Question, 500) || !validText(p.Reason, 700) {
 				return errors.New("A question must explain which uncertainty it addresses")
 			}
+			if strings.Count(p.Question, "?") > 1 {
+				return errors.New("Ask one focused question per turn")
+			}
+			topic := backgroundFor(p.Question)
 			for _, a := range in.Answers {
-				if a.Kind == "reply" && strings.EqualFold(strings.TrimSpace(a.Question), strings.TrimSpace(p.Question)) {
+				if (a.Kind == "reply" && sameQuestion(a.Question, p.Question)) || (topic != nil && topic.addressedBy(a)) {
 					return errors.New("The patient already answered that question")
 				}
 			}
@@ -298,7 +321,7 @@ func Validate(in Input, p Proposal) error {
 			if err != nil {
 				return err
 			}
-			if a.Kind == "screen" || pastEvent(a) || !contextualRisk(clauseAt(a.Text, strings.Index(a.Text, ev.Quote))) {
+			if evidenceDisposition(a) != "provided" || a.Kind == "screen" || pastEvent(a) || !contextualRisk(clauseAt(a.Text, strings.Index(a.Text, ev.Quote))) {
 				return errors.New("The urgent flag needs evidence of a current, relevant patient report")
 			}
 		}
@@ -352,6 +375,7 @@ func Validate(in Input, p Proposal) error {
 }
 
 var declined = regexp.MustCompile(`(?i)\b(declin(?:e|ed)|prefer not|rather not|skip|won['’]t answer|don['’]t want|do not want)\b`)
+var binaryQuestion = regexp.MustCompile(`(?i)^(?:do|did|does|is|are|was|were|have|has|had|can|could)\b`)
 var words = regexp.MustCompile(`[[:alnum:]]+`)
 
 // A generic "no" can establish a focused symptom only through its originating
@@ -362,7 +386,7 @@ func denialSupports(concept, quote string, a Answer) bool {
 	}
 	source := strings.ToLower(quote)
 	if pureDenial.MatchString(strings.TrimSpace(quote)) && len(strings.Fields(quote)) <= 4 {
-		if a.Kind != "reply" {
+		if a.Kind != "reply" || (backgroundFor(a.Question) == nil && !binaryQuestion.MatchString(strings.TrimSpace(a.Question))) {
 			return false
 		}
 		source = strings.ToLower(a.Question)

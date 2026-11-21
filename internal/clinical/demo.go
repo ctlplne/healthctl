@@ -20,6 +20,9 @@ func Demo(in Input) Proposal {
 	var first, second bool
 	var facts []FindingProposal
 	for _, a := range in.Answers {
+		if fixtureBackground(a) {
+			continue
+		}
 		switch a.Kind {
 		case "concern":
 			if a.Text != DemoConcern {
@@ -63,7 +66,7 @@ func Demo(in Input) Proposal {
 			p.Outstanding = []string{trigger}
 		default:
 			p.Action = "review"
-			p.Outstanding = []string{"Medications and allergies have not been established."}
+			p.Outstanding = []string{"No examination or testing has been recorded."}
 		}
 		return p
 	}
@@ -105,6 +108,9 @@ func reportDemo(in Input) Proposal {
 	var symptom, timing *Answer
 	for i := range in.Answers {
 		a := &in.Answers[i]
+		if fixtureBackground(*a) {
+			continue
+		}
 		switch a.Kind {
 		case "concern":
 			if a.Text != DemoReportConcern {

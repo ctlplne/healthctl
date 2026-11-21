@@ -26,7 +26,7 @@ func New(encounterID string, intake Intake, provider ProviderRef, emergency stri
 		return nil, errors.New("Enter an age from 1 to 125, a chief concern and acknowledge the current notice")
 	}
 	e := &Encounter{
-		ReportFirst: intake.ReportFirst, ID: encounterID, Concern: strings.TrimSpace(intake.Concern), Background: strings.TrimSpace(intake.Background),
+		GuidedHistory: intake.GuidedHistory, ReportFirst: intake.ReportFirst, ID: encounterID, Concern: strings.TrimSpace(intake.Concern), Background: strings.TrimSpace(intake.Background),
 		Age: intake.Age, PregnancyRelated: intake.PregnancyRelated,
 		Provider: provider, Demo: provider.Kind == "demo", CreatedAt: time.Now().UTC(),
 		Notice: Notice, NoticeVersion: NoticeVersion, ReviewStatus: ReviewStatus, HistoryRevision: 1,
@@ -59,6 +59,9 @@ func (e *Encounter) appendAnswer(kind, question, text, supersedes, emergency str
 
 func (e *Encounter) appendDatedAnswer(kind, question, text, supersedes, eventDate, emergency string) Answer {
 	a := Answer{EventDate: eventDate, ID: id("a", len(e.Answers)), Kind: kind, Question: question, Text: text, Active: true, Supersedes: supersedes, CreatedAt: time.Now().UTC()}
+	if kind == "reply" {
+		a.Disposition = responseDisposition(text, question)
+	}
 	e.Answers = append(e.Answers, a)
 	if kind != "correction" || supersedes != "" {
 		e.screen(a, emergency)
@@ -213,14 +216,19 @@ func (e *Encounter) Apply(c Command, emergency string) error {
 		if err := e.correctFact(c, emergency); err != nil {
 			return err
 		}
+	case "report_emergency":
+		if len(e.Answers) >= 256 {
+			return errors.New("This encounter has reached its input limit")
+		}
+		e.changed()
+		e.appendAnswer("screen", urgentQuestion, urgentYes, "", emergency)
+		e.routeInterview()
 	case "review":
 		if e.ScopeReason != "" {
 			return errors.New("This encounter is outside the interview scope")
 		}
+		previousGaps := len(e.Outstanding)
 		if e.Question != "" && !contains(e.Outstanding, e.Question) {
-			if e.ConfirmedRevision == e.HistoryRevision {
-				e.changed()
-			}
 			e.Outstanding = append(e.Outstanding, e.Question)
 			for _, id := range e.QuestionReviewIDs {
 				if !contains(e.OutstandingReviewIDs, id) {
@@ -228,9 +236,19 @@ func (e *Encounter) Apply(c Command, emergency string) error {
 				}
 			}
 		}
+		for _, topic := range e.remainingBackground() {
+			if !contains(e.Outstanding, topic.question) {
+				e.Outstanding = append(e.Outstanding, topic.question)
+			}
+		}
+		if len(e.Outstanding) != previousGaps && e.ConfirmedRevision == e.HistoryRevision {
+			e.changed()
+		}
 		extract := e.State == "interrupted_for_safety" && e.ExtractedRevision != e.HistoryRevision
 		e.State = "history_review"
 		e.Question = ""
+		e.QuestionSource = nil
+		e.QuestionReviewIDs = nil
 		e.Choices = []string{}
 		e.Pending = ""
 		e.ReviewExtraction = extract
@@ -372,6 +390,9 @@ func (e *Encounter) applyAnswer(c Command, emergency string) error {
 	}
 	e.Answers[len(e.Answers)-1].QuestionSource = source
 	e.Answers[len(e.Answers)-1].ReviewIDs = append([]string(nil), deps...)
+	if topic := backgroundFor(question); kind == "reply" && topic != nil && a.Disposition == "none" {
+		e.recordFinding(FindingProposal{Evidence: Evidence{a.ID, a.Text}, Concept: topic.concept, Status: "explicitly_denied", Subject: "self"}, "patient_answer", "", false)
+	}
 	switch kind {
 	case "concern":
 		e.Concern = a.Text
@@ -383,6 +404,9 @@ func (e *Encounter) applyAnswer(c Command, emergency string) error {
 	}
 	e.rebuildContradictions()
 	e.routeInterview()
+	if c.Action == "answer" && source != nil && source.Key == "background" && a.Disposition != "provided" && e.Pending == "interview" {
+		e.askNextBackground()
+	}
 	return nil
 }
 

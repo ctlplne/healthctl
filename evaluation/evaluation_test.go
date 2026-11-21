@@ -57,7 +57,7 @@ func TestHiddenDataAndUnaskedRepliesStayOutOfRequests(t *testing.T) {
 	m := &observingModel{t: t}
 	c := Case{ID: "hidden-case-482", Opening: "I have a headache.", Age: 40, Reference: "hidden-reference-482",
 		Facts:   []ExpectedFact{{Label: "hidden-concept-482", Concept: "headache", Source: "headache", Subject: "self", Status: "reported_present"}},
-		Replies: []Reply{{Topic: "medication", Answer: "hidden-answer-482"}},
+		Replies: []Reply{{Topic: "trigger", Answer: "hidden-answer-482"}},
 	}
 	r := Run(t.Context(), c, true, m, 3)
 	if r.Failed() || m.calls < 2 {

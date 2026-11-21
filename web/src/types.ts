@@ -29,6 +29,7 @@ export type Session = {
   emergency: string
 }
 export type Answer = {
+  disposition?: string
   sourceOutdated?: boolean
   id: string
   kind: string

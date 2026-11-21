@@ -31,6 +31,7 @@ type ProviderRef struct {
 }
 
 type Intake struct {
+	GuidedHistory    bool   `json:"guidedHistory,omitempty"`
 	ReportFirst      bool   `json:"reportFirst,omitempty"`
 	Concern          string `json:"concern"`
 	Age              int    `json:"age"`
@@ -70,6 +71,7 @@ type Command struct {
 }
 
 type Answer struct {
+	Disposition    string          `json:"disposition,omitempty"`
 	SourceOutdated bool            `json:"sourceOutdated,omitempty"`
 	EventDate      string          `json:"eventDate,omitempty"`
 	QuestionSource *QuestionSource `json:"questionSource,omitempty"`
@@ -175,20 +177,21 @@ type Assessment struct {
 }
 
 type Input struct {
-	ReportEntries     []ReportExtract `json:"reportEntries,omitempty"`
-	Pathways          []Pathway       `json:"pathways,omitempty"`
-	ReviewOnly        bool            `json:"reviewOnly,omitempty"`
-	CorrectedEvidence []Evidence      `json:"correctedEvidence,omitempty"`
-	Task              string          `json:"task"`
-	Age               int             `json:"age"`
-	Concern           string          `json:"concern"`
-	Background        string          `json:"background"`
-	Answers           []Answer        `json:"answers"`
-	Facts             []Fact          `json:"facts"`
-	Contradictions    []Contradiction `json:"contradictions"`
-	Outstanding       []string        `json:"outstanding"`
-	ActiveWarnings    []Warning       `json:"activeWarnings"`
-	HistoryRevision   int             `json:"historyRevision"`
+	BackgroundQuestions []string        `json:"backgroundQuestions,omitempty"`
+	ReportEntries       []ReportExtract `json:"reportEntries,omitempty"`
+	Pathways            []Pathway       `json:"pathways,omitempty"`
+	ReviewOnly          bool            `json:"reviewOnly,omitempty"`
+	CorrectedEvidence   []Evidence      `json:"correctedEvidence,omitempty"`
+	Task                string          `json:"task"`
+	Age                 int             `json:"age"`
+	Concern             string          `json:"concern"`
+	Background          string          `json:"background"`
+	Answers             []Answer        `json:"answers"`
+	Facts               []Fact          `json:"facts"`
+	Contradictions      []Contradiction `json:"contradictions"`
+	Outstanding         []string        `json:"outstanding"`
+	ActiveWarnings      []Warning       `json:"activeWarnings"`
+	HistoryRevision     int             `json:"historyRevision"`
 }
 
 type Proposal struct {
@@ -236,6 +239,7 @@ type IntakeRevision struct {
 }
 
 type Encounter struct {
+	GuidedHistory         bool                   `json:"guidedHistory,omitempty"`
 	ReportConsents        []ReportConsent        `json:"reportConsents,omitempty"`
 	ReportIdentityChanges []ReportIdentityChange `json:"reportIdentityChanges,omitempty"`
 	EpisodeID             string                 `json:"episodeId,omitempty"`

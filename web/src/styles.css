@@ -208,8 +208,7 @@ a.secondary {
   width: 100%;
 }
 .text-button,
-.back,
-.skip-options button {
+.back {
   color: var(--pine);
   font-size: 0.9rem;
   font-weight: 500;
@@ -219,8 +218,7 @@ a.secondary {
   padding: 0.35rem 0;
 }
 .text-button:hover,
-.back:hover,
-.skip-options button:hover {
+.back:hover {
   text-decoration: underline;
 }
 .actions,
@@ -1086,6 +1084,7 @@ legend {
   margin: 1.1rem 0;
 }
 .choices button {
+  min-height: 2.75rem;
   border: 1px solid #b9cbb9;
   padding: 0.42rem 0.75rem;
   border-radius: 18px;
@@ -1097,16 +1096,8 @@ legend {
   color: #20432b;
   border-color: #5e7e5d;
 }
-.skip-options {
-  display: flex;
-  gap: 0.6rem;
-  align-items: center;
-}
-.skip-options button {
-  font-size: 0.8rem;
-}
-.skip-options span {
-  color: #95a498;
+.response-options button {
+  border-style: dashed;
 }
 .record-aside dl {
   margin: 1rem 0;

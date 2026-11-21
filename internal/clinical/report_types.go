@@ -69,6 +69,8 @@ type ReportExtract struct {
 }
 
 type QuestionSource struct {
+	EntryLabel string `json:"entryLabel,omitempty"`
+	AnswerHint string `json:"answerHint,omitempty"`
 	DocumentID string `json:"documentId,omitempty"`
 	RowID      string `json:"rowId,omitempty"`
 	ReviewID   string `json:"reviewId,omitempty"`

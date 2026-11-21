@@ -140,6 +140,24 @@ async function remove(page: Page) {
     page.getByRole('heading', { name: 'Encounter journal' }),
   ).toBeVisible()
 }
+async function finishBackground(page: Page) {
+  for (const [question, answer] of [
+    [
+      'What medicines or supplements do you take?',
+      'I take no medicines or supplements.',
+    ],
+    ['What allergies do you know you have?', 'Not sure'],
+    ['What ongoing health conditions do you have?', 'Not applicable'],
+    ['What operations have you had in the past?', 'Skip this question'],
+  ]) {
+    await expect(
+      page.getByRole('heading', { name: question, exact: true }),
+    ).toBeVisible()
+    await expect(page.getByLabel('Your answer', { exact: true })).toHaveCount(0)
+    await page.getByRole('button', { name: answer, exact: true }).click()
+    await page.getByRole('button', { name: 'Save answer' }).click()
+  }
+}
 async function reviewAndAssess(page: Page) {
   await page.getByRole('button', { name: 'Confirm my history' }).click()
   await page
@@ -178,11 +196,20 @@ test('Owner setup and synthetic encounter through correction, print, export, res
     .getByRole('button', { name: 'After being outdoors', exact: true })
     .click()
   await page.getByRole('button', { name: 'Save answer' }).click()
+  await finishBackground(page)
   await reviewAndAssess(page)
   await expect(
     page.getByRole('heading', { name: 'Nasal allergies', exact: true }),
   ).toBeVisible()
   const first = await grabReport(page)
+  expect(
+    first.answers
+      .filter(
+        (a: { questionSource?: { key: string } }) =>
+          a.questionSource?.key === 'background',
+      )
+      .map((a: { disposition: string }) => a.disposition),
+  ).toEqual(['none', 'unknown', 'not_applicable', 'skipped'])
   expect(first.exportVersion).toBe('clinical-history/1')
   expect(first.modelGuidance).toBe(guidance)
   expect(first.reviewStatus).toBe('not_clinician_reviewed')
@@ -499,6 +526,7 @@ test('Report-first visit keeps an inspected source through questions, handoff, s
     .getByRole('button', { name: 'Before the sample', exact: true })
     .click()
   await page.getByRole('button', { name: 'Save answer' }).click()
+  await finishBackground(page)
   await reviewAndAssess(page)
   await expect(
     page.getByRole('heading', { name: 'Bladder infection', exact: true }),
@@ -814,9 +842,9 @@ test('Throttled connection retains the draft and retries a committed answer exac
   await expect(
     page.getByRole('alert').filter({ hasText: 'Reconnect, then retry' }),
   ).toBeVisible()
-  await expect(page.locator('.encounter-content textarea')).toHaveValue(
-    'Yesterday',
-  )
+  await expect(
+    page.getByRole('button', { name: 'Yesterday', exact: true }),
+  ).toHaveAttribute('aria-pressed', 'true')
   await page.getByRole('button', { name: 'Save answer' }).click()
   await expect(
     page.getByRole('button', { name: 'After being outdoors', exact: true }),
@@ -1037,4 +1065,59 @@ test('Model guidance is present before JavaScript and remains visible during loa
       .click()
     await guidanceVisible(page, true)
   }
+})
+
+test('Patient adds medicine in their own words, resumes at allergies and flags an emergency without answering it', async ({
+  page,
+}, info) => {
+  const concern =
+    'Synthetic interview about a change ' +
+    info.project.name +
+    ' ' +
+    randomUUID()
+  const medicine = 'I take the fictional blue tablet with breakfast.'
+  await enter(page)
+  await configure(page, 'compatible', 'fixture-ok')
+  await start(page, { concern, age: 42 })
+  await page.getByRole('button', { name: 'Yesterday', exact: true }).click()
+  await page.getByRole('button', { name: 'Save answer' }).click()
+  await page
+    .getByRole('button', { name: 'Add a medicine or supplement' })
+    .click()
+  const input = page.getByRole('textbox', { name: 'Your answer', exact: true })
+  await expect(input).toBeFocused()
+  await input.fill(medicine)
+  await page.getByRole('button', { name: 'Save answer' }).click()
+  const allergy = page.getByRole('heading', {
+    name: 'What allergies do you know you have?',
+  })
+  await expect(allergy).toBeVisible()
+  await page.getByRole('button', { name: 'Pause and return' }).click()
+  await page.reload()
+  await page.getByRole('button', { name: new RegExp(concern) }).click()
+  await expect(allergy).toBeVisible()
+  await page
+    .getByLabel('I may be having a medical emergency right now.')
+    .check()
+  await page.getByRole('button', { name: 'Save emergency warning' }).click()
+  await expect(
+    page.getByRole('heading', { name: 'Routine questions are paused' }),
+  ).toBeVisible()
+  const exported = await grabReport(page)
+  expect(exported.answers).toContainEqual(
+    expect.objectContaining({
+      text: medicine,
+      disposition: 'provided',
+      active: true,
+    }),
+  )
+  expect(
+    exported.answers.some((a: { question: string }) =>
+      a.question.includes('What allergies'),
+    ),
+  ).toBe(false)
+  expect(exported.warnings.some((w: { active: boolean }) => w.active)).toBe(
+    true,
+  )
+  await remove(page)
 })

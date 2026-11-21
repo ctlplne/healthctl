@@ -27,6 +27,16 @@ import { EvidenceLookup } from './evidence'
 import { AfterVisit, Revisions, Interop, BriefBody, Appendix } from './handoff'
 import type { Brief } from './handoff'
 
+const responseOptions = [
+  { label: 'Not sure', text: 'Not sure' },
+  { label: 'Not applicable', text: 'Not applicable' },
+  { label: 'Skip this question', text: 'I prefer not to answer.' },
+]
+const isStandardOption = (s: string) =>
+  /^(?:i(?:’m|'m| am)? )?(?:not sure|unsure|do(?:n['’]t| not) know|not applicable(?: to me)?|n\/?a|prefer not to answer|skip(?: this question)?)[.!]?$/i.test(
+    s.trim(),
+  )
+
 type Tab =
   'interview' | 'history' | 'estimate' | 'report' | 'sources' | 'followup'
 const defaultTab = (e: Encounter): Tab =>
@@ -72,6 +82,7 @@ export function EncounterPage({
         : defaultTab(e),
     ),
     [answer, setAnswer] = useState(''),
+    [answerMode, setAnswerMode] = useState<'choice' | 'text'>(),
     [urgentNow, setUrgentNow] = useState(false),
     [deleting, setDeleting] = useState(false),
     [moving, setMoving] = useState(false),
@@ -100,6 +111,16 @@ export function EncounterPage({
     }
   }
   const textarea = useRef<HTMLTextAreaElement>(null)
+  const choices = [...new Set(e.choices || [])].filter(
+    (c) => !isStandardOption(c),
+  )
+  const background = e.questionSource?.key === 'background' && !!e.question
+  const ownWords = answerMode === 'text'
+  const writeAnswer =
+    ownWords || (!answerMode && !choices.length && !background)
+  useEffect(() => {
+    if (ownWords) textarea.current?.focus()
+  }, [ownWords])
   const activeWarnings = e.warnings.filter((w) => w.active)
   const latest = e.assessments.at(-1),
     current = latest?.historyRevision === e.historyRevision ? latest : undefined
@@ -113,6 +134,11 @@ export function EncounterPage({
   const act = async (cmd: Fields): Promise<boolean> => {
     const next = await onAction(cmd)
     if (!next) return false
+    if (next.question !== e.question) {
+      setAnswer('')
+      setAnswerMode(undefined)
+      setUrgentNow(false)
+    }
     if (cmd.action === 'change_provider') {
       setMoving(false)
       setConsent(false)
@@ -122,15 +148,16 @@ export function EncounterPage({
   }
   const addAnswer = async (text: string) => {
     const value = text.trim()
-    if (!value) return
+    if (!value && !urgentNow) return
     if (
       await act({
-        action: 'answer',
+        action: value ? 'answer' : 'report_emergency',
         text: value,
         ...(urgentNow ? { urgentNow: true } : {}),
       })
     ) {
       setAnswer('')
+      setAnswerMode(undefined)
       setUrgentNow(false)
     }
   }
@@ -296,7 +323,11 @@ export function EncounterPage({
                 {e.provider.kind === 'chatgpt' && <PlanUsage />}
                 <div className="topic-mark">
                   <MessageSquareText size={19} />{' '}
-                  {e.question ? 'Interview question' : 'Interview'}
+                  {background
+                    ? 'Health background'
+                    : e.question
+                      ? 'Interview question'
+                      : 'Interview'}
                 </div>
                 {e.state === 'interrupted_for_safety' ? (
                   <>
@@ -363,56 +394,82 @@ export function EncounterPage({
                         void addAnswer(answer)
                       }}
                     >
-                      {e.choices?.length > 0 && (
-                        <div className="choices" aria-label="Suggested answers">
-                          {e.choices.map((c, i) => (
-                            <button
-                              type="button"
-                              key={i}
-                              className={answer === c ? 'chosen' : ''}
-                              aria-pressed={answer === c}
-                              onClick={() => setAnswer(c)}
-                            >
-                              {c}
-                            </button>
-                          ))}
+                      <div
+                        className="choices"
+                        role="group"
+                        aria-label="Answer options"
+                      >
+                        {choices.map((choice) => (
                           <button
                             type="button"
+                            key={choice}
+                            className={
+                              !ownWords && answer === choice ? 'chosen' : ''
+                            }
+                            aria-pressed={!ownWords && answer === choice}
                             onClick={() => {
-                              setAnswer('')
+                              setAnswerMode('choice')
+                              setAnswer(choice)
+                            }}
+                          >
+                            {choice}
+                          </button>
+                        ))}
+                        {(background || choices.length > 0 || !writeAnswer) && (
+                          <button
+                            type="button"
+                            aria-pressed={ownWords}
+                            className={ownWords ? 'chosen' : ''}
+                            onClick={() => {
+                              if (!ownWords) setAnswer('')
+                              setAnswerMode('text')
                               textarea.current?.focus()
                             }}
                           >
-                            Something else
+                            {e.questionSource?.entryLabel || 'Use my own words'}
                           </button>
-                        </div>
+                        )}
+                      </div>
+                      {writeAnswer && (
+                        <label>
+                          Your answer
+                          <textarea
+                            ref={textarea}
+                            maxLength={4000}
+                            rows={2}
+                            value={answer}
+                            onChange={(ev) => {
+                              setAnswerMode('text')
+                              setAnswer(ev.target.value)
+                            }}
+                            placeholder={
+                              e.questionSource?.answerHint ||
+                              'A short answer in your own words is fine.'
+                            }
+                          />
+                        </label>
                       )}
-                      <label>
-                        Your answer
-                        <textarea
-                          ref={textarea}
-                          required
-                          maxLength={4000}
-                          rows={4}
-                          value={answer}
-                          onChange={(ev) => setAnswer(ev.target.value)}
-                          placeholder="Answer in your own words…"
-                        />
-                      </label>
-                      <div className="skip-options">
-                        <button
-                          type="button"
-                          onClick={() => setAnswer('Not sure')}
-                        >
-                          Not sure
-                        </button>
-                        <span>·</span>
-                        <button
-                          type="button"
-                          onClick={() => setAnswer('I prefer not to answer.')}
-                        >
-                          Prefer not to answer
-                        </button>
+                      <div
+                        className="choices response-options"
+                        role="group"
+                        aria-label="Other ways to answer"
+                      >
+                        {responseOptions.map(({ label, text }) => (
+                          <button
+                            type="button"
+                            key={text}
+                            aria-pressed={!ownWords && answer === text}
+                            className={
+                              !ownWords && answer === text ? 'chosen' : ''
+                            }
+                            onClick={() => {
+                              setAnswer(text)
+                              setAnswerMode('choice')
+                            }}
+                          >
+                            {label}
+                          </button>
+                        ))}
                       </div>
                       <label className="check">
                         <input
@@ -436,9 +493,11 @@ export function EncounterPage({
                       <div className="actions">
                         <button
                           className="primary"
-                          disabled={busy || !answer.trim()}
+                          disabled={busy || (!answer.trim() && !urgentNow)}
                         >
-                          Save answer
+                          {urgentNow && !answer.trim()
+                            ? 'Save emergency warning'
+                            : 'Save answer'}
                         </button>
                         {!e.scopeReason && (
                           <button

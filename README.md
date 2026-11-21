@@ -16,7 +16,7 @@ docker compose up -d --build --wait
 Open [healthctl on this computer](http://127.0.0.1:8437). Create the owner account. The initialization script creates a private `.env` with an installation-specific random database password and data encryption key. Subsequent runs preserve it. The first build needs access to the pinned base images and package registries. After installation, the application and a separately installed local model can operate offline.
 
 1. Open provider settings. Select **Synthetic demo** for the authored example, or configure a model and test its connection.
-2. Start an encounter, review the destination and experimental notice, and provide the requested intake information. For the demo, use the supplied nasal-symptom concern, leave other background blank, then choose **Yesterday** and **After being outdoors** during the interview.
+2. Start an encounter with a short description, answer the age and safety questions, and acknowledge the destination and notice. The interview asks focused follow-ups and checks medicines, allergies, ongoing conditions and operations one at a time. Choose a response or use your own words. For the authored demo, use the supplied concern, choose **Yesterday** and **After being outdoors**, then use the background choices.
 3. Review the history. Compare a finding with the original wording and correct it if needed. Confirm the current summary, then request the estimate. Insufficient histories can be exported and revisited.
 4. Open the report to download JSON or print using the browser's Save as PDF destination. History changes create a new revision. Earlier estimates retain their model and revision.
 5. Use the encounters list to pause and resume. Deletion removes the encounter from this installation's primary storage.
@@ -27,7 +27,7 @@ Open [healthctl on this computer](http://127.0.0.1:8437). Create the owner accou
 
 Choose **Start with a report** in the encounter journal, or open an existing encounter and add a document. The local reader accepts PDF, DOCX, UTF-8 text, pasted text, JPEG and PNG. Scanned pages use English OCR. Confirm whose report it is. Compare each relevant row with its original text or file, check the value, printed units and dates, and review the selected extracts and model destination. A report can be kept on the installation without sending any of its passages to the model.
 
-For a reproducible fictional example select **Synthetic demo**, start with the concern **It burns when I urinate.**, and paste these rows. Confirm your selected report row is about the patient. The authored example uses **Trace** and **Before the sample**. Keep the other opening fields empty except required scope and notice responses.
+For a reproducible fictional example select **Synthetic demo**, start with the concern **It burns when I urinate.**, and paste these rows. Confirm your selected report row is about the patient. The authored example uses **Trace** and **Before the sample**. Use the background choices to finish the fictional visit.
 
 ```text
 Test | Result | Collected

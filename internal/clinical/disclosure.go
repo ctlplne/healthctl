@@ -28,6 +28,9 @@ func allApproved(ids []string, allowed map[string]ReportExtract) bool {
 func (e *Encounter) inputHistory(task string) Input {
 	allowed := e.disclosed()
 	in := Input{ReviewOnly: e.ReviewExtraction, Task: task, Age: e.Age, Concern: e.Concern, Background: e.Background, HistoryRevision: e.HistoryRevision, Answers: []Answer{}, Facts: []Fact{}, ActiveWarnings: []Warning{}, Contradictions: []Contradiction{}, Outstanding: []string{}}
+	for _, topic := range e.remainingBackground() {
+		in.BackgroundQuestions = append(in.BackgroundQuestions, topic.question)
+	}
 	shownAnswers := map[string]bool{}
 	for _, a := range e.Answers {
 		if a.Active && !a.SourceOutdated && allApproved(a.ReviewIDs, allowed) {

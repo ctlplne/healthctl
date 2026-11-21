@@ -46,6 +46,9 @@ export type Outcome = {
   createdAt: string
 }
 export type QuestionsSource = {
+  key?: string
+  entryLabel?: string
+  answerHint?: string
   documentId: string
   rowId: string
   reviewId: string

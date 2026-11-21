@@ -531,7 +531,6 @@ export function IntakeForm({
       reportFirst ? '' : demo ? sampleConcern : '',
     ),
     [age, setAge] = useState(demo ? '35' : ''),
-    [background, setBackground] = useState(''),
     [urgent, setUrgent] = useState(''),
     [pregnancy, setPregnancy] = useState(''),
     [ack, setAck] = useState(false)
@@ -541,7 +540,7 @@ export function IntakeForm({
       onCreate({
         concern: concern.trim(),
         age: Number(age),
-        background: background.trim(),
+        guidedHistory: true,
         pregnancyRelated: pregnancy === 'yes',
         urgentNow: urgent === 'yes',
         noticeVersion: session.noticeVersion,
@@ -577,7 +576,7 @@ export function IntakeForm({
               placeholder={
                 reportFirst
                   ? 'For example, help me understand my routine screening results.'
-                  : 'Describe the main symptom or change in your own words.'
+                  : 'What changed or started bothering you? A short answer is enough to begin.'
               }
             />
           </label>
@@ -592,16 +591,6 @@ export function IntakeForm({
               step={1}
               value={age}
               onChange={(e) => setAge(e.target.value)}
-            />
-          </label>
-          <label>
-            Relevant background <span className="label-note">Optional</span>
-            <textarea
-              rows={3}
-              maxLength={4000}
-              value={background}
-              onChange={(e) => setBackground(e.target.value)}
-              placeholder="For example, medications, allergies, or medical history."
             />
           </label>
           <fieldset>
@@ -646,9 +635,9 @@ export function IntakeForm({
           <BookOpenCheck size={24} />
           <h3>Interview scope</h3>
           <p>
-            This text interview is designed for adults answering in English. You
-            can save an incomplete history for a child or a pregnancy-related
-            concern.
+            Start with what brought you here. We’ll ask one question at a time
+            about your concern and health background. You can choose an answer,
+            use your own words, or skip.
           </p>
           {demo && (
             <>

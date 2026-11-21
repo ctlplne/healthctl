@@ -79,7 +79,7 @@ func RunArm(ctx context.Context, c Case, arm string, model Model, maxTurns int) 
 		r.ElapsedMS = elapsed.Milliseconds()
 	}()
 	r = Result{Case: c.ID, Arm: arm, Model: model.Reference().Model, CheckpointAlerts: map[string]bool{}, Errors: []string{}, MissedTargets: []string{}, Unadjudicated: []string{}, FabricatedFindings: []string{}, StaleAssessments: []string{}, LostWarnings: []string{}, AlertErrors: []string{}, ContradictionErrors: []string{}}
-	intake := clinical.Intake{Age: c.Age, Concern: c.Opening, UrgentNow: c.UrgentScreen, PregnancyRelated: c.PregnancyRelated, NoticeVersion: clinical.NoticeVersion}
+	intake := clinical.Intake{GuidedHistory: arm == "adaptive", Age: c.Age, Concern: c.Opening, UrgentNow: c.UrgentScreen, PregnancyRelated: c.PregnancyRelated, NoticeVersion: clinical.NoticeVersion}
 	e, err := clinical.New("synthetic-encounter", intake, model.Reference(), "")
 	if err != nil {
 		r.Errors = append(r.Errors, err.Error())
