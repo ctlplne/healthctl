@@ -4,6 +4,12 @@ healthctl is a self-hosted tool for taking a medical history before a visit. Sta
 
 The symptom interview is designed for English-speaking adults. After you confirm your history, you can ask the model for possible explanations. It generates an experimental estimate without clinician review. If you may be having a medical emergency, seek local emergency care immediately.
 
+[![Watch Your first encounter, a walkthrough from local setup to a saved clinician brief](docs/media/walkthrough-cover.jpg)](docs/media/healthctl-walkthrough.mp4?raw=true)
+
+**[Watch the first-run walkthrough (1 min 55 sec, narrated MP4 with captions)](docs/media/healthctl-walkthrough.mp4?raw=true)** · [English captions (WebVTT)](docs/media/healthctl-walkthrough.en.vtt) · [Try the demo](#try-the-demo)
+
+Follow a fictional patient from creating the local owner account to reopening a saved visit. See how one approved lab result shapes the interview, what happens to an estimate when the patient corrects their history, and what goes into the exported brief.
+
 ## Install healthctl
 
 There are two self-hosted installation paths. Both use Docker and keep the journal on your computer.
@@ -32,9 +38,24 @@ To stop this installation, run `docker compose stop`. To resume it with your sav
 
 After setup on either installation, the built-in demo runs locally with a fictional patient. It requires no model account, API key or separate inference server.
 
+<details>
+<summary>Follow the report-first case from the video</summary>
+
+1. **Set up the journal (0:00).** Create the owner account. Choose **Configure a provider**, select **Synthetic demo**, then test and save the connection.
+2. **Start the encounter (0:19).** Choose **Start with a report**. For this scripted example, enter “It burns when I urinate.” Set the age to 34, answer **No** to both screening questions, and acknowledge the notice.
+3. **Review the lab result (0:35).** Upload the [fictional lab PDF used in the video](docs/media/fictional-urinalysis.pdf). Select **Mine** and **Read report locally**. Review the leukocyte esterase entry, confirm the printed value **Trace** and collection date **2026-11-18**, then preview and approve the selected extract.
+4. **Answer the interview (0:52).** Choose **Before the sample**. The video also shows how to record no medicines, uncertainty about allergies, a condition question that doesn’t apply, and a skipped surgery question.
+5. **Review and correct the history (1:06).** Confirm the history and request the optional provisional estimate. In **History review**, edit the onset finding to “The burning started the evening before I gave the sample.” Save, confirm again, and request a fresh estimate. In this scripted case, the revised assessment asks for more information.
+6. **Export and reopen (1:32).** Under **Report**, select **Clinician brief** to print or save a PDF. **Download JSON** saves the encounter data. Return to the journal and reopen the visit to find the correction again.
+
+</details>
+
+For a shorter symptom-only example, try the prefilled runny-nose case.
+
 1. In **Model settings**, select **Synthetic demo** and **Save provider**.
-2. Choose **New encounter** and use the prefilled runny-nose example. Answer the intake questions for the fictional adult, then choose **Yesterday** and **After being outdoors** when asked. For follow-ups, you can use your own words, say you’re unsure, or skip.
-3. Review the history alongside the original answers. Choose **Confirm my history**, then **Generate provisional estimate**. Open **Report** to print a visit summary, save it as a PDF, or download the encounter as JSON.
+2. Choose **New encounter** and use the prefilled runny-nose example. Answer the intake questions for the fictional adult, then choose **Yesterday** and **After being outdoors** when asked. For follow-ups, you can use your own words, say you’re unsure, or skip. [See the first interview question](docs/media/interview-question.png)
+3. In **History review**, choose the pencil beside **Runny nose**. Add when it stopped in **Corrected wording**, save the correction, then choose **Confirm my history**. [See a correction alongside the original wording](docs/media/correct-a-finding.png)
+4. Open **Report** and choose **Clinician brief**. Look under **Reported positives** for the wording you just saved. You can print the brief or save it as a PDF. The report also offers a JSON download. For an optional experimental estimate, choose **Generate provisional estimate** after confirming the history. [See the fictional clinician brief](docs/media/clinician-brief.png)
 
 ## Keep track between visits
 
