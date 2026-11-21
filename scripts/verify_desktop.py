@@ -35,21 +35,21 @@ def verify(package, wav_source, resources_only=False):
             subprocess.run(["codesign", "--verify", "--deep", "--strict", app], check=True)
             res = app / "Contents/Resources"
         notices = res / "notices"
-        source = res / "healthctl-source.tar.gz"
+        source_archive = res / "healthctl-source.tar.gz"
         image_packages = {"app": {"poppler-utils", "tesseract-ocr", "whisper.cpp", "ggml-tiny.en-q5_1.bin", "nih-adult-reference", "react"},
                           "db": {"postgresql", "musl"}}
-        for name, required in ({} if source.exists() else image_packages).items():
+        for name, required in ({} if source_archive.exists() else image_packages).items():
             inventory = json.loads((notices / (name + ".spdx.json")).read_bytes())
             components = {p["name"] for p in inventory["packages"]}
             if inventory["spdxVersion"] != "SPDX-2.3" or required - components:
                 raise ValueError(f"Incomplete {name} SBOM: {required - components}")
         if not resources_only:
             native = json.loads((notices / "desktop.spdx.json").read_bytes())
-            if source.exists():
+            if source_archive.exists():
                 packaged = next(p for p in native["packages"] if p["SPDXID"] == "SPDXRef-source")
                 revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
                 if (packaged["versionInfo"] != revision or
-                        packaged["checksums"][0]["checksumValue"] != hashlib.sha256(source.read_bytes()).hexdigest()):
+                        packaged["checksums"][0]["checksumValue"] != hashlib.sha256(source_archive.read_bytes()).hexdigest()):
                     raise ValueError("Packaged source differs from the release under test")
             else:
                 refs = {r["externalDocumentId"]: r["checksum"]["checksumValue"] for r in native["externalDocumentRefs"]}
@@ -67,7 +67,7 @@ def verify(package, wav_source, resources_only=False):
                 capture_output=True,
                 input=data,
                 env=env,
-                timeout=1800 if source.exists() and args[0] == "start" else 190,
+                timeout=1800 if source_archive.exists() and args[0] == "start" else 190,
             )
             if success and proc.returncode:
                 raise RuntimeError(proc.stderr.decode()[-1500:])
