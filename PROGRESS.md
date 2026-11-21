@@ -1,8 +1,10 @@
 # Implementation handoff
 
-The authoritative product brief is PRD.md. The build followed three steps: complete the authenticated patient journey, integrate all adapters and safety/version controls, then rebuild and verify the local deployment.
+The [product brief](PRD.md) defines the original MVP. The current build adds report-guided and return visits, focused interviews, diary and dictation, and a macOS launcher. The November 21, 2026 verification covered 46 browser tests across desktop and mobile, 11 PDF exports, and 23 release and recovery checkpoints. The scripted adaptive interview still missed one positional dizziness finding. [Installation](README.md#install-healthctl) · [Current verification and open checks](docs/combined-verification.md)
 
-The scoped MVP is implemented. The personal installation runs on http://127.0.0.1:8437. QA used a separate synthetic database. The final application binary, frontend assets and shipped license files matched the tested QA runtime byte for byte.
+## Original MVP
+
+The scoped MVP is implemented. The original check used the default Compose loopback address. QA used a separate synthetic database. The final application binary, frontend assets and shipped license files matched the tested QA runtime byte for byte.
 
 All race-enabled software and PostgreSQL integration checks passed. Eight desktop/mobile browser journeys passed. Four printed reports were checked for warnings, review status and pagination. A fresh-volume encrypted backup/restore drill passed, as did the 38-run deterministic synthetic evaluation. The per-case results and reproduction commands are linked in docs/verification.md.
 
@@ -14,7 +16,7 @@ The local build follows the [combined roadmap](docs/iteration-2-3-roadmap.md). I
 
 The initial subscription build passed 90 top-level Go checks with the race detector and 38 desktop/mobile browser journeys. The reminder appeared on all 19 pages of 11 PDF exports. All 23 release-drill checkpoints passed, including upgrade from the retained v1 binary, rollback, offline FHIR validation, backup/restore, rotation and owner recovery. The 84 scripted interviews and six report comparisons retain individual outcomes. The adaptive fixture missed the positional dizziness target in one case. [Verification and PRD section 16 map](docs/combined-verification.md) · [EHR scope and qualification](docs/ehr.md)
 
-The personal and QA runtimes match across the 22 shipped files. The personal app listens at http://127.0.0.1:8437. The combined-release suite used a synthetic provider and portal. Live model and vendor sandbox checks, independent clinical/usability review, and the distribution decisions remain open.
+The personal and QA runtimes match across the 22 shipped files. That run used the default Compose loopback port. The combined-release suite used a synthetic provider and portal. Live model and vendor sandbox checks, independent clinical/usability review, and the distribution decisions remain open.
 
 
 ## Personal subscription inference

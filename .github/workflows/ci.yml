@@ -1,0 +1,70 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  software:
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [backend, browser]
+    name: ${{ matrix.suite }} verification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - run: python3 scripts/init.py
+      - run: python3 scripts/verify.py "${{ matrix.suite }}"
+      - name: Save synthetic browser screenshots on failure
+        if: failure() && matrix.suite == 'browser'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: synthetic-browser-failures
+          path: build/test-results/**/test-failed-*.png
+          if-no-files-found: ignore
+          retention-days: 7
+
+  evaluation:
+    name: Synthetic case regressions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - run: docker build --target evaluator -t healthctl-evaluator .
+      - name: Run the offline benchmark
+        run: docker run --rm --network none --read-only --tmpfs /tmp healthctl-evaluator -release > "$RUNNER_TEMP/scorecard.json"
+      - name: Report individual cases and compare history capture
+        if: '!cancelled()'
+        run: python3 scripts/check_scorecard.py "$RUNNER_TEMP/scorecard.json" | tee -a "$GITHUB_STEP_SUMMARY"
+        shell: bash
+      - name: Save the per-case scorecard
+        if: '!cancelled()'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: synthetic-scorecard
+          path: ${{ runner.temp }}/scorecard.json
+          retention-days: 7
+
+  docs:
+    name: Documentation and study checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - run: python3 scripts/check_docs.py
+      - run: python3 -m unittest discover -s evaluation/study -v
+      - run: python3 -m unittest discover -s tests -p test_scorecard.py -v

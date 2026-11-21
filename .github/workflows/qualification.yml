@@ -1,0 +1,158 @@
+name: Release qualification
+on:
+  schedule:
+    - cron: '23 5 * * 1'
+  workflow_dispatch:
+  workflow_call:
+permissions:
+  contents: read
+
+jobs:
+  restore:
+    name: Fresh installation and encrypted restore
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - run: python3 scripts/verify_restore.py
+
+  upgrade:
+    name: Upgrade, rollback and FHIR validation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Build the first public version
+        run: git archive 32b51041b394b24ac95eb336e4c6b45d59f9ec0d | docker build -t healthctl:baseline-32b5104 -
+        shell: bash
+      - name: Prepare validators and print runner
+        run: |
+          docker build -f tests/fhir/Dockerfile -t clinical-history:r4-validator .
+          docker build -f tests/fhir/profile.Dockerfile -t clinical-history:r4-profiles .
+          docker build -f tests/browser.Dockerfile -t clinical-history-qa-browser-tests .
+      - run: python3 scripts/verify_release.py --baseline-image healthctl:baseline-32b5104 --profile-validator --study-pair
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-drill
+          path: build/release-drill.json
+          retention-days: 7
+
+  accessibility:
+    name: Screen-reader journey
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - run: python3 scripts/init.py
+      - run: python3 scripts/verify.py browser
+      - name: Run Orca against the synthetic journal
+        run: |
+          docker build --file web/e2e/orca.Dockerfile -t healthctl-orca web/e2e
+          docker run --rm -i --network container:clinical-history-qa-app-1 --shm-size=512m healthctl-orca < .secrets/qa-owner
+
+  images:
+    name: Test installable images (${{ matrix.arch }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {arch: amd64, runner: ubuntu-24.04}
+          - {arch: arm64, runner: ubuntu-24.04-arm}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: Build and exercise the exact image bundle
+        env:
+          ARCH: ${{ matrix.arch }}
+        run: |
+          ./scripts/bundle-desktop-images.sh build/resources
+          cp desktop/manage.sh desktop/desktop.yaml compose.yaml build/resources/
+          go build -o build/resources/archive ./cmd/healthctl-archive
+          read -r app db < build/resources/images.txt
+          test "$(docker image inspect --format '{{.Architecture}}' "$app")" = "$ARCH"
+          test "$(docker image inspect --format '{{.Architecture}}' "$db")" = "$ARCH"
+          docker image rm "$app" "$db"
+          curl -fsSL --retry 3 https://raw.githubusercontent.com/ggml-org/whisper.cpp/v1.9.5/samples/jfk.wav -o "$RUNNER_TEMP/jfk.wav"
+          python3 scripts/verify_desktop.py --resources-only build/resources "$RUNNER_TEMP/jfk.wav"
+      - name: Hand the tested Arm images to macOS
+        if: matrix.arch == 'arm64'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: desktop-image-bundle
+          path: |
+            build/resources/images.tar.gz
+            build/resources/images.txt
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+      - name: Export the tested application image for the release
+        if: github.ref_type == 'tag'
+        env:
+          ARCH: ${{ matrix.arch }}
+        run: |
+          read -r app _ < build/resources/images.txt
+          docker tag "$app" "healthctl-release:$GITHUB_SHA-$ARCH"
+          docker save "healthctl-release:$GITHUB_SHA-$ARCH" | gzip -1 > "build/healthctl-linux-$ARCH.tar.gz"
+        shell: bash
+      - if: github.ref_type == 'tag'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: linux-${{ matrix.arch }}
+          path: build/healthctl-linux-*.tar.gz
+          if-no-files-found: error
+          retention-days: 3
+          compression-level: 0
+
+  desktop:
+    name: Package and verify Apple silicon DMG
+    needs: images
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: go.mod
+          cache: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: desktop-image-bundle
+          path: build/verified-images
+      - name: Build, mount and verify the launcher and bundled images
+        env:
+          HEALTHCTL_DESKTOP_IMAGES: build/verified-images
+        run: |
+          test "$(uname -m)" = arm64
+          ./scripts/build-desktop.sh
+          mount="$RUNNER_TEMP/healthctl-mount"
+          mkdir "$mount"
+          hdiutil attach -readonly -nobrowse -mountpoint "$mount" build/desktop/healthctl-arm64.dmg
+          trap 'hdiutil detach "$mount"' EXIT
+          app="$mount/healthctl.app"
+          codesign --verify --deep --strict "$app"
+          cmp build/verified-images/images.txt "$app/Contents/Resources/images.txt"
+          cmp build/verified-images/images.tar.gz "$app/Contents/Resources/images.tar.gz"
+          cmp desktop/manage.sh "$app/Contents/Resources/manage.sh"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: macos-arm64-adhoc
+          path: build/desktop/healthctl-arm64.dmg
+          if-no-files-found: error
+          retention-days: 3
+          compression-level: 0

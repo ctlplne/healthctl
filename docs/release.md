@@ -18,7 +18,7 @@ healthctl uses `BUSL-1.1` with a four-year conversion to `MPL-2.0`. The conversi
 | Change Date | The fourth anniversary of the first public distribution of this version. Record both calendar dates in its release notice. |
 | Change License | Mozilla Public License 2.0 (`MPL-2.0`), with the standard secondary-license compatibility provisions. |
 
-Resolve release parameters, ownership, third-party dependency notices, and commercial terms before public distribution. Complete a model/provider retention and data-processing review against the operator's intended use and region. Medical notices are separate from the software license.
+The source repository is public. The rights holder still needs to finalize the release parameters, ownership notice, and commercial terms and review the dependency notices for packaged distribution. Complete a model/provider retention and data-processing review against the operator's intended use and region. Medical notices are separate from the software license.
 
 
 ## ChatGPT subscription qualification

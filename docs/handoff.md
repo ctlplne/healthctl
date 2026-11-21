@@ -1,6 +1,6 @@
 # Visit briefs and local integrations
 
-Open **Report** to preview the clinician brief, full appendix, or a structured export. The authenticated owner can preview incomplete histories, including active urgent warnings. Patient-confirmed history, document findings, AI hypotheses and visit outcomes have separate fields. The full appendix contains more personal information, including draft and older source material. Review the chosen export before manually sharing a downloaded copy.
+Open **Report** to preview the clinician brief, full appendix, or a structured export. The authenticated owner can preview incomplete histories, including active urgent warnings. Patient-confirmed history, document findings, AI hypotheses and visit outcomes have separate fields. The clinician brief also carries the patient’s main question and reviewed visit-preparation details. Witness observations keep their attribution. The full appendix contains more personal information, including draft and older source material. Review the chosen export before manually sharing a downloaded copy.
 
 ## Local read-only API
 
@@ -14,7 +14,7 @@ Use the report's access panel to grant access to the current confirmed encounter
 python3 scripts/read_brief.py --base http://127.0.0.1:8437
 ```
 
-The consumer privately prompts for its token and writes the authorized JSON to standard output. Its single network operation is `GET /api/integration/brief` with `Authorization: Bearer <token>`. Tokens in URLs are unsupported. The consumer accepts loopback origins and disables redirects and proxies. The token grants no access to uploads, timelines, other encounters, writing, or patient sign-in. Owner routes use an authenticated session and CSRF protection for mutations.
+Use the address shown by your launcher or your configured Compose port for `--base`. The consumer privately prompts for its token and writes the authorized JSON to standard output. Its single network operation is `GET /api/integration/brief` with `Authorization: Bearer <token>`. Tokens in URLs are unsupported. The consumer accepts loopback origins and disables redirects and proxies. The token grants no access to uploads, timelines, other encounters, writing, or patient sign-in. Owner routes use an authenticated session and CSRF protection for mutations.
 
 | Owner endpoint | Operation |
 |---|---|

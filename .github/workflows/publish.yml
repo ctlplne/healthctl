@@ -1,0 +1,56 @@
+name: Publish release images
+on:
+  release:
+    types: [published]
+permissions:
+  contents: read
+concurrency:
+  group: publish-${{ github.event.release.tag_name }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Promote attested archives to GHCR
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      TAG: ${{ github.event.release.tag_name }}
+      IMAGE: ghcr.io/${{ github.repository }}
+    steps:
+      - name: Verify both published assets before registry promotion
+        run: |
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          for arch in amd64 arm64; do
+            archive="healthctl-linux-$arch.tar.gz"
+            gh release download "$TAG" --pattern "$archive"
+            gh attestation verify "$archive" --repo "$GH_REPO" \
+              --signer-workflow "$GH_REPO/.github/workflows/release.yml" \
+              --source-ref "refs/tags/$TAG" --source-digest "$GITHUB_SHA"
+            docker load --input "$archive"
+            test "$(docker image inspect --format '{{.Architecture}}' "healthctl-release:$GITHUB_SHA-$arch")" = "$arch"
+          done
+      - name: Publish the multi-architecture version
+        id: manifest
+        run: |
+          echo "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          for arch in amd64 arm64; do
+            docker tag "healthctl-release:$GITHUB_SHA-$arch" "$IMAGE:$GITHUB_SHA-$arch"
+            docker push "$IMAGE:$GITHUB_SHA-$arch"
+          done
+          docker buildx imagetools create --metadata-file manifest.json --tag "$IMAGE:$TAG" \
+            "$IMAGE:$GITHUB_SHA-amd64" "$IMAGE:$GITHUB_SHA-arm64"
+          digest="$(jq -er '.["containerimage.descriptor"].digest' manifest.json)"
+          echo "digest=$digest" >> "$GITHUB_OUTPUT"
+      - uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
+        with:
+          subject-name: ${{ env.IMAGE }}
+          subject-digest: ${{ steps.manifest.outputs.digest }}
+          push-to-registry: true
+          create-storage-record: false

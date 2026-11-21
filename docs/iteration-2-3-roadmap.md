@@ -1,6 +1,6 @@
 # healthctl · combined iteration 2 and 3
 
-Proposed scope for one local release, prepared 21 November 2026. The original [PRD, sections 1–16](../PRD.md) remains the baseline. The first release's [verification report](verification.md) and [model evaluation](../evaluation/README.md) distinguish shipped behavior from open checks.
+Proposed scope for one local release, prepared 21 November 2026. The original [PRD, sections 1–16](../PRD.md) remains the baseline. For delivered features and open checks, see the [combined verification report](combined-verification.md) and [model evaluation](../evaluation/README.md).
 
 ## Product and first users
 

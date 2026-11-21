@@ -13,14 +13,11 @@ cp desktop/Info.plist "$app/Contents/Info.plist"
 cp compose.yaml desktop/desktop.yaml desktop/manage.sh LICENSE "$res/"
 swiftc -O -module-cache-path "$dest/swift-cache" desktop/Launcher.swift -o "$bin/healthctl"
 go build -trimpath -ldflags="-s -w" -o "$res/archive" ./cmd/healthctl-archive
-docker build --iidfile "$temp/image-id" -t healthctl:desktop-build .
-appimage="healthctl-local/app:$(cut -c8-23 "$temp/image-id")"
-dbref="$(awk '/image: postgres:/{print $2;exit}' compose.yaml)"
-docker image inspect "$dbref" >/dev/null 2>&1 || docker pull "$dbref"
-dbimage="healthctl-local/db:${dbref#*@sha256:}"; dbimage="${dbimage:0:35}"
-docker tag healthctl:desktop-build "$appimage"; docker tag "$dbref" "$dbimage"
-printf '%s %s\n' "$appimage" "$dbimage" > "$res/images.txt"
-docker save "$appimage" "$dbimage" | gzip -1 > "$res/images.tar.gz"
+if [[ -n "${HEALTHCTL_DESKTOP_IMAGES:-}" ]]; then
+  cp "$HEALTHCTL_DESKTOP_IMAGES/images.txt" "$HEALTHCTL_DESKTOP_IMAGES/images.tar.gz" "$res/"
+else
+  ./scripts/bundle-desktop-images.sh "$res"
+fi
 identity="${HEALTHCTL_SIGN_IDENTITY:--}"
 sign=(--force --sign "$identity")
 if [[ "$identity" != - ]]; then sign+=(--timestamp --options runtime); fi

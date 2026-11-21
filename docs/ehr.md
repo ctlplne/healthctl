@@ -28,7 +28,7 @@ If Docker runs on a laptop, the backend requests originate from that laptop's Do
 
 ## Configure a registered portal
 
-Obtain a public-client registration for standalone patient access. Register the exact local callback with the portal. Use an accepted HTTPS callback or a loopback redirect explicitly supported by that registration. For a reverse proxy, configure the installation's existing `CLINICAL_PUBLIC_ORIGIN` and secure cookie settings. Copy the following settings to the installation's private `.env`. The example hosts and client ID are placeholders.
+Obtain a public-client registration for standalone patient access. Register the exact local callback with the portal. Use an accepted HTTPS callback or a loopback redirect explicitly supported by that registration. For a reverse proxy, configure the installation's existing `CLINICAL_PUBLIC_ORIGIN` and secure cookie settings. For a Compose installation, copy the following settings to its private `.env`. Replace the example hosts and client ID with your registration details and match the callback port to your installation.
 
 ```dotenv
 CLINICAL_EHR_NAME=My hospital

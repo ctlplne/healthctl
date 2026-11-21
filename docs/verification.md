@@ -1,6 +1,8 @@
-# Verification and section 16 delivery
+# Original MVP verification and section 16 delivery
 
-Verified locally on 21 November 2026 with fictional records. No patient history or application was published. PostgreSQL and the rebuilt Go/React application ran in Docker Compose. The browser suite used an isolated QA installation, including a separately labeled synthetic API double and the application’s own demo workflows. The personal installation remains ready for its owner to register.
+This is the original milestone record. For the current installation commands, expanded test suites, and remaining release checks, see the [combined verification report](combined-verification.md).
+
+Verified locally on 21 November 2026 with fictional records. No patient history or application was published. PostgreSQL and the rebuilt Go/React application ran in Docker Compose. The browser suite used an isolated QA installation, including a separately labeled synthetic API double and the application’s own demo workflows. Fresh installations prompted their owner to register.
 
 ## Reproduce
 
@@ -12,7 +14,7 @@ docker compose up -d --build --wait
 python3 scripts/verify.py
 python3 scripts/verify_restore.py
 go run ./cmd/evaluate -out /tmp/clinical-history-evaluation.json
-go vet ./...
+go vet ./cmd/... ./internal/... ./evaluation/...
 ```
 
 The verification script builds the Go runner with the race detector, runs it against PostgreSQL, rebuilds the QA app and synthetic compatible API, and runs Playwright on desktop and mobile. The two suites can also be run separately with `python3 scripts/verify.py backend` and `python3 scripts/verify.py browser`. The browser suite generates its own QA owner password in `.secrets/qa-owner` and uses loopback port 18437. Specify `CLINICAL_QA_PORT` if the port is in use. Test screenshots and PDFs are local, ephemeral artifacts in `build/test-results`.

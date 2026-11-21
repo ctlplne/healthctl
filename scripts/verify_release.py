@@ -29,7 +29,7 @@ def same(left, right, message):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--v1-image", default="clinical-history:verification-v1")
+    parser.add_argument("--v1-image", "--baseline-image", dest="baseline_image", default="clinical-history:verification-v1")
     parser.add_argument("--out", type=Path, default=ROOT / "build/release-drill.json")
     parser.add_argument(
         "--profile-validator",
@@ -67,7 +67,7 @@ def main():
         config.chmod(0o600)
         v1 = workspace / "v1.yaml"
         v1.write_text(
-            "services:\n  app:\n    image: " + json.dumps(args.v1_image) + "\n"
+            "services:\n  app:\n    image: " + json.dumps(args.baseline_image) + "\n"
         )
         env = dict(
             os.environ,
@@ -191,7 +191,7 @@ def main():
                 }
                 (pair / "case.json").write_text(json.dumps(manifest, indent=2) + "\n")
                 passed(
-                    "Matched handouts printed by v1 and the combined UI for the same synthetic visit"
+                    "Matched handouts printed by the baseline and the combined UI for the same synthetic visit"
                 )
 
         def act(c, e, action, **fields):
@@ -254,7 +254,7 @@ def main():
 
         try:
             subprocess.run(
-                ["docker", "image", "inspect", args.v1_image],
+                ["docker", "image", "inspect", args.baseline_image],
                 check=True,
                 stdout=subprocess.DEVNULL,
             )
@@ -273,7 +273,7 @@ def main():
             vpath = "/encounters/" + v["id"]
             old = c.call(vpath + "/export")
             assert old["assessments"][0]["items"]
-            passed("Actual v1 fixture installed, completed, assessed and exported")
+            passed("Baseline fixture installed, completed, assessed and exported")
             if args.study_pair:
                 print_handout(False)
             snapshot = workspace / "pre-upgrade.dump"
@@ -308,10 +308,10 @@ def main():
                 "notice",
                 "reviewStatus",
             ):
-                same(old[field], upgraded[field], "v1 migration changed " + field)
+                same(old[field], upgraded[field], "migration changed " + field)
             same(upgraded["modelGuidance"], MODEL_GUIDANCE, "old encounter export lost current model guidance")
             passed(
-                "Upgrade preserved the v1 owner, active session, evidence, warning state and historical assessment"
+                "Upgrade preserved the baseline owner, active session, evidence, warning state and historical assessment"
             )
             if args.study_pair:
                 print_handout(True)
@@ -343,7 +343,7 @@ def main():
                 "rollback report changed",
             )
             passed(
-                "Application rollback restored the pre-upgrade snapshot under the actual v1 binary and reproduced the original export"
+                "Application rollback restored the pre-upgrade snapshot under the baseline binary and reproduced the original export"
             )
             assert c.call("/region")["emergency"] == ""
             env.update(CLINICAL_LOCALE="en-US", CLINICAL_UNITS="us-customary")
@@ -573,7 +573,7 @@ def main():
             passed(
                 "Printed critical flag interrupted questioning and remained in JSON, brief and FHIR alongside a deliberately requested differential"
             )
-            passed("Model recommendation retained on the upgraded v1 export, scoped read-only brief and all urgent handoff formats")
+            passed("Model recommendation retained on the upgraded historical export, scoped read-only brief and all urgent handoff formats")
             e = act(
                 c,
                 e,
@@ -761,7 +761,7 @@ def main():
             args.out.parent.mkdir(parents=True, exist_ok=True)
             args.out.write_text(
                 json.dumps(
-                    {"synthetic": True, "passed": results, "v1Image": args.v1_image},
+                    {"synthetic": True, "passed": results, "baselineImage": args.baseline_image, **({"v1Image": args.baseline_image} if args.baseline_image == "clinical-history:verification-v1" else {})},
                     indent=2,
                 )
                 + "\n"

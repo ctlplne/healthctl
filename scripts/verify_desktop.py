@@ -1,12 +1,13 @@
 """Exercise the built macOS image and a disposable signed launcher workspace."""
 
+import argparse
+from contextlib import ExitStack
 import io
 import json
 import os
 from pathlib import Path
 import secrets
 import subprocess
-import sys
 import tempfile
 import wave
 from urllib.request import Request
@@ -15,27 +16,23 @@ from verify_restore import Client, demo
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def verify(image, wav_source):
-    with tempfile.TemporaryDirectory() as temp:
+def verify(package, wav_source, resources_only=False):
+    with tempfile.TemporaryDirectory() as temp, ExitStack() as mounts:
         work = Path(temp)
-        mount = work / "mounted"
-        mount.mkdir()
         state = work / "workspace"
-        subprocess.run(
-            [
-                "hdiutil",
-                "attach",
-                "-readonly",
-                "-nobrowse",
-                "-mountpoint",
-                str(mount),
-                str(image),
-            ],
-            check=True,
-            stdout=subprocess.DEVNULL,
-        )
-        app = mount / "healthctl.app"
-        res = app / "Contents/Resources"
+        if resources_only:
+            res = package
+        else:
+            mount = work / "mounted"
+            mount.mkdir()
+            subprocess.run(
+                ["hdiutil", "attach", "-readonly", "-nobrowse", "-mountpoint", str(mount), str(package)],
+                check=True, stdout=subprocess.DEVNULL,
+            )
+            mounts.callback(subprocess.run, ["hdiutil", "detach", str(mount)], check=True, stdout=subprocess.DEVNULL)
+            app = mount / "healthctl.app"
+            subprocess.run(["codesign", "--verify", "--deep", "--strict", app], check=True)
+            res = app / "Contents/Resources"
         env = dict(os.environ, HEALTHCTL_DESKTOP_STATE=str(state))
         password = secrets.token_urlsafe(26).encode() + b"\n"
 
@@ -53,9 +50,6 @@ def verify(image, wav_source):
             return proc.stdout.decode().strip()
 
         try:
-            subprocess.run(
-                ["codesign", "--verify", "--deep", "--strict", app], check=True
-            )
             original = manage("start")
             port = original.rstrip("/").rsplit(":", 1)[1]
             client = Client(port)
@@ -156,7 +150,7 @@ def verify(image, wav_source):
                 record.pop("exportedAt")
             assert report == recovered
             print(
-                "Verified app signature, bundled startup, real offline speech, encrypted backup, wrong-passphrase recovery, restored diary and demo assessment equality, platform key configuration and fresh login."
+                "Verified bundled startup, real offline speech, encrypted backup, wrong-passphrase recovery, restored diary and demo assessment equality, platform key configuration and fresh login."
             )
         finally:
             for folder in state.glob("healthctl-desktop-*"):
@@ -182,14 +176,12 @@ def verify(image, wav_source):
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,
                 )
-            subprocess.run(
-                ["hdiutil", "detach", str(mount)], check=True, stdout=subprocess.DEVNULL
-            )
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        raise SystemExit(
-            "Usage: python3 scripts/verify_desktop.py healthctl.dmg path/to/whisper.cpp/samples/jfk.wav"
-        )
-    verify(Path(sys.argv[1]).resolve(), Path(sys.argv[2]).resolve())
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("package", type=Path, help="macOS disk image or staged resources directory")
+    parser.add_argument("recording", type=Path)
+    parser.add_argument("--resources-only", action="store_true", help="Exercise bundled services on a native Linux runner")
+    args = parser.parse_args()
+    verify(args.package.resolve(), args.recording.resolve(), args.resources_only)
