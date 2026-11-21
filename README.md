@@ -1,72 +1,48 @@
 # healthctl
 
-A [ctlplne](https://github.com/ctlplne) project maintained solely by [@imfeelingtheagi](https://github.com/imfeelingtheagi).
+healthctl is a self-hosted tool for taking a medical history before a visit. Start with a symptom in your own words or bring a lab report. The interview asks one question at a time. You can see the words or report entries behind a finding, correct what was misunderstood, and take a concise history to your clinician.
 
-A personal, self-hosted application for an adaptive symptom interview, a patient-correctable history, and an experimental, patient-visible provisional differential. Patients can begin with a medical report, review the extracted passages, and choose which entries inform the interview. The workspace includes a personal timeline, local evidence lookup, a visit brief and post-visit outcomes. It supports English-language adult encounters. All estimates are AI-generated and unreviewed by a healthcare professional. The synthetic demo uses a fictional scripted case.
+The symptom interview is designed for English-speaking adults. After you confirm your history, you can ask the model for possible explanations. It generates an experimental estimate without clinician review. If you may be having a medical emergency, seek local emergency care immediately.
 
-## Start a local installation
+## Try the demo
 
-From this repository, with Python 3 and Docker Compose v2 installed, run:
+The built-in demo uses a fictional patient and runs on your computer without a model download or API key. Install Git, Python 3, and Docker with Compose v2, then run the following commands.
 
 ```sh
+git clone https://github.com/ctlplne/healthctl.git
+cd healthctl
 python3 scripts/init.py
 docker compose up -d --build --wait
 ```
 
-Open [healthctl on this computer](http://127.0.0.1:8437). Create the owner account. The initialization script creates a private `.env` with an installation-specific random database password and data encryption key. Subsequent runs preserve it. The first build needs access to the pinned base images and package registries. After installation, the application and a separately installed local model can operate offline.
+Open [healthctl on your computer](http://127.0.0.1:8437) and create the local owner account. The app listens on loopback by default. The setup script generates a private `.env` containing the installation’s database password and encryption key. Keep a secure backup. [Backup and recovery](docs/operations.md)
 
-1. Open provider settings. Select **Synthetic demo** for the authored example, or configure a model and test its connection.
-2. Start an encounter with a short description, answer the age and safety questions, and acknowledge the destination and notice. The interview asks focused follow-ups and checks medicines, allergies, ongoing conditions and operations one at a time. Choose a response or use your own words. For the authored demo, use the supplied concern, choose **Yesterday** and **After being outdoors**, then use the background choices.
-3. Review the history. Compare a finding with the original wording and correct it if needed. Confirm the current summary, then request the estimate. Insufficient histories can be exported and revisited.
-4. Open the report to download JSON or print using the browser's Save as PDF destination. History changes create a new revision. Earlier estimates retain their model and revision.
-5. Use the encounters list to pause and resume. Deletion removes the encounter from this installation's primary storage.
+1. In **Model settings**, select **Synthetic demo** and **Save provider**.
+2. Choose **New encounter** and use the prefilled runny-nose example. Answer the intake questions for the fictional adult, then choose **Yesterday** and **After being outdoors** when asked. For follow-ups, you can use your own words, say you’re unsure, or skip.
+3. Review the history alongside the original answers. Choose **Confirm my history**, then **Generate provisional estimate**. Open **Report** to print a visit summary, save it as a PDF, or download the encounter as JSON.
 
-`docker compose stop` stops the application and database. `docker compose up -d` restarts them with existing data. A fresh installation is unclaimed until the first owner is registered. Complete setup from the host before enabling a reverse proxy.
+To stop the installation, run `docker compose stop`. To resume it with your saved encounters, run `docker compose up -d`.
 
-## Start from a medical report
+## Bring your records
 
-Choose **Start with a report** in the encounter journal, or open an existing encounter and add a document. The local reader accepts PDF, DOCX, UTF-8 text, pasted text, JPEG and PNG. Scanned pages use English OCR. Confirm whose report it is. Compare each relevant row with its original text or file, check the value, printed units and dates, and review the selected extracts and model destination. A report can be kept on the installation without sending any of its passages to the model.
+Choose **Start with a report** to add a PDF, Word document (.docx), image (JPEG or PNG), or plain text. healthctl extracts text locally, including English OCR for scans. Check dates, values, and units against the original, then choose which entries the model can use. For example, when a urine report includes a collection date, the interview can ask whether symptoms began before or after the sample.
 
-For a reproducible fictional example select **Synthetic demo**, start with the concern **It burns when I urinate.**, and paste these rows. Confirm your selected report row is about the patient. The authored example uses **Trace** and **Before the sample**. Use the background choices to finish the fictional visit.
+You can revisit encounters on a timeline, record what happened after a visit, and export a clinician brief or a FHIR R4 document. A configured SMART on FHIR portal can also import lab results you select. [Visit briefs and exports](docs/handoff.md) · [Patient portal setup](docs/ehr.md)
 
-```text
-Test | Result | Collected
-Leukocyte esterase | Trace | 2026-10-09
-```
+## Models and privacy
 
-The full appendix contains the original history and revisions. The clinician brief and FHIR document use the current handoff. The optional local brief consumer requires a revocable token for the specific confirmed record. [Report formats and local integration](docs/handoff.md) · [Combined release verification](docs/combined-verification.md)
+Your installation stores the encounter and original uploads. You choose where inference runs.
 
-An optional SMART on FHIR patient portal connector brings selected laboratory results into the same source review. The patient authorizes a direct read from a registered hospital and decides which rows enter the encounter. [EHR research, setup and data flows](docs/ehr.md)
+| Model connection | What you need |
+| --- | --- |
+| Local or remote OpenAI-compatible server | A model ID and an endpoint you explicitly allow in `.env` |
+| OpenAI or Anthropic API | A server-side API key and a supported model ID |
+| ChatGPT plan | An eligible ChatGPT account linked from **Model settings** on a personal loopback installation |
 
-## Model setup
+Use the best model you have access to and select its highest available reasoning effort. A cloud connection sends relevant history and approved report extracts directly from your installation to the selected provider. Moving an existing encounter to another provider or endpoint requires your confirmation. [Model setup](docs/model-providers.md) · [Architecture and data boundaries](docs/architecture.md)
 
-Use the best model you have access to and select its highest available reasoning effort. Select the model in the app and configure the effort level where your provider supports it. The persistent reminder also appears in patient and clinician reports.
+## Project and license
 
-An eligible ChatGPT account can fund model requests on a personal installation. In **Model settings**, select **ChatGPT plan**, allow plan use, and choose **Continue with ChatGPT**. After returning, select a model from the account’s catalog, choose **Test connection**, then **Save provider**. OpenAI applies the selected account’s limits and credit settings. Claude uses an Anthropic API credential. [Subscription setup and privacy](docs/model-providers.md#use-a-chatgpt-subscription)
+healthctl is a [ctlplne](https://github.com/ctlplne) project maintained by [@imfeelingtheagi](https://github.com/imfeelingtheagi). For clinical scope and limitations, see the [intended use notes](docs/release.md). The [evaluation guide](evaluation/README.md) explains how the synthetic cases test history capture and safety warnings.
 
-The **OpenAI-compatible endpoint** option connects to the operator’s explicitly allowlisted base URL. Use the model ID your server accepts. For a remote API, set the following values in the private `.env` file and recreate the app. This example uses a placeholder hostname.
-
-```dotenv
-CLINICAL_ALLOWED_ENDPOINTS=https://model.example/v1
-BYOM_KEY_ENDPOINT=https://model.example/v1
-BYOM_API_KEY=
-```
-
-```sh
-docker compose up -d --force-recreate app
-```
-
-Use the same base URL in Settings. For OpenAI or Anthropic, set the appropriate server-side key in `.env`, recreate the app, select the provider, and enter an explicitly supported model ID. For local inference, choose the compatible adapter and configure a reachable LAN or Docker network address. Inside the app container, `localhost` points to the app container. Docker Desktop supports `host.docker.internal` for a host-side service; Linux operators can supply an explicit private address or a host-gateway mapping.
-
-The server sends relevant reported evidence to the chosen model. External providers have their own data handling and retention practices. The demo runs in process. The application never requires a developer service. Read the adapter protocol, disclosure and live verification details in [Model providers](docs/model-providers.md).
-
-## Operation and verification
-
-- [Architecture and data boundaries](docs/architecture.md)
-- [Installation security, backup and restore](docs/operations.md)
-- [Reproducing checks and section 16 delivery evidence](docs/verification.md)
-- [Clinical scope, limitations and release decisions](docs/release.md)
-- [Unvalidated development safety policy and sources](internal/clinical/POLICY.md)
-- [Authoritative requirements](PRD.md)
-
-Each version of healthctl is source-available under the Business Source License 1.1 (`BUSL-1.1`) and converts to the Mozilla Public License 2.0 (`MPL-2.0`) on the fourth anniversary of that version’s first public distribution. [License text](LICENSE) · [Release parameters](docs/release.md#source-available-license)
+healthctl is source-available under the Business Source License 1.1. Each version converts to the Mozilla Public License 2.0 four years after its first public distribution. The licensor and any additional production-use grant are pending. [License](LICENSE) · [Release parameters](docs/release.md#source-available-license)
