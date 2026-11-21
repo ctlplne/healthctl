@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
-	"mime"
 	"net/http"
 	"regexp"
 	"slices"
@@ -165,10 +164,8 @@ func (c *Client) chatGPTRequest(ctx context.Context, cfg Config, p *call, usage 
 	if res.StatusCode != http.StatusOK {
 		return nil, "", planHTTPError(res)
 	}
-	ct, _, err := mime.ParseMediaType(res.Header.Get("Content-Type"))
-	if err != nil || ct != "text/event-stream" {
-		return nil, "", &ChatGPTError{message: "ChatGPT did not return the expected response stream."}
-	}
+	// The subscription route can deliver SSE under a generic or absent media
+	// type. Validate the event framing and terminal response from the body.
 	return readPlanStream(res.Body, res.Header.Get("x-request-id"), p.maxTokens, usage)
 }
 

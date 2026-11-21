@@ -144,6 +144,49 @@ func TestChatGPTPlanSocketModelCatalogAndInference(t *testing.T) {
 	}
 }
 
+// The subscription endpoint may return event frames with a generic, missing
+// or malformed media type. Only the terminal event can validate the probe.
+func TestChatGPTProbeReadsBodyWithInconsistentContentType(t *testing.T) {
+	ready := planCompletion(`{"status":"ready"}`, 7)
+	for _, tc := range []struct {
+		name, contentType, body string
+		wantOK                  bool
+		wantMessage             string
+	}{
+		{"no header", "", ready, true, ""},
+		{"binary", "application/octet-stream", ready, true, ""},
+		{"plain text", "text/plain; charset=utf-8", ready, true, ""},
+		{"JSON label", "application/json", ready, true, ""},
+		{"duplicate media type", "text/event-stream, text/event-stream", ready, true, ""},
+		{"partial stream", "", planEvent("response.output_text.delta", map[string]any{"delta": `{"status":"ready"}`}), false, ""},
+		{"wrong result", "application/octet-stream", planCompletion(`{"status":"offline"}`, 7), false, ""},
+		{"HTML", "text/html", "<html>SENTINEL_PRIVATE</html>\n\n" + ready, false, "HTML"},
+		{"quota JSON", "application/json", `{"error":{"code":"subscription_sharing_usage_limit_exceeded","message":"SENTINEL_PRIVATE"}}`, false, "usage limit"},
+		{"bare JSON", "application/json", `{"status":"ready"}`, false, "JSON"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			c := NewWithChatGPT(func(context.Context, string) (string, error) { return "plan-grant", nil })
+			posts := 0
+			c.fixtureTransport(func(r *http.Request) (*http.Response, error) {
+				if r.Method == "GET" {
+					return planResponse(fixturePlanCatalog()), nil
+				}
+				posts++
+				res := planResponse(tc.body)
+				res.Header.Set("Content-Type", tc.contentType)
+				return res, nil
+			})
+			err := c.Test(t.Context(), planCfg())
+			if (err == nil) != tc.wantOK || posts != 1 {
+				t.Fatalf("posts=%d, probe error=%v", posts, err)
+			}
+			if err != nil && (strings.Contains(err.Error(), "SENTINEL_PRIVATE") || !strings.Contains(err.Error(), tc.wantMessage)) {
+				t.Fatalf("unexpected error: %v", err)
+			}
+		})
+	}
+}
+
 func TestChatGPTSubscriptionStreamsFailClosed(t *testing.T) {
 	quota := planEvent("response.failed", map[string]any{"response": map[string]any{"error": map[string]string{"code": "subscription_sharing_usage_limit_exceeded", "message": "SENTINEL_REMOTE_DETAIL"}}})
 	tool := planEvent("response.output_item.added", map[string]any{"item": map[string]string{"type": "function_call"}})
@@ -241,7 +284,10 @@ func TestChatGPTCompletedProposalRequiresDomainValidation(t *testing.T) {
 			t.Fatal("explicit native schema was omitted")
 		}
 		instructionsSeen = append(instructionsSeen, body.Instructions)
-		return planResponse(planCompletion(proposal, 5)), nil
+		// Exercise clinical validation and repair on the headerless plan route too.
+		reply := planResponse(planCompletion(proposal, 5))
+		reply.Header.Del("Content-Type")
+		return reply, nil
 	})
 	accepts := 0
 	results, meta, err := c.Generate(t.Context(), cfg, "interview", struct{}{}, func(raw []byte) error {
