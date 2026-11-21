@@ -1,0 +1,20 @@
+{
+  "study": "Instrument rehearsal",
+  "practiceOnly": true,
+  "cases": [{
+    "id": "urinary-practice",
+    "complaint": "urinary symptoms",
+    "group": "adult",
+    "baseline": "full.txt",
+    "candidate": "brief.txt",
+    "expectedUrgent": true,
+    "expectedAbstain": false,
+    "facilitatorKey": {
+      "concern": "Burning with urination",
+      "timeline": "Before urine specimen on 18 November",
+      "warning": "Seek local emergency care immediately; do not wait",
+      "outstanding": "Medication history and symptom progression",
+      "patientUnderstanding": "AI possibilities may be wrong, no clinician review, do not delay care or change treatment based on them."
+    }
+  }]
+}

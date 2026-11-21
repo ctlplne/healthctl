@@ -1,0 +1,59 @@
+# Use with -p clinical-history-qa or another fresh test project.
+services:
+  app:
+    environment:
+      CLINICAL_ALLOWED_ENDPOINTS: http://fixture:8090/v1
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+      BYOM_API_KEY: ""
+      BYOM_KEY_ENDPOINT: ""
+      CLINICAL_SECURE_COOKIE: "false"
+      CLINICAL_PUBLIC_ORIGIN: ""
+  fixture:
+    build:
+      context: .
+      dockerfile: tests/fixture.Dockerfile
+    networks: [database]
+  backend-tests:
+    build:
+      context: .
+      target: server
+    profiles: [verify]
+    command: ["go","test","-race","-count=1","-timeout=180s","-v","./..."]
+    depends_on:
+      db: {condition: service_healthy}
+    environment:
+      PGHOST: db
+      PGPORT: '5432'
+      PGUSER: clinicalhistory
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Run python3 scripts/init.py}
+      PGDATABASE: clinicalhistory
+      PGSSLMODE: disable
+      CLINICAL_TEST_POSTGRES: "1"
+    networks: [database]
+  ehr-fixture:
+    profiles: [verify]
+    build:
+      context: .
+      dockerfile: tests/fixture.Dockerfile
+    command: ["python", "-B", "/qa/ehr_fixture.py"]
+    network_mode: service:app
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8091/ready', timeout=1)"]
+      interval: 2s
+      timeout: 2s
+      retries: 20
+  browser-tests:
+    build:
+      context: .
+      dockerfile: tests/browser.Dockerfile
+    profiles: [verify]
+    network_mode: service:app
+    volumes: ["./build/test-results:/ui/test-results"]
+    environment:
+      PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH: /ms-playwright/chromium-1193/chrome-linux/chrome
+      CLINICAL_E2E_PASSWORD: ${CLINICAL_E2E_PASSWORD:-}
+      CLINICAL_E2E_URL: http://127.0.0.1:8080
+      CLINICAL_E2E_PROVIDER_URL: http://fixture:8090/v1
+    ipc: private
+    shm_size: 512mb

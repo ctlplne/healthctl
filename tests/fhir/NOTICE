@@ -1,0 +1,5 @@
+The unmodified fhir.schema.json.zip is published with HL7 FHIR R4 4.0.1.
+https://hl7.org/fhir/R4/fhir.schema.json.zip
+https://hl7.org/fhir/R4/license.html
+FHIR specification content is released under CC0. FHIR is a trademark of HL7.
+The verifier tests JSON structure and this application's document subset.

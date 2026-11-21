@@ -1,0 +1,11 @@
+[
+ {"id":"respiratory-medication-change","age":61,"opening":"I have a dry cough. My blood pressure medicine changed recently.","facts":[{"label":"dry cough","concept":"cough","source":"dry cough","status":"reported_present","subject":"self"}],"replies":[{"topic":"timing","answer":"It began on Monday."}]},
+ {"id":"headache-with-warning","age":46,"opening":"I developed a sudden severe headache this morning.","alert":true,"facts":[{"label":"reported headache","concept":"headache","source":"headache","status":"reported_present","subject":"self"}]},
+ {"id":"abdominal-urgent","age":49,"opening":"I have severe abdominal pain now.","alert":true,"facts":[{"label":"abdominal pain","concept":"abdominal pain","source":"abdominal pain","status":"reported_present","subject":"self"}]},
+ {"id":"abdominal-vague","age":31,"opening":"Something feels odd around my belly.","insufficient":true,"facts":[]},
+ {"id":"dizziness-medication-change","age":68,"opening":"I feel dizzy when I stand after my new medicine.","facts":[{"label":"positional dizziness","concept":"dizz|lightheaded","source":"feel dizzy","status":"reported_present","subject":"self"}],"replies":[{"topic":"timing","answer":"It started yesterday."}]},
+ {"id":"dizziness-with-warning","age":58,"opening":"I feel dizzy. I have sudden trouble speaking.","alert":true,"facts":[{"label":"trouble speaking","concept":"speaking|speech","source":"trouble speaking","status":"reported_present","subject":"self"}]},
+ {"id":"headache-denies-sudden-onset","age":33,"opening":"I have headaches sometimes. No sudden severe headache today.","facts":[{"label":"denied sudden severe headache","concept":"sudden severe headache","source":"No sudden severe headache","status":"explicitly_denied","subject":"self"}]},
+ {"id":"age-outside-scope","age":14,"opening":"I feel dizzy at school.","facts":[]},
+ {"id":"pregnancy-specific","age":35,"opening":"I want to ask about pregnancy-related headaches.","pregnancyRelated":true,"facts":[]}
+]

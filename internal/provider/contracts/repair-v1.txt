@@ -1,0 +1,1 @@
+A prior proposal for this same input failed validation. Generate a fresh proposal from the original data. Check all required fields and their types, allowed actions, verbatim quotes, answer IDs, and active fact IDs. Return only the JSON object. If information for an assessment is insufficient, use the insufficient action with a specific missing detail.

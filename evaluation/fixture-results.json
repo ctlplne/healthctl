@@ -1,0 +1,1349 @@
+{
+  "evaluationVersion": "synthetic-1",
+  "mode": "deterministic_fixture",
+  "model": "scripted-v1",
+  "runs": 38,
+  "failedRuns": 0,
+  "results": [
+    {
+      "case": "nasal-symptoms",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 2,
+        "total": 2
+      },
+      "keyHistory": {
+        "matched": 2,
+        "total": 4
+      },
+      "missedTargets": [
+        "onset",
+        "outdoor association"
+      ],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": 0
+    },
+    {
+      "case": "nasal-symptoms",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 4,
+        "total": 4
+      },
+      "keyHistory": {
+        "matched": 4,
+        "total": 4
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "differential",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": 1
+    },
+    {
+      "case": "throat-and-cough",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 2
+      },
+      "missedTargets": [
+        "cough"
+      ],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": 0
+    },
+    {
+      "case": "throat-and-cough",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 2,
+        "total": 2
+      },
+      "keyHistory": {
+        "matched": 2,
+        "total": 2
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": 0
+    },
+    {
+      "case": "ankle-injury",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 2
+      },
+      "missedTargets": [
+        "swelling"
+      ],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": 0
+    },
+    {
+      "case": "ankle-injury",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 2,
+        "total": 2
+      },
+      "keyHistory": {
+        "matched": 2,
+        "total": 2
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": 0
+    },
+    {
+      "case": "headache-denied-nausea",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 2
+      },
+      "missedTargets": [
+        "nausea denied"
+      ],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "headache-denied-nausea",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 2,
+        "total": 2
+      },
+      "keyHistory": {
+        "matched": 2,
+        "total": 2
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "vague-concern",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 0,
+        "total": 0
+      },
+      "keyHistory": {
+        "matched": 0,
+        "total": 0
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "vague-concern",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 0,
+        "total": 0
+      },
+      "keyHistory": {
+        "matched": 0,
+        "total": 0
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "declined-medication",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 2
+      },
+      "missedTargets": [
+        "medication history declined"
+      ],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "declined-medication",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 3,
+      "modelCalls": 5,
+      "visibleTargetExtraction": {
+        "matched": 2,
+        "total": 2
+      },
+      "keyHistory": {
+        "matched": 2,
+        "total": 2
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "answer_3": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 4,
+      "revisedHistory": 5,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "uncertain-medication",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "uncertain-medication",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "uncertain-allergy",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "uncertain-allergy",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "contradictory-cough",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 2
+      },
+      "missedTargets": [
+        "cough denied"
+      ],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "contradictory-cough",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 2,
+        "total": 2
+      },
+      "keyHistory": {
+        "matched": 2,
+        "total": 2
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 1,
+      "expectedContradiction": true,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "family-history",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "family-history",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "current-chest-pain",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "current-chest-pain",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "denied-chest-pain",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "denied-chest-pain",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "historical-chest-pain",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "historical-chest-pain",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "third-person-chest-pain",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "third-person-chest-pain",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "breathing-difficulty",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "breathing-difficulty",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "explicit-warning",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 0,
+        "total": 0
+      },
+      "keyHistory": {
+        "matched": 0,
+        "total": 0
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "explicit-warning",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 0,
+        "total": 0
+      },
+      "keyHistory": {
+        "matched": 0,
+        "total": 0
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "corrected-warning",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "after_patient_correction": false,
+        "assessment": false,
+        "intake": true,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 2,
+      "revisedHistory": 3,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "corrected-warning",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "after_patient_correction": false,
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": true,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 4,
+      "revisedHistory": 5,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "uncertain-current-warning",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "uncertain-current-warning",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "warning-on-followup",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 2
+      },
+      "missedTargets": [
+        "new breathing difficulty"
+      ],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "case": "warning-on-followup",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 2,
+        "total": 2
+      },
+      "keyHistory": {
+        "matched": 2,
+        "total": 2
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": true,
+        "assessment": true,
+        "intake": false,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": null
+    }
+  ]
+}

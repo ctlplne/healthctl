@@ -1,0 +1,98 @@
+name: clinical-history
+services:
+  db:
+    image: postgres:16.15-alpine@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: clinicalhistory
+      POSTGRES_USER: clinicalhistory
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run python3 scripts/init.py}
+    volumes:
+      - clinical_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U clinicalhistory -d clinicalhistory"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    networks: [database]
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${CLINICAL_PORT:-8437}:8080"
+    environment:
+      CLINICAL_LISTEN: ':8080'
+      CLINICAL_PUBLIC_ORIGIN: ${CLINICAL_PUBLIC_ORIGIN:-}
+      PGHOST: db
+      PGPORT: '5432'
+      PGUSER: clinicalhistory
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Run python3 scripts/init.py}
+      PGDATABASE: clinicalhistory
+      PGSSLMODE: disable
+      CLINICAL_DATA_KEY: ${CLINICAL_DATA_KEY:?Run python3 scripts/init.py}
+      CLINICAL_DISPLAY_NAME: ${CLINICAL_DISPLAY_NAME:-healthctl}
+      CLINICAL_LOCALE: ${CLINICAL_LOCALE:-en}
+      CLINICAL_UNITS: ${CLINICAL_UNITS:-as-reported}
+      CLINICAL_CARE_DESTINATION: ${CLINICAL_CARE_DESTINATION:-}
+      CLINICAL_EMERGENCY_CONTACT: ${CLINICAL_EMERGENCY_CONTACT:-}
+      CLINICAL_SECURE_COOKIE: ${CLINICAL_SECURE_COOKIE:-false}
+      CLINICAL_ALLOWED_ENDPOINTS: ${CLINICAL_ALLOWED_ENDPOINTS:-}
+      CLINICAL_EHR_NAME: ${CLINICAL_EHR_NAME:-}
+      CLINICAL_EHR_FHIR_BASE: ${CLINICAL_EHR_FHIR_BASE:-}
+      CLINICAL_EHR_AUTHORIZE_URL: ${CLINICAL_EHR_AUTHORIZE_URL:-}
+      CLINICAL_EHR_TOKEN_URL: ${CLINICAL_EHR_TOKEN_URL:-}
+      CLINICAL_EHR_CLIENT_ID: ${CLINICAL_EHR_CLIENT_ID:-}
+      CLINICAL_EHR_REDIRECT_URI: ${CLINICAL_EHR_REDIRECT_URI:-}
+      CLINICAL_EHR_AUTH_ISSUER: ${CLINICAL_EHR_AUTH_ISSUER:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_WORKSPACE_ID: ${ANTHROPIC_WORKSPACE_ID:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      BYOM_API_KEY: ${BYOM_API_KEY:-}
+      CLINICAL_MODEL_PRICES: ${CLINICAL_MODEL_PRICES:-}
+      BYOM_KEY_ENDPOINT: ${BYOM_KEY_ENDPOINT:-}
+    read_only: true
+    tmpfs: ["/tmp:rw,noexec,nosuid,nodev,size=128m,mode=1777"]
+    mem_limit: 1g
+    pids_limit: 128
+    healthcheck:
+      test: ["CMD", "/app", "healthcheck"]
+      interval: 10s
+      start_period: 2s
+      timeout: 3s
+      retries: 6
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    networks: [database, inference]
+  backup:
+    image: postgres:16.15-alpine@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea
+    profiles: [backups]
+    restart: unless-stopped
+    depends_on:
+      db: {condition: service_healthy}
+    user: postgres
+    entrypoint: ["/bin/sh", "/opt/backup.sh"]
+    environment:
+      PGHOST: db
+      PGUSER: clinicalhistory
+      PGDATABASE: clinicalhistory
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      BACKUP_INTERVAL_HOURS: ${CLINICAL_BACKUP_INTERVAL_HOURS:-24}
+      BACKUP_KEEP: ${CLINICAL_BACKUP_KEEP:-7}
+    volumes:
+      - ${CLINICAL_BACKUP_DIRECTORY:-clinical_backups}:/var/lib/postgresql/data
+      - ./scripts/backup.sh:/opt/backup.sh:ro
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    networks: [database]
+
+volumes:
+  clinical_data:
+  clinical_backups:
+networks:
+  database:
+    internal: true
+  inference: {}

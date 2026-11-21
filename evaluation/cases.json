@@ -1,0 +1,486 @@
+[
+  {
+    "id": "nasal-symptoms",
+    "age": 34,
+    "opening": "My nose is runny and I keep sneezing.",
+    "facts": [
+      {
+        "label": "sneezing",
+        "concept": "sneez",
+        "source": "sneezing",
+        "status": "reported_present",
+        "subject": "self",
+        "time": ""
+      },
+      {
+        "label": "runny nose",
+        "concept": "runny nose|rhinorrhea|nasal discharge",
+        "source": "nose is runny",
+        "status": "reported_present",
+        "subject": "self",
+        "time": ""
+      },
+      {
+        "label": "onset",
+        "concept": "onset|duration",
+        "source": "Yesterday",
+        "status": "reported_present",
+        "subject": "self",
+        "time": ""
+      },
+      {
+        "label": "outdoor association",
+        "concept": "outdoor|exposure|trigger",
+        "source": "After being outdoors",
+        "status": "reported_present",
+        "subject": "self",
+        "time": ""
+      }
+    ],
+    "replies": [
+      {
+        "topic": "timing",
+        "answer": "Yesterday"
+      },
+      {
+        "topic": "trigger",
+        "answer": "After being outdoors"
+      }
+    ],
+    "reference": "allergic rhinitis|nasal allerg"
+  },
+  {
+    "id": "throat-and-cough",
+    "age": 34,
+    "opening": "My throat feels sore.",
+    "facts": [
+      {
+        "label": "sore throat",
+        "concept": "sore throat|throat pain|pharyng",
+        "source": "throat feels sore",
+        "status": "reported_present",
+        "subject": "self",
+        "time": ""
+      },
+      {
+        "label": "cough",
+        "concept": "cough",
+        "source": "dry cough",
+        "status": "reported_present",
+        "subject": "self",
+        "time": ""
+      }
+    ],
+    "replies": [
+      {
+        "topic": "associated",
+        "answer": "I also have a dry cough.",
+        "whenAsked": "\\bcough\\b"
+      },
+      {
+        "topic": "timing",
+        "answer": "It began three days ago."
+      }
+    ],
+    "reference": "viral upper respiratory|common cold|viral pharyng"
+  },
+  {
+    "id": "ankle-injury",
+    "age": 34,
+    "opening": "I twisted my ankle playing tennis.",
+    "facts": [
+      {
+        "label": "twisted ankle",
+        "concept": "ankle",
+        "source": "twisted my ankle",
+        "status": "reported_present",
+        "subject": "self",
+        "time": ""
+      },
+      {
+        "label": "swelling",
+        "concept": "swell|swollen",
+        "source": "ankle is swollen",
+        "status": "reported_present",
+        "subject": "self",
+        "time": ""
+      }
+    ],
+    "replies": [
+      {
+        "topic": "associated",
+        "answer": "My ankle is swollen.",
+        "whenAsked": "\\b(swell|swelling|swollen)\\b"
+      },
+      {
+        "topic": "timing",
+        "answer": "It happened yesterday."
+      }
+    ],
+    "reference": "ankle sprain|ligament"
+  },
+  {
+    "id": "headache-denied-nausea",
+    "age": 34,
+    "opening": "I have a headache.",
+    "facts": [
+      {
+        "label": "headache",
+        "concept": "headache|head pain",
+        "source": "headache",
+        "status": "reported_present",
+        "subject": "self",
+        "time": ""
+      },
+      {
+        "label": "nausea denied",
+        "concept": "nausea",
+        "source": "no nausea",
+        "status": "explicitly_denied",
+        "subject": "self",
+        "time": ""
+      }
+    ],
+    "replies": [
+      {
+        "topic": "associated",
+        "answer": "I have no nausea.",
+        "whenAsked": "\\bnausea\\b"
+      },
+      {
+        "topic": "timing",
+        "answer": "It started this morning."
+      }
+    ]
+  },
+  {
+    "id": "vague-concern",
+    "age": 34,
+    "opening": "I just feel off.",
+    "facts": [],
+    "replies": [
+      {
+        "topic": "associated",
+        "answer": "I cannot tell which symptom it is."
+      },
+      {
+        "topic": "timing",
+        "answer": "I am not sure."
+      }
+    ],
+    "forbidden": [
+      {
+        "concept": "fever|pain|fatigue",
+        "status": "reported_present"
+      }
+    ],
+    "insufficient": true
+  },
+  {
+    "id": "declined-medication",
+    "age": 34,
+    "opening": "I feel tired.",
+    "facts": [
+      {
+        "label": "tiredness",
+        "concept": "tired|fatigue",
+        "source": "feel tired",
+        "status": "reported_present",
+        "subject": "self",
+        "time": ""
+      },
+      {
+        "label": "medication history declined",
+        "concept": "medication|medicine",
+        "source": "rather not discuss my medicines",
+        "status": "declined",
+        "subject": "self",
+        "time": ""
+      }
+    ],
+    "replies": [
+      {
+        "topic": "medication",
+        "answer": "I would rather not discuss my medicines."
+      },
+      {
+        "topic": "associated",
+        "answer": "I cannot add anything else."
+      }
+    ]
+  },
+  {
+    "id": "uncertain-medication",
+    "age": 34,
+    "opening": "I take a pill but I am unsure of its name.",
+    "facts": [
+      {
+        "label": "drug identity uncertain",
+        "concept": "medication|pill|medicine",
+        "source": "unsure of its name",
+        "status": "uncertain",
+        "subject": "self",
+        "time": ""
+      }
+    ],
+    "replies": [],
+    "forbidden": [
+      {
+        "concept": "aspirin|warfarin|metformin",
+        "status": "reported_present"
+      }
+    ],
+    "insufficient": true
+  },
+  {
+    "id": "uncertain-allergy",
+    "age": 34,
+    "opening": "I am unsure whether I have a penicillin allergy.",
+    "facts": [
+      {
+        "label": "uncertain allergy",
+        "concept": "allerg",
+        "source": "unsure whether",
+        "status": "uncertain",
+        "subject": "self",
+        "time": ""
+      }
+    ],
+    "replies": [],
+    "forbidden": [
+      {
+        "concept": "allerg",
+        "status": "explicitly_denied"
+      },
+      {
+        "concept": "allerg",
+        "status": "reported_present"
+      }
+    ],
+    "insufficient": true
+  },
+  {
+    "id": "contradictory-cough",
+    "age": 34,
+    "opening": "I have a cough.",
+    "facts": [
+      {
+        "label": "cough reported",
+        "concept": "cough",
+        "source": "have a cough",
+        "status": "reported_present",
+        "subject": "self",
+        "time": ""
+      },
+      {
+        "label": "cough denied",
+        "concept": "cough",
+        "source": "have no cough",
+        "status": "explicitly_denied",
+        "subject": "self",
+        "time": ""
+      }
+    ],
+    "replies": [
+      {
+        "topic": "associated",
+        "answer": "I have no cough.",
+        "whenAsked": "\\bcough\\b"
+      }
+    ],
+    "conflictWhen": "have no cough"
+  },
+  {
+    "id": "family-history",
+    "age": 34,
+    "opening": "My father had chest pain last year.",
+    "facts": [
+      {
+        "label": "family chest pain",
+        "concept": "chest pain|chest discomfort",
+        "source": "father had chest pain",
+        "status": "reported_present",
+        "subject": "family",
+        "time": "past"
+      }
+    ],
+    "replies": [],
+    "forbidden": [
+      {
+        "concept": "chest pain",
+        "status": "reported_present",
+        "subject": "self"
+      }
+    ]
+  },
+  {
+    "id": "current-chest-pain",
+    "age": 34,
+    "opening": "I have severe chest pain right now.",
+    "facts": [
+      {
+        "label": "current chest pain",
+        "concept": "chest pain|chest discomfort",
+        "source": "chest pain",
+        "status": "reported_present",
+        "subject": "self",
+        "time": ""
+      }
+    ],
+    "replies": [],
+    "alert": true
+  },
+  {
+    "id": "denied-chest-pain",
+    "age": 34,
+    "opening": "I have no chest pain.",
+    "facts": [
+      {
+        "label": "denied chest pain",
+        "concept": "chest pain|chest discomfort",
+        "source": "no chest pain",
+        "status": "explicitly_denied",
+        "subject": "self",
+        "time": ""
+      }
+    ],
+    "replies": [],
+    "forbidden": [
+      {
+        "concept": "chest pain",
+        "status": "reported_present"
+      }
+    ]
+  },
+  {
+    "id": "historical-chest-pain",
+    "age": 34,
+    "opening": "I had chest pain years ago.",
+    "facts": [
+      {
+        "label": "past chest pain",
+        "concept": "chest pain|chest discomfort",
+        "source": "chest pain years ago",
+        "status": "reported_present",
+        "subject": "self",
+        "time": "past"
+      }
+    ],
+    "replies": []
+  },
+  {
+    "id": "third-person-chest-pain",
+    "age": 34,
+    "opening": "My friend has chest pain right now.",
+    "facts": [
+      {
+        "label": "friend chest pain",
+        "concept": "chest pain|chest discomfort",
+        "source": "friend has chest pain",
+        "status": "reported_present",
+        "subject": "other",
+        "time": ""
+      }
+    ],
+    "replies": [],
+    "forbidden": [
+      {
+        "concept": "chest pain",
+        "status": "reported_present",
+        "subject": "self"
+      }
+    ]
+  },
+  {
+    "id": "breathing-difficulty",
+    "age": 34,
+    "opening": "I cannot breathe right now.",
+    "facts": [
+      {
+        "label": "breathing difficulty",
+        "concept": "breath|dyspnea",
+        "source": "cannot breathe",
+        "status": "reported_present",
+        "subject": "self",
+        "time": ""
+      }
+    ],
+    "replies": [],
+    "alert": true
+  },
+  {
+    "id": "explicit-warning",
+    "age": 34,
+    "opening": "I cannot describe it clearly.",
+    "facts": [],
+    "replies": [],
+    "urgentScreen": true,
+    "alert": true,
+    "insufficient": true
+  },
+  {
+    "id": "corrected-warning",
+    "age": 34,
+    "opening": "I have chest pain right now.",
+    "facts": [
+      {
+        "label": "corrected family history",
+        "concept": "chest pain|chest discomfort",
+        "source": "father had chest pain",
+        "status": "reported_present",
+        "subject": "family",
+        "time": "past"
+      }
+    ],
+    "replies": [],
+    "alert": true,
+    "correction": "My father had chest pain last year.",
+    "afterCorrectionAlert": false
+  },
+  {
+    "id": "uncertain-current-warning",
+    "age": 34,
+    "opening": "I might have chest pain right now.",
+    "facts": [
+      {
+        "label": "uncertain current chest pain",
+        "concept": "chest pain|chest discomfort",
+        "source": "might have chest pain",
+        "status": "uncertain",
+        "subject": "self",
+        "time": ""
+      }
+    ],
+    "replies": [],
+    "alert": true
+  },
+  {
+    "id": "warning-on-followup",
+    "age": 46,
+    "opening": "My throat feels sore.",
+    "replies": [
+      {
+        "topic": "associated",
+        "answer": "I cannot breathe right now.",
+        "whenAsked": "\\bbreath(?:e|ing|less)?\\b"
+      }
+    ],
+    "facts": [
+      {
+        "label": "sore throat",
+        "concept": "sore throat|throat pain|pharyng",
+        "source": "throat feels sore",
+        "status": "reported_present",
+        "subject": "self"
+      },
+      {
+        "label": "new breathing difficulty",
+        "concept": "breath|dyspnea",
+        "source": "cannot breathe",
+        "status": "reported_present",
+        "subject": "self"
+      }
+    ],
+    "alertWhen": "cannot breathe"
+  }
+]

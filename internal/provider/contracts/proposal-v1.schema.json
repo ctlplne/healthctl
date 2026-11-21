@@ -1,0 +1,49 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "action": {"type": "string", "enum": ["ask", "review", "insufficient", "differential"]},
+    "question": {"type": "string"},
+    "choices": {"type": "array", "items": {"type": "string"}},
+    "reason": {"type": "string"},
+    "findings": {
+      "type": "array", "items": {
+        "type": "object", "additionalProperties": false,
+        "properties": {
+          "concept": {"type": "string"},
+          "status": {"type": "string", "enum": ["reported_present", "explicitly_denied", "unknown", "not_asked", "uncertain", "declined"]},
+          "subject": {"type": "string", "enum": ["self", "family", "other"]},
+          "timeContext": {"type": "string"},
+          "value": {"type": "string"},
+          "units": {"type": "string"},
+          "answerId": {"type": "string"},
+          "quote": {"type": "string"}
+        },
+        "required": ["concept", "status", "subject", "timeContext", "value", "units", "answerId", "quote"]
+      }
+    },
+    "urgentEvidence": {
+      "type": "array", "items": {
+        "type": "object", "additionalProperties": false,
+        "properties": {"answerId": {"type": "string"}, "quote": {"type": "string"}},
+        "required": ["answerId", "quote"]
+      }
+    },
+    "outstanding": {"type": "array", "items": {"type": "string"}},
+    "items": {
+      "type": "array", "items": {
+        "type": "object", "additionalProperties": false,
+        "properties": {
+          "name": {"type": "string"},
+          "clinicalTerm": {"type": "string"},
+          "explanation": {"type": "string"},
+          "supporting": {"type": "array", "items": {"type": "string"}},
+          "conflicting": {"type": "array", "items": {"type": "string"}},
+          "limitations": {"type": "array", "items": {"type": "string"}}
+        },
+        "required": ["name", "clinicalTerm", "explanation", "supporting", "conflicting", "limitations"]
+      }
+    }
+  },
+  "required": ["action", "question", "choices", "reason", "findings", "urgentEvidence", "outstanding", "items"]
+}

@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+.secrets/
+web/node_modules/
+web/dist/
+web/test-results/
+web/playwright-report/
+build/
+*.dump
+
+__pycache__/

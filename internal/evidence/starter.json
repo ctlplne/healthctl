@@ -1,0 +1,325 @@
+{
+  "id": "nih-adult-reference",
+  "title": "NIH patient education passages",
+  "version": "2026-11-21.2",
+  "passages": [
+    {
+      "id": "cold-definition",
+      "title": "Common Cold",
+      "section": "Summary · What is the common cold?",
+      "text": "The common cold is a mild infection of your upper respiratory tract (which includes your nose and throat).",
+      "publisher": "MedlinePlus, National Library of Medicine",
+      "url": "https://medlineplus.gov/commoncold.html",
+      "published": "2022-11-16",
+      "verified": "2026-11-21",
+      "population": "General patient education; displayed here for English-speaking adults.",
+      "limitations": "Definition only. This passage cannot distinguish a cold from other causes of respiratory symptoms.",
+      "rights": "US public-domain MedlinePlus topic summary or medical test text. Courtesy of MedlinePlus from the National Library of Medicine.",
+      "rightsUrl": "https://medlineplus.gov/about/using/usingcontent/",
+      "reviewStatus": "unreviewed_for_application",
+      "topics": [
+        "common cold",
+        "cold",
+        "viral upper respiratory infection"
+      ],
+      "conflictsWith": [],
+      "applicability": {
+        "scope": "general_education",
+        "minAge": 18,
+        "maxAge": 130
+      }
+    },
+    {
+      "id": "hay-fever-symptoms",
+      "title": "Hay Fever",
+      "section": "Summary · Symptoms can include",
+      "text": "Sneezing, often with a runny or clogged nose",
+      "publisher": "MedlinePlus, National Library of Medicine",
+      "url": "https://medlineplus.gov/hayfever.html",
+      "published": "2026-10-29",
+      "verified": "2026-11-21",
+      "population": "General patient education; displayed here for English-speaking adults.",
+      "limitations": "One symptom from the publisher’s list. Seasonal exposure and an individual diagnosis are not established by this excerpt.",
+      "rights": "US public-domain MedlinePlus topic summary or medical test text. Courtesy of MedlinePlus from the National Library of Medicine.",
+      "rightsUrl": "https://medlineplus.gov/about/using/usingcontent/",
+      "reviewStatus": "unreviewed_for_application",
+      "topics": [
+        "hay fever",
+        "allergic rhinitis",
+        "nasal allergies",
+        "pollen allergy",
+        "sneezing"
+      ],
+      "conflictsWith": [],
+      "conditions": [
+        "hay fever",
+        "allergic rhinitis",
+        "nasal allergies",
+        "pollen allergy"
+      ],
+      "features": [
+        {
+          "quote": "Sneezing",
+          "concepts": [
+            "Sneezing"
+          ]
+        },
+        {
+          "quote": "runny or clogged nose",
+          "concepts": [
+            "Runny nose",
+            "Nasal congestion",
+            "Rhinorrhea"
+          ]
+        }
+      ],
+      "applicability": {
+        "scope": "general_education",
+        "minAge": 18,
+        "maxAge": 130
+      }
+    },
+    {
+      "id": "migraine-pattern",
+      "title": "Migraine",
+      "section": "Summary · What are migraines?",
+      "text": "Migraines are a recurring type of headache. They cause moderate to severe pain that is throbbing or pulsing.",
+      "publisher": "MedlinePlus, National Library of Medicine",
+      "url": "https://medlineplus.gov/migraine.html",
+      "published": "2025-11-20",
+      "verified": "2026-11-21",
+      "population": "General patient education; displayed here for English-speaking adults.",
+      "limitations": "Describes a migraine pattern. A first, sudden or different headache needs its own assessment.",
+      "rights": "US public-domain MedlinePlus topic summary or medical test text. Courtesy of MedlinePlus from the National Library of Medicine.",
+      "rightsUrl": "https://medlineplus.gov/about/using/usingcontent/",
+      "reviewStatus": "unreviewed_for_application",
+      "topics": [
+        "migraine",
+        "migraines",
+        "migraine headache",
+        "headache"
+      ],
+      "conflictsWith": [],
+      "conditions": [
+        "migraine",
+        "migraine headache"
+      ],
+      "features": [
+        {
+          "quote": "throbbing or pulsing",
+          "concepts": [
+            "throbbing headache",
+            "pulsating headache"
+          ]
+        }
+      ],
+      "applicability": {
+        "scope": "general_education",
+        "minAge": 18,
+        "maxAge": 130
+      }
+    },
+    {
+      "id": "bloating-definition",
+      "title": "Symptoms & Causes of Gas in the Digestive Tract",
+      "section": "Bloating and distention",
+      "text": "Bloating is a feeling of fullness or swelling in your abdomen, or belly.",
+      "publisher": "National Institute of Diabetes and Digestive and Kidney Diseases",
+      "url": "https://www.niddk.nih.gov/health-information/digestive-diseases/gas-digestive-tract/symptoms-causes",
+      "published": "2021-06",
+      "verified": "2026-11-21",
+      "population": "General patient education; displayed here for English-speaking adults.",
+      "limitations": "Defines the sensation. It cannot identify the cause of abdominal pain or establish measured distention.",
+      "rights": "NIDDK agency-authored patient information. The agency permits credited reproduction of this unmodified text.",
+      "rightsUrl": "https://www.niddk.nih.gov/copyright",
+      "reviewStatus": "unreviewed_for_application",
+      "topics": [
+        "abdominal bloating",
+        "bloating",
+        "abdominal gas",
+        "bloating and distention"
+      ],
+      "conflictsWith": [],
+      "conditions": [
+        "abdominal bloating",
+        "bloating"
+      ],
+      "features": [
+        {
+          "quote": "fullness or swelling",
+          "concepts": [
+            "abdominal fullness",
+            "abdominal swelling"
+          ]
+        }
+      ],
+      "applicability": {
+        "scope": "general_education",
+        "minAge": 18,
+        "maxAge": 130
+      }
+    },
+    {
+      "id": "balance-definition",
+      "title": "Balance Disorders",
+      "section": "What is a balance disorder?",
+      "text": "A balance disorder is a condition that makes you feel unsteady or dizzy.",
+      "publisher": "National Institute on Deafness and Other Communication Disorders",
+      "url": "https://www.nidcd.nih.gov/health/balance-disorders",
+      "published": "2018-03-06",
+      "verified": "2026-11-21",
+      "population": "General patient education; displayed here for English-speaking adults.",
+      "limitations": "A broad definition. There are many other possible causes of dizziness; it provides no diagnosis or urgency classification.",
+      "rights": "US public-domain NIDCD agency text under the publisher’s copyright policy.",
+      "rightsUrl": "https://www.nidcd.nih.gov/policies",
+      "reviewStatus": "unreviewed_for_application",
+      "topics": [
+        "balance disorder",
+        "balance disorders",
+        "unsteady",
+        "dizziness",
+        "dizzy"
+      ],
+      "conflictsWith": [],
+      "conditions": [
+        "balance disorder"
+      ],
+      "features": [
+        {
+          "quote": "unsteady or dizzy",
+          "concepts": [
+            "dizziness",
+            "unsteadiness",
+            "feeling dizzy"
+          ]
+        }
+      ],
+      "applicability": {
+        "scope": "general_education",
+        "minAge": 18,
+        "maxAge": 130
+      }
+    },
+    {
+      "id": "lab-interval",
+      "title": "How to Understand Your Lab Results",
+      "section": "What is a reference range?",
+      "text": "A test may have different reference ranges for different groups. For example, there may be separate ranges for children and adults.",
+      "publisher": "MedlinePlus, National Library of Medicine",
+      "url": "https://medlineplus.gov/lab-tests/how-to-understand-your-lab-results/",
+      "published": "2025-09-04",
+      "verified": "2026-11-21",
+      "population": "General patient education; displayed here for English-speaking adults.",
+      "limitations": "General context only. Interpret a result using its original units, laboratory reference range and relevant clinical information.",
+      "rights": "US public-domain MedlinePlus topic summary or medical test text. Courtesy of MedlinePlus from the National Library of Medicine.",
+      "rightsUrl": "https://medlineplus.gov/about/using/usingcontent/",
+      "reviewStatus": "unreviewed_for_application",
+      "topics": [
+        "reference range",
+        "reference ranges",
+        "lab reference range",
+        "laboratory reference interval"
+      ],
+      "conflictsWith": [],
+      "applicability": {
+        "scope": "general_education",
+        "minAge": 18,
+        "maxAge": 130
+      }
+    },
+    {
+      "id": "uti-symptoms",
+      "title": "Urinary Tract Infections",
+      "section": "Summary · You may have a UTI if you notice",
+      "text": "Pain or burning when you urinate",
+      "publisher": "MedlinePlus, National Library of Medicine",
+      "url": "https://medlineplus.gov/urinarytractinfections.html",
+      "published": "2025-06-07",
+      "verified": "2026-11-21",
+      "population": "General patient education; displayed here for English-speaking adults.",
+      "limitations": "One possible symptom. This excerpt cannot determine whether an infection is present or interpret a urine test.",
+      "rights": "US public-domain MedlinePlus topic summary or medical test text. Courtesy of MedlinePlus from the National Library of Medicine.",
+      "rightsUrl": "https://medlineplus.gov/about/using/usingcontent/",
+      "reviewStatus": "unreviewed_for_application",
+      "topics": [
+        "urinary tract infection",
+        "uti",
+        "cystitis",
+        "bladder infection"
+      ],
+      "conflictsWith": [],
+      "conditions": [
+        "bladder infection",
+        "cystitis",
+        "urinary tract infection",
+        "uti"
+      ],
+      "features": [
+        {
+          "quote": "Pain or burning when you urinate",
+          "concepts": [
+            "burning with urination",
+            "dysuria",
+            "painful urination"
+          ]
+        }
+      ],
+      "applicability": {
+        "scope": "general_education",
+        "minAge": 18,
+        "maxAge": 130
+      }
+    },
+    {
+      "id": "cold-symptoms",
+      "title": "Common Cold",
+      "section": "Summary · What are the symptoms of the common cold?",
+      "text": "Sneezing\nStuffy nose (congestion)\nRunny nose",
+      "publisher": "MedlinePlus, National Library of Medicine",
+      "url": "https://medlineplus.gov/commoncold.html",
+      "published": "2022-11-16",
+      "verified": "2026-11-21",
+      "population": "General patient education; displayed here for English-speaking adults.",
+      "limitations": "Selected symptoms from the publisher’s list. Many other conditions also cause these symptoms.",
+      "rights": "US public-domain MedlinePlus topic summary or medical test text. Courtesy of MedlinePlus from the National Library of Medicine.",
+      "rightsUrl": "https://medlineplus.gov/about/using/usingcontent/",
+      "reviewStatus": "unreviewed_for_application",
+      "topics": [
+        "common cold",
+        "cold",
+        "viral upper respiratory infection"
+      ],
+      "conflictsWith": [],
+      "conditions": [
+        "common cold",
+        "viral upper respiratory infection"
+      ],
+      "features": [
+        {
+          "quote": "Sneezing",
+          "concepts": [
+            "Sneezing"
+          ]
+        },
+        {
+          "quote": "Runny nose",
+          "concepts": [
+            "Runny nose",
+            "Rhinorrhea"
+          ]
+        },
+        {
+          "quote": "Stuffy nose (congestion)",
+          "concepts": [
+            "Nasal congestion"
+          ]
+        }
+      ],
+      "applicability": {
+        "scope": "general_education",
+        "minAge": 18,
+        "maxAge": 130
+      }
+    }
+  ]
+}

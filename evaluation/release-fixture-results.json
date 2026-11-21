@@ -1,0 +1,4628 @@
+{
+  "evaluationVersion": "synthetic-release-2",
+  "provider": "evaluation-fixture",
+  "configurationFingerprint": "6ff2adab99b6ce74d280",
+  "datasetFingerprint": "bdd41d73072dde343d4b65aa4b47e14cf987edde605bc446e4960903497636c1",
+  "starterCorpusVersion": "85f71710ed48b518829c",
+  "mode": "deterministic_fixture",
+  "model": "scripted-v1",
+  "runs": 84,
+  "failedRuns": 0,
+  "scorecard": {
+    "arms": {
+      "adaptive": {
+        "runs": 28,
+        "completed": 28,
+        "failed": 0,
+        "abstained": 25,
+        "missedUrgencyCheckpoints": 0,
+        "excessiveUrgencyCheckpoints": 0,
+        "keyHistory": {
+          "matched": 31,
+          "total": 32
+        },
+        "questions": 39,
+        "repeatQuestions": 0,
+        "p50AutomatedRunMicroseconds": 527,
+        "p95AutomatedRunMicroseconds": 1071,
+        "timedRuns": 28,
+        "modelOperations": 91,
+        "operationsWithoutUsage": 91,
+        "modelCostPerCompletedEncounterUSD": null,
+        "costPerClinicianAcceptableBriefUSD": null,
+        "httpRequests": 0,
+        "retries": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "unknownCostOperations": 0,
+        "pricedSubtotalUSD": null
+      },
+      "free_text_only": {
+        "runs": 28,
+        "completed": 28,
+        "failed": 0,
+        "abstained": 26,
+        "missedUrgencyCheckpoints": 0,
+        "excessiveUrgencyCheckpoints": 0,
+        "keyHistory": {
+          "matched": 23,
+          "total": 32
+        },
+        "questions": 0,
+        "repeatQuestions": 0,
+        "p50AutomatedRunMicroseconds": 213,
+        "p95AutomatedRunMicroseconds": 1144,
+        "timedRuns": 28,
+        "modelOperations": 52,
+        "operationsWithoutUsage": 52,
+        "modelCostPerCompletedEncounterUSD": null,
+        "costPerClinicianAcceptableBriefUSD": null,
+        "httpRequests": 0,
+        "retries": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "unknownCostOperations": 0,
+        "pricedSubtotalUSD": null
+      },
+      "static_form": {
+        "runs": 28,
+        "completed": 28,
+        "failed": 0,
+        "abstained": 26,
+        "missedUrgencyCheckpoints": 0,
+        "excessiveUrgencyCheckpoints": 0,
+        "keyHistory": {
+          "matched": 27,
+          "total": 32
+        },
+        "questions": 56,
+        "repeatQuestions": 0,
+        "p50AutomatedRunMicroseconds": 372,
+        "p95AutomatedRunMicroseconds": 543,
+        "timedRuns": 28,
+        "modelOperations": 52,
+        "operationsWithoutUsage": 52,
+        "modelCostPerCompletedEncounterUSD": null,
+        "costPerClinicianAcceptableBriefUSD": null,
+        "httpRequests": 0,
+        "retries": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "unknownCostOperations": 0,
+        "pricedSubtotalUSD": null
+      }
+    },
+    "original19CaseFixtureBaseline": {
+      "adaptive": {
+        "runs": 19,
+        "completed": 19,
+        "failed": 0,
+        "abstained": 18,
+        "missedUrgencyCheckpoints": 0,
+        "excessiveUrgencyCheckpoints": 0,
+        "keyHistory": {
+          "matched": 26,
+          "total": 26
+        },
+        "questions": 31,
+        "repeatQuestions": 0,
+        "p50AutomatedRunMicroseconds": null,
+        "p95AutomatedRunMicroseconds": null,
+        "timedRuns": 0,
+        "modelOperations": 69,
+        "operationsWithoutUsage": 69,
+        "modelCostPerCompletedEncounterUSD": null,
+        "costPerClinicianAcceptableBriefUSD": null,
+        "httpRequests": 0,
+        "retries": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "unknownCostOperations": 0,
+        "pricedSubtotalUSD": null
+      },
+      "free_text_only": {
+        "runs": 19,
+        "completed": 19,
+        "failed": 0,
+        "abstained": 19,
+        "missedUrgencyCheckpoints": 0,
+        "excessiveUrgencyCheckpoints": 0,
+        "keyHistory": {
+          "matched": 18,
+          "total": 26
+        },
+        "questions": 0,
+        "repeatQuestions": 0,
+        "p50AutomatedRunMicroseconds": null,
+        "p95AutomatedRunMicroseconds": null,
+        "timedRuns": 0,
+        "modelOperations": 38,
+        "operationsWithoutUsage": 38,
+        "modelCostPerCompletedEncounterUSD": null,
+        "costPerClinicianAcceptableBriefUSD": null,
+        "httpRequests": 0,
+        "retries": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "unknownCostOperations": 0,
+        "pricedSubtotalUSD": null
+      }
+    },
+    "policyVersion": "development-2",
+    "humanStudies": "No patient abandonment, independent clinician adjudication, comprehension or timed handoff study has been performed. Automated run latency measures software only.",
+    "costScope": "Operator-supplied flat token rates; local infrastructure, cached-token discounts, content maintenance, and cost per clinician-acceptable brief are unmeasured."
+  },
+  "reportComparison": [
+    {
+      "runId": "6ff2adab99b6ce74d280/report/opening_only/01",
+      "repetition": 1,
+      "variant": "opening_only",
+      "status": "exercised",
+      "disclosedEntries": 0,
+      "assessmentOutcome": "insufficient",
+      "failures": [],
+      "observations": []
+    },
+    {
+      "citationAudits": [
+        {
+          "itemIndex": 0,
+          "relation": "supported_context",
+          "corpusVersion": "85f71710ed48b518829c",
+          "passageIds": [
+            "nih-adult-reference/2026-11-21.2/uti-symptoms"
+          ],
+          "linkedFactIds": [
+            "f2"
+          ]
+        },
+        {
+          "itemIndex": 1,
+          "relation": "unavailable",
+          "corpusVersion": "85f71710ed48b518829c",
+          "passageIds": [],
+          "linkedFactIds": []
+        }
+      ],
+      "runId": "6ff2adab99b6ce74d280/report/relevant_urine_report/01",
+      "repetition": 1,
+      "variant": "relevant_urine_report",
+      "status": "exercised",
+      "firstQuestion": "Did your symptoms start before or after the sample for this report entry was collected?",
+      "questionSource": {
+        "documentId": "doc",
+        "rowId": "r3",
+        "reviewId": "rr1",
+        "reason": "The report gives a collection date. The timing of your symptoms relative to this sample is still unclear.",
+        "key": "sample_timing"
+      },
+      "disclosedEntries": 1,
+      "assessmentOutcome": "differential",
+      "failures": [],
+      "observations": [
+        "Original row and collection/issue dates preserved; corrected assessment stale; withdrawn row excluded."
+      ]
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/report/unrelated_report/01",
+      "repetition": 1,
+      "variant": "unrelated_report",
+      "status": "exercised",
+      "disclosedEntries": 1,
+      "assessmentOutcome": "insufficient",
+      "failures": [],
+      "observations": [
+        "Original row and collection/issue dates preserved; corrected assessment stale; withdrawn row excluded."
+      ]
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/report/timing_already_known/01",
+      "repetition": 1,
+      "variant": "timing_already_known",
+      "status": "exercised",
+      "firstQuestion": "When did you first notice the symptoms?",
+      "questionSource": {
+        "reason": "The answer could clarify the timing or relevant clinical context."
+      },
+      "disclosedEntries": 1,
+      "assessmentOutcome": "insufficient",
+      "failures": [],
+      "observations": [
+        "Original row and collection/issue dates preserved; corrected assessment stale; withdrawn row excluded."
+      ]
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/report/wrong_patient/01",
+      "repetition": 1,
+      "variant": "wrong_patient",
+      "status": "exercised",
+      "disclosedEntries": 0,
+      "failures": [],
+      "observations": [
+        "Wrong-patient entry rejected; no report findings shared."
+      ]
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/report/blurred_decimal_missing_unit/01",
+      "repetition": 1,
+      "variant": "blurred_decimal_missing_unit",
+      "status": "exercised",
+      "disclosedEntries": 0,
+      "failures": [],
+      "observations": [
+        "Rows marked uncertain: 3; expected decimal visible: true; missing unit preserved."
+      ]
+    }
+  ],
+  "results": [
+    {
+      "runId": "6ff2adab99b6ce74d280/nasal-symptoms/free_text_only/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 3455,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 3,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "respiratory",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Clarify onset, progression, breathlessness and relevant exposure when these could change the estimate.",
+            "Consider respiratory limitations and urgent breathing concerns separately from likely explanations."
+          ]
+        }
+      ],
+      "case": "nasal-symptoms",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 2,
+        "total": 2
+      },
+      "keyHistory": {
+        "matched": 2,
+        "total": 4
+      },
+      "missedTargets": [
+        "onset",
+        "outdoor association"
+      ],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": 0
+    },
+    {
+      "citationAudits": [
+        {
+          "itemIndex": 0,
+          "relation": "supported_context",
+          "corpusVersion": "85f71710ed48b518829c",
+          "passageIds": [
+            "nih-adult-reference/2026-11-21.2/hay-fever-symptoms"
+          ],
+          "linkedFactIds": [
+            "f2",
+            "f1"
+          ]
+        },
+        {
+          "itemIndex": 1,
+          "relation": "supported_context",
+          "corpusVersion": "85f71710ed48b518829c",
+          "passageIds": [
+            "nih-adult-reference/2026-11-21.2/cold-definition",
+            "nih-adult-reference/2026-11-21.2/cold-symptoms"
+          ],
+          "linkedFactIds": [
+            "f2",
+            "f1"
+          ]
+        }
+      ],
+      "runId": "6ff2adab99b6ce74d280/nasal-symptoms/adaptive/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 1448,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 1,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "respiratory",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Clarify onset, progression, breathlessness and relevant exposure when these could change the estimate.",
+            "Consider respiratory limitations and urgent breathing concerns separately from likely explanations."
+          ]
+        }
+      ],
+      "case": "nasal-symptoms",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 4,
+        "total": 4
+      },
+      "keyHistory": {
+        "matched": 4,
+        "total": 4
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "differential",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": 1
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/nasal-symptoms/static_form/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 460,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "respiratory",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Clarify onset, progression, breathlessness and relevant exposure when these could change the estimate.",
+            "Consider respiratory limitations and urgent breathing concerns separately from likely explanations."
+          ]
+        }
+      ],
+      "case": "nasal-symptoms",
+      "arm": "static_form",
+      "model": "scripted-v1",
+      "interviewQuestions": 3,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 0,
+        "total": 3
+      },
+      "keyHistory": {
+        "matched": 0,
+        "total": 4
+      },
+      "missedTargets": [
+        "sneezing",
+        "runny nose",
+        "onset",
+        "outdoor association"
+      ],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false,
+        "static_1": false,
+        "static_2": false,
+        "static_3": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 4,
+      "revisedHistory": 5,
+      "exploratoryReferenceRank": 0
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/throat-and-cough/free_text_only/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 207,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "throat-and-cough",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 2
+      },
+      "missedTargets": [
+        "cough"
+      ],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": 0
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/throat-and-cough/adaptive/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 700,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "throat-and-cough",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 2,
+        "total": 2
+      },
+      "keyHistory": {
+        "matched": 2,
+        "total": 2
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": 0
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/throat-and-cough/static_form/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 543,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "throat-and-cough",
+      "arm": "static_form",
+      "model": "scripted-v1",
+      "interviewQuestions": 3,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 2,
+        "total": 2
+      },
+      "keyHistory": {
+        "matched": 2,
+        "total": 2
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false,
+        "static_1": false,
+        "static_2": false,
+        "static_3": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 4,
+      "revisedHistory": 5,
+      "exploratoryReferenceRank": 0
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/ankle-injury/free_text_only/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 213,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "ankle-injury",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 2
+      },
+      "missedTargets": [
+        "swelling"
+      ],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": 0
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/ankle-injury/adaptive/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 1071,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 1,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "ankle-injury",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 2,
+        "total": 2
+      },
+      "keyHistory": {
+        "matched": 2,
+        "total": 2
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": 0
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/ankle-injury/static_form/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 432,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "ankle-injury",
+      "arm": "static_form",
+      "model": "scripted-v1",
+      "interviewQuestions": 3,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 2,
+        "total": 2
+      },
+      "keyHistory": {
+        "matched": 2,
+        "total": 2
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false,
+        "static_1": false,
+        "static_2": false,
+        "static_3": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 4,
+      "revisedHistory": 5,
+      "exploratoryReferenceRank": 0
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/headache-denied-nausea/free_text_only/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 247,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "headache",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Establish whether onset was sudden, how this differs from prior episodes and any associated changes.",
+            "Ask about recent medication changes or injury if relevant. Sudden severe onset may need an immediate interruption."
+          ]
+        }
+      ],
+      "case": "headache-denied-nausea",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 2
+      },
+      "missedTargets": [
+        "nausea denied"
+      ],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/headache-denied-nausea/adaptive/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 601,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "headache",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Establish whether onset was sudden, how this differs from prior episodes and any associated changes.",
+            "Ask about recent medication changes or injury if relevant. Sudden severe onset may need an immediate interruption."
+          ]
+        }
+      ],
+      "case": "headache-denied-nausea",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 2,
+        "total": 2
+      },
+      "keyHistory": {
+        "matched": 2,
+        "total": 2
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/headache-denied-nausea/static_form/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 454,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "headache",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Establish whether onset was sudden, how this differs from prior episodes and any associated changes.",
+            "Ask about recent medication changes or injury if relevant. Sudden severe onset may need an immediate interruption."
+          ]
+        }
+      ],
+      "case": "headache-denied-nausea",
+      "arm": "static_form",
+      "model": "scripted-v1",
+      "interviewQuestions": 3,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 2,
+        "total": 2
+      },
+      "keyHistory": {
+        "matched": 2,
+        "total": 2
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false,
+        "static_1": false,
+        "static_2": false,
+        "static_3": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 4,
+      "revisedHistory": 5,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/vague-concern/free_text_only/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 125,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "vague-concern",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 0,
+        "total": 0
+      },
+      "keyHistory": {
+        "matched": 0,
+        "total": 0
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/vague-concern/adaptive/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 405,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "vague-concern",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 0,
+        "total": 0
+      },
+      "keyHistory": {
+        "matched": 0,
+        "total": 0
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/vague-concern/static_form/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 330,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "vague-concern",
+      "arm": "static_form",
+      "model": "scripted-v1",
+      "interviewQuestions": 3,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 0,
+        "total": 0
+      },
+      "keyHistory": {
+        "matched": 0,
+        "total": 0
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false,
+        "static_1": false,
+        "static_2": false,
+        "static_3": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 4,
+      "revisedHistory": 5,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/declined-medication/free_text_only/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 156,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "declined-medication",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 2
+      },
+      "missedTargets": [
+        "medication history declined"
+      ],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/declined-medication/adaptive/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 822,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "declined-medication",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 3,
+      "modelCalls": 5,
+      "visibleTargetExtraction": {
+        "matched": 2,
+        "total": 2
+      },
+      "keyHistory": {
+        "matched": 2,
+        "total": 2
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "answer_3": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 4,
+      "revisedHistory": 5,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/declined-medication/static_form/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 414,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "declined-medication",
+      "arm": "static_form",
+      "model": "scripted-v1",
+      "interviewQuestions": 3,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 2,
+        "total": 2
+      },
+      "keyHistory": {
+        "matched": 2,
+        "total": 2
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false,
+        "static_1": false,
+        "static_2": false,
+        "static_3": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 4,
+      "revisedHistory": 5,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/uncertain-medication/free_text_only/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 222,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "uncertain-medication",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/uncertain-medication/adaptive/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 676,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "uncertain-medication",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/uncertain-medication/static_form/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 417,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "uncertain-medication",
+      "arm": "static_form",
+      "model": "scripted-v1",
+      "interviewQuestions": 3,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false,
+        "static_1": false,
+        "static_2": false,
+        "static_3": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 4,
+      "revisedHistory": 5,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/uncertain-allergy/free_text_only/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 205,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "uncertain-allergy",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/uncertain-allergy/adaptive/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 557,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "uncertain-allergy",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/uncertain-allergy/static_form/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 381,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "uncertain-allergy",
+      "arm": "static_form",
+      "model": "scripted-v1",
+      "interviewQuestions": 3,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false,
+        "static_1": false,
+        "static_2": false,
+        "static_3": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 4,
+      "revisedHistory": 5,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/contradictory-cough/free_text_only/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 215,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "respiratory",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Clarify onset, progression, breathlessness and relevant exposure when these could change the estimate.",
+            "Consider respiratory limitations and urgent breathing concerns separately from likely explanations."
+          ]
+        }
+      ],
+      "case": "contradictory-cough",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 2
+      },
+      "missedTargets": [
+        "cough denied"
+      ],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/contradictory-cough/adaptive/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 565,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "respiratory",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Clarify onset, progression, breathlessness and relevant exposure when these could change the estimate.",
+            "Consider respiratory limitations and urgent breathing concerns separately from likely explanations."
+          ]
+        }
+      ],
+      "case": "contradictory-cough",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 2,
+        "total": 2
+      },
+      "keyHistory": {
+        "matched": 2,
+        "total": 2
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 1,
+      "expectedContradiction": true,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/contradictory-cough/static_form/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 381,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "respiratory",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Clarify onset, progression, breathlessness and relevant exposure when these could change the estimate.",
+            "Consider respiratory limitations and urgent breathing concerns separately from likely explanations."
+          ]
+        }
+      ],
+      "case": "contradictory-cough",
+      "arm": "static_form",
+      "model": "scripted-v1",
+      "interviewQuestions": 3,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 2,
+        "total": 2
+      },
+      "keyHistory": {
+        "matched": 2,
+        "total": 2
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false,
+        "static_1": false,
+        "static_2": false,
+        "static_3": false
+      },
+      "contradictions": 1,
+      "expectedContradiction": true,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 4,
+      "revisedHistory": 5,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/family-history/free_text_only/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 204,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "family-history",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/family-history/adaptive/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 527,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "family-history",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/family-history/static_form/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 363,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "family-history",
+      "arm": "static_form",
+      "model": "scripted-v1",
+      "interviewQuestions": 3,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false,
+        "static_1": false,
+        "static_2": false,
+        "static_3": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 4,
+      "revisedHistory": 5,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/current-chest-pain/free_text_only/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 267,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "current-chest-pain",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/current-chest-pain/adaptive/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 261,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "current-chest-pain",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/current-chest-pain/static_form/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 252,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "current-chest-pain",
+      "arm": "static_form",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/denied-chest-pain/free_text_only/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 181,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "denied-chest-pain",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/denied-chest-pain/adaptive/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 483,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "denied-chest-pain",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/denied-chest-pain/static_form/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 331,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "denied-chest-pain",
+      "arm": "static_form",
+      "model": "scripted-v1",
+      "interviewQuestions": 3,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false,
+        "static_1": false,
+        "static_2": false,
+        "static_3": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 4,
+      "revisedHistory": 5,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/historical-chest-pain/free_text_only/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 191,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "historical-chest-pain",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/historical-chest-pain/adaptive/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 506,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "historical-chest-pain",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/historical-chest-pain/static_form/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 351,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "historical-chest-pain",
+      "arm": "static_form",
+      "model": "scripted-v1",
+      "interviewQuestions": 3,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false,
+        "static_1": false,
+        "static_2": false,
+        "static_3": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 4,
+      "revisedHistory": 5,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/third-person-chest-pain/free_text_only/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 197,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "third-person-chest-pain",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/third-person-chest-pain/adaptive/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 518,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "third-person-chest-pain",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/third-person-chest-pain/static_form/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 359,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "third-person-chest-pain",
+      "arm": "static_form",
+      "model": "scripted-v1",
+      "interviewQuestions": 3,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false,
+        "static_1": false,
+        "static_2": false,
+        "static_3": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 4,
+      "revisedHistory": 5,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/breathing-difficulty/free_text_only/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 207,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "breathing-difficulty",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/breathing-difficulty/adaptive/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 212,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "breathing-difficulty",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/breathing-difficulty/static_form/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 203,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "breathing-difficulty",
+      "arm": "static_form",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/explicit-warning/free_text_only/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 140,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "explicit-warning",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 0,
+        "total": 0
+      },
+      "keyHistory": {
+        "matched": 0,
+        "total": 0
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/explicit-warning/adaptive/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 141,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "explicit-warning",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 0,
+        "total": 0
+      },
+      "keyHistory": {
+        "matched": 0,
+        "total": 0
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/explicit-warning/static_form/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 139,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "explicit-warning",
+      "arm": "static_form",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 0,
+        "total": 0
+      },
+      "keyHistory": {
+        "matched": 0,
+        "total": 0
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/corrected-warning/free_text_only/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 317,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "corrected-warning",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "after_patient_correction": false,
+        "assessment": false,
+        "intake": true,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 2,
+      "revisedHistory": 3,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/corrected-warning/adaptive/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 564,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "corrected-warning",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "after_patient_correction": false,
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": true,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 4,
+      "revisedHistory": 5,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/corrected-warning/static_form/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 397,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "corrected-warning",
+      "arm": "static_form",
+      "model": "scripted-v1",
+      "interviewQuestions": 3,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "after_patient_correction": false,
+        "assessment": false,
+        "intake": true,
+        "review": false,
+        "static_1": false,
+        "static_2": false,
+        "static_3": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 5,
+      "revisedHistory": 6,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/uncertain-current-warning/free_text_only/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 234,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "uncertain-current-warning",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/uncertain-current-warning/adaptive/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 229,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "uncertain-current-warning",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/uncertain-current-warning/static_form/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 229,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "uncertain-current-warning",
+      "arm": "static_form",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/warning-on-followup/free_text_only/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 160,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "warning-on-followup",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 2
+      },
+      "missedTargets": [
+        "new breathing difficulty"
+      ],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/warning-on-followup/adaptive/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 555,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "warning-on-followup",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 2,
+        "total": 2
+      },
+      "keyHistory": {
+        "matched": 2,
+        "total": 2
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": true,
+        "assessment": true,
+        "intake": false,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/warning-on-followup/static_form/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 372,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "case": "warning-on-followup",
+      "arm": "static_form",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 2,
+        "total": 2
+      },
+      "keyHistory": {
+        "matched": 2,
+        "total": 2
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": false,
+        "review": true,
+        "static_1": false,
+        "static_2": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/respiratory-medication-change/free_text_only/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 353,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "respiratory",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Clarify onset, progression, breathlessness and relevant exposure when these could change the estimate.",
+            "Consider respiratory limitations and urgent breathing concerns separately from likely explanations."
+          ]
+        }
+      ],
+      "case": "respiratory-medication-change",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/respiratory-medication-change/adaptive/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 724,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "respiratory",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Clarify onset, progression, breathlessness and relevant exposure when these could change the estimate.",
+            "Consider respiratory limitations and urgent breathing concerns separately from likely explanations."
+          ]
+        }
+      ],
+      "case": "respiratory-medication-change",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/respiratory-medication-change/static_form/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 494,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "respiratory",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Clarify onset, progression, breathlessness and relevant exposure when these could change the estimate.",
+            "Consider respiratory limitations and urgent breathing concerns separately from likely explanations."
+          ]
+        }
+      ],
+      "case": "respiratory-medication-change",
+      "arm": "static_form",
+      "model": "scripted-v1",
+      "interviewQuestions": 3,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false,
+        "static_1": false,
+        "static_2": false,
+        "static_3": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 4,
+      "revisedHistory": 5,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/headache-with-warning/free_text_only/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 393,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "headache",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Establish whether onset was sudden, how this differs from prior episodes and any associated changes.",
+            "Ask about recent medication changes or injury if relevant. Sudden severe onset may need an immediate interruption."
+          ]
+        }
+      ],
+      "case": "headache-with-warning",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/headache-with-warning/adaptive/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 393,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "headache",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Establish whether onset was sudden, how this differs from prior episodes and any associated changes.",
+            "Ask about recent medication changes or injury if relevant. Sudden severe onset may need an immediate interruption."
+          ]
+        }
+      ],
+      "case": "headache-with-warning",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/headache-with-warning/static_form/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 394,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "headache",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Establish whether onset was sudden, how this differs from prior episodes and any associated changes.",
+            "Ask about recent medication changes or injury if relevant. Sudden severe onset may need an immediate interruption."
+          ]
+        }
+      ],
+      "case": "headache-with-warning",
+      "arm": "static_form",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/abdominal-urgent/free_text_only/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 274,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "abdominal",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Clarify location, onset, progression and associated digestive or urinary changes.",
+            "Review recent medication changes, exposures and relevant prior episodes without guessing pregnancy status."
+          ]
+        }
+      ],
+      "case": "abdominal-urgent",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/abdominal-urgent/adaptive/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 267,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "abdominal",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Clarify location, onset, progression and associated digestive or urinary changes.",
+            "Review recent medication changes, exposures and relevant prior episodes without guessing pregnancy status."
+          ]
+        }
+      ],
+      "case": "abdominal-urgent",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/abdominal-urgent/static_form/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 266,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "abdominal",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Clarify location, onset, progression and associated digestive or urinary changes.",
+            "Review recent medication changes, exposures and relevant prior episodes without guessing pregnancy status."
+          ]
+        }
+      ],
+      "case": "abdominal-urgent",
+      "arm": "static_form",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/abdominal-vague/free_text_only/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 235,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "abdominal",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Clarify location, onset, progression and associated digestive or urinary changes.",
+            "Review recent medication changes, exposures and relevant prior episodes without guessing pregnancy status."
+          ]
+        }
+      ],
+      "case": "abdominal-vague",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 0,
+        "total": 0
+      },
+      "keyHistory": {
+        "matched": 0,
+        "total": 0
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/abdominal-vague/adaptive/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 617,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "abdominal",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Clarify location, onset, progression and associated digestive or urinary changes.",
+            "Review recent medication changes, exposures and relevant prior episodes without guessing pregnancy status."
+          ]
+        }
+      ],
+      "case": "abdominal-vague",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 0,
+        "total": 0
+      },
+      "keyHistory": {
+        "matched": 0,
+        "total": 0
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/abdominal-vague/static_form/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 408,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "abdominal",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Clarify location, onset, progression and associated digestive or urinary changes.",
+            "Review recent medication changes, exposures and relevant prior episodes without guessing pregnancy status."
+          ]
+        }
+      ],
+      "case": "abdominal-vague",
+      "arm": "static_form",
+      "model": "scripted-v1",
+      "interviewQuestions": 3,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 0,
+        "total": 0
+      },
+      "keyHistory": {
+        "matched": 0,
+        "total": 0
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false,
+        "static_1": false,
+        "static_2": false,
+        "static_3": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 4,
+      "revisedHistory": 5,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/dizziness-medication-change/free_text_only/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 1144,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 1,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "dizziness",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Clarify what dizziness feels like, its timing, triggers, fainting or any new neurological change.",
+            "Ask about recent medication changes if they could affect urgency or possible causes."
+          ]
+        }
+      ],
+      "case": "dizziness-medication-change",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 0,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 0,
+        "total": 1
+      },
+      "missedTargets": [
+        "positional dizziness"
+      ],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/dizziness-medication-change/adaptive/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 787,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "dizziness",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Clarify what dizziness feels like, its timing, triggers, fainting or any new neurological change.",
+            "Ask about recent medication changes if they could affect urgency or possible causes."
+          ]
+        }
+      ],
+      "case": "dizziness-medication-change",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 0,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 0,
+        "total": 1
+      },
+      "missedTargets": [
+        "positional dizziness"
+      ],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/dizziness-medication-change/static_form/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 602,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "dizziness",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Clarify what dizziness feels like, its timing, triggers, fainting or any new neurological change.",
+            "Ask about recent medication changes if they could affect urgency or possible causes."
+          ]
+        }
+      ],
+      "case": "dizziness-medication-change",
+      "arm": "static_form",
+      "model": "scripted-v1",
+      "interviewQuestions": 3,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 0,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 0,
+        "total": 1
+      },
+      "missedTargets": [
+        "positional dizziness"
+      ],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false,
+        "static_1": false,
+        "static_2": false,
+        "static_3": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 4,
+      "revisedHistory": 5,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/dizziness-with-warning/free_text_only/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 284,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "dizziness",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Clarify what dizziness feels like, its timing, triggers, fainting or any new neurological change.",
+            "Ask about recent medication changes if they could affect urgency or possible causes."
+          ]
+        }
+      ],
+      "case": "dizziness-with-warning",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/dizziness-with-warning/adaptive/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 322,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "dizziness",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Clarify what dizziness feels like, its timing, triggers, fainting or any new neurological change.",
+            "Ask about recent medication changes if they could affect urgency or possible causes."
+          ]
+        }
+      ],
+      "case": "dizziness-with-warning",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/dizziness-with-warning/static_form/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 314,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "dizziness",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Clarify what dizziness feels like, its timing, triggers, fainting or any new neurological change.",
+            "Ask about recent medication changes if they could affect urgency or possible causes."
+          ]
+        }
+      ],
+      "case": "dizziness-with-warning",
+      "arm": "static_form",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": true,
+        "intake": true,
+        "review": true
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/headache-denies-sudden-onset/free_text_only/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 318,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "headache",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Establish whether onset was sudden, how this differs from prior episodes and any associated changes.",
+            "Ask about recent medication changes or injury if relevant. Sudden severe onset may need an immediate interruption."
+          ]
+        }
+      ],
+      "case": "headache-denies-sudden-onset",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 1,
+      "revisedHistory": 2,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/headache-denies-sudden-onset/adaptive/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 776,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "headache",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Establish whether onset was sudden, how this differs from prior episodes and any associated changes.",
+            "Ask about recent medication changes or injury if relevant. Sudden severe onset may need an immediate interruption."
+          ]
+        }
+      ],
+      "case": "headache-denies-sudden-onset",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 2,
+      "modelCalls": 4,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "answer_1": false,
+        "answer_2": false,
+        "assessment": false,
+        "intake": false,
+        "review": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 3,
+      "revisedHistory": 4,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/headache-denies-sudden-onset/static_form/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 537,
+      "promptVersion": "evaluation-fixture-v1",
+      "schemaVersion": "proposal-v1",
+      "appVersion": "0.2.0",
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "returnedModels": [
+        "scripted-v1"
+      ],
+      "pathways": [
+        {
+          "id": "headache",
+          "version": "adult-development-v2",
+          "reviewStatus": "unvalidated_development",
+          "context": [
+            "Establish whether onset was sudden, how this differs from prior episodes and any associated changes.",
+            "Ask about recent medication changes or injury if relevant. Sudden severe onset may need an immediate interruption."
+          ]
+        }
+      ],
+      "case": "headache-denies-sudden-onset",
+      "arm": "static_form",
+      "model": "scripted-v1",
+      "interviewQuestions": 3,
+      "modelCalls": 2,
+      "visibleTargetExtraction": {
+        "matched": 1,
+        "total": 1
+      },
+      "keyHistory": {
+        "matched": 1,
+        "total": 1
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {
+        "assessment": false,
+        "intake": false,
+        "review": false,
+        "static_1": false,
+        "static_2": false,
+        "static_3": false
+      },
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "insufficient",
+      "assessedRevision": 4,
+      "revisedHistory": 5,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/age-outside-scope/free_text_only/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 5,
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "case": "age-outside-scope",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 0,
+      "visibleTargetExtraction": {
+        "matched": 0,
+        "total": 0
+      },
+      "keyHistory": {
+        "matched": 0,
+        "total": 0
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {},
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "history_only",
+      "assessedRevision": 0,
+      "revisedHistory": 0,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/age-outside-scope/adaptive/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 4,
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "case": "age-outside-scope",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 0,
+      "visibleTargetExtraction": {
+        "matched": 0,
+        "total": 0
+      },
+      "keyHistory": {
+        "matched": 0,
+        "total": 0
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {},
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "history_only",
+      "assessedRevision": 0,
+      "revisedHistory": 0,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/age-outside-scope/static_form/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 4,
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "case": "age-outside-scope",
+      "arm": "static_form",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 0,
+      "visibleTargetExtraction": {
+        "matched": 0,
+        "total": 0
+      },
+      "keyHistory": {
+        "matched": 0,
+        "total": 0
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {},
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "history_only",
+      "assessedRevision": 0,
+      "revisedHistory": 0,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/pregnancy-specific/free_text_only/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 5,
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "case": "pregnancy-specific",
+      "arm": "free_text_only",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 0,
+      "visibleTargetExtraction": {
+        "matched": 0,
+        "total": 0
+      },
+      "keyHistory": {
+        "matched": 0,
+        "total": 0
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {},
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "history_only",
+      "assessedRevision": 0,
+      "revisedHistory": 0,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/pregnancy-specific/adaptive/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 5,
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "case": "pregnancy-specific",
+      "arm": "adaptive",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 0,
+      "visibleTargetExtraction": {
+        "matched": 0,
+        "total": 0
+      },
+      "keyHistory": {
+        "matched": 0,
+        "total": 0
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {},
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "history_only",
+      "assessedRevision": 0,
+      "revisedHistory": 0,
+      "exploratoryReferenceRank": null
+    },
+    {
+      "runId": "6ff2adab99b6ce74d280/pregnancy-specific/static_form/01",
+      "repetition": 1,
+      "elapsedMicroseconds": 5,
+      "missedAlertCheckpoints": 0,
+      "excessiveAlertCheckpoints": 0,
+      "elapsedMs": 0,
+      "repeatedQuestions": 0,
+      "case": "pregnancy-specific",
+      "arm": "static_form",
+      "model": "scripted-v1",
+      "interviewQuestions": 0,
+      "modelCalls": 0,
+      "visibleTargetExtraction": {
+        "matched": 0,
+        "total": 0
+      },
+      "keyHistory": {
+        "matched": 0,
+        "total": 0
+      },
+      "missedTargets": [],
+      "unadjudicatedFindings": [],
+      "fabricatedFindings": [],
+      "staleAssessments": [],
+      "lostWarnings": [],
+      "alertErrors": [],
+      "contradictionErrors": [],
+      "errors": [],
+      "checkpointAlerts": {},
+      "contradictions": 0,
+      "expectedContradiction": false,
+      "assessmentOutcome": "history_only",
+      "assessedRevision": 0,
+      "revisedHistory": 0,
+      "exploratoryReferenceRank": null
+    }
+  ]
+}
