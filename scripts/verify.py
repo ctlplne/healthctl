@@ -67,5 +67,8 @@ if suite in ("all", "backend"):
 if suite in ("all", "browser"):
     (root / "build" / "test-results").mkdir(parents=True, exist_ok=True)
     run("up", "-d", "--wait", "--build", "app", "fixture", "ehr-fixture")
-    run("run", "--rm", "--build", "browser-tests")
+    # The portal and browser share the live app network namespace. Recreating the
+    # healthy app here would leave the portal listening in the old namespace.
+    run("build", "browser-tests")
+    run("run", "--rm", "--no-deps", "browser-tests")
     check_printed_reports()

@@ -31,9 +31,43 @@ jobs:
     needs: tag
     uses: ./.github/workflows/qualification.yml
 
+  sign_mac:
+    name: Sign and notarize the tested Mac installer
+    needs: [test, qualify]
+    if: vars.HEALTHCTL_MACOS_SIGNING == 'true'
+    environment: macos-signing
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: macos-arm64-adhoc
+          path: build/qualified
+      - name: Apply Developer ID and obtain Apple's notarization ticket
+        env:
+          APPLE_CERTIFICATE_P12: ${{ secrets.APPLE_CERTIFICATE_P12 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_NOTARY_KEY_P8: ${{ secrets.APPLE_NOTARY_KEY_P8 }}
+          APPLE_NOTARY_KEY_ID: ${{ secrets.APPLE_NOTARY_KEY_ID }}
+          APPLE_NOTARY_ISSUER: ${{ secrets.APPLE_NOTARY_ISSUER }}
+        run: ./scripts/sign-desktop-ci.sh build/qualified/healthctl-arm64.dmg
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: macos-arm64-notarized
+          path: build/desktop/healthctl-arm64.dmg
+          if-no-files-found: error
+          retention-days: 3
+          compression-level: 0
+
   draft:
     name: Attest tested archives and prepare draft
-    needs: [test, qualify]
+    needs: [test, qualify, sign_mac]
+    if: >-
+      !cancelled() && needs.test.result == 'success' && needs.qualify.result == 'success' &&
+      (needs.sign_mac.result == 'success' || needs.sign_mac.result == 'skipped')
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     permissions:
@@ -46,9 +80,17 @@ jobs:
           pattern: linux-*
           merge-multiple: true
           path: dist
-      - name: Generate checksums for both architectures
+      - if: needs.sign_mac.result == 'success'
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: macos-arm64-notarized
+          path: dist
+      - name: Generate checksums for tested release artifacts
         working-directory: dist
-        run: sha256sum healthctl-linux-amd64.tar.gz healthctl-linux-arm64.tar.gz > SHA256SUMS
+        run: |
+          files=(healthctl-linux-amd64.tar.gz healthctl-linux-arm64.tar.gz)
+          if [[ -f healthctl-arm64.dmg ]]; then files+=(healthctl-arm64.dmg); fi
+          sha256sum "${files[@]}" > SHA256SUMS
       - uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
         with:
           subject-checksums: dist/SHA256SUMS
