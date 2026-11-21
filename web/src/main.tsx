@@ -16,6 +16,11 @@ import {
 import { RegionContext } from './region'
 import { Timeline } from './timeline'
 import {
+  ChatGPTConnections,
+  ChatGPTReturn,
+  captureChatGPTReturn,
+} from './chatgpt'
+import {
   capturePortalReturn,
   encounterSourceLink,
   linkedSourceEncounter,
@@ -58,6 +63,8 @@ function App() {
     [message, setMessage] = useState('')
   const [reportFirst, setReportFirst] = useState(false),
     [region, setRegion] = useState<Region | null>(null)
+  const [planReturn, setPlanReturn] = useState(captureChatGPTReturn),
+    [planSelection, setPlanSelection] = useState<string>()
   const [portalReturn, setPortalReturn] = useState(capturePortalReturn)
   const [sourceEncounter, setSourceEncounter] = useState(linkedSourceEncounter)
   const locked = useRef(false),
@@ -206,6 +213,7 @@ function App() {
   const move = (p: Page) => {
     if (locked.current) return
     leaveSources()
+    setPlanSelection(undefined)
     setPage(p)
     setError('')
     setMessage('')
@@ -215,6 +223,7 @@ function App() {
   }
   const storeProvider = async (p: Provider) => {
     const s = await api<Settings>('/settings', 'PUT', { provider: p })
+    setPlanSelection(undefined)
     setSettings(s)
     setPage('journal')
     setMessage('Provider saved for new encounters.')
@@ -277,6 +286,24 @@ function App() {
         />
       </>
     )
+  if (planReturn)
+    return (
+      <>
+        <a href="#main-content" className="skip">
+          Skip to content
+        </a>
+        <ChatGPTReturn
+          callback={planReturn}
+          name={session.displayName}
+          done={(id) => {
+            window.history.replaceState(null, '', '/')
+            setPlanReturn(null)
+            setPlanSelection(id)
+            setPage('settings')
+          }}
+        />
+      </>
+    )
   if (portalReturn)
     return (
       <>
@@ -292,203 +319,206 @@ function App() {
       </>
     )
   return (
-    <div className="app-shell">
-      <a href="#main-content" className="skip">
-        Skip to content
-      </a>
-      <aside className="sidebar">
-        <Brand name={session.displayName} />
-        <div className="workspace-meta">
-          <span className="workspace-icon">
-            <LockKeyhole size={16} />
-          </span>
-          <div>
-            <strong>Personal workspace</strong>
-            <small>Self-hosted installation</small>
+    <ChatGPTConnections>
+      <div className="app-shell">
+        <a href="#main-content" className="skip">
+          Skip to content
+        </a>
+        <aside className="sidebar">
+          <Brand name={session.displayName} />
+          <div className="workspace-meta">
+            <span className="workspace-icon">
+              <LockKeyhole size={16} />
+            </span>
+            <div>
+              <strong>Personal workspace</strong>
+              <small>Self-hosted installation</small>
+            </div>
           </div>
-        </div>
-        <nav className="main-nav" aria-label="Workspace">
-          <button
-            className={
-              ['record', 'intake', 'journal'].includes(page) ? 'selected' : ''
-            }
-            aria-current={
-              ['record', 'intake', 'journal'].includes(page)
-                ? 'page'
-                : undefined
-            }
-            disabled={busy}
-            onClick={() => move('journal')}
-          >
-            <FolderOpen size={19} />
-            Encounter journal
-          </button>
-          <button
-            className={page === 'timeline' ? 'selected' : ''}
-            aria-current={page === 'timeline' ? 'page' : undefined}
-            disabled={busy}
-            onClick={() => move('timeline')}
-          >
-            <CalendarDays size={19} />
-            Personal timeline
-          </button>
-          <button
-            className={page === 'evidence' ? 'selected' : ''}
-            aria-current={page === 'evidence' ? 'page' : undefined}
-            disabled={busy}
-            onClick={() => move('evidence')}
-          >
-            <Library size={19} />
-            Medical evidence
-          </button>
-          <button
-            className={page === 'settings' ? 'selected' : ''}
-            aria-current={page === 'settings' ? 'page' : undefined}
-            disabled={busy}
-            onClick={() => move('settings')}
-          >
-            <Settings2 size={19} />
-            Model settings
-          </button>
-        </nav>
-        <div className="rail-bottom">
-          <button className="rail-link" onClick={() => setNotice((v) => !v)}>
-            <CircleHelp size={17} />
-            Experimental-use notice
-          </button>
-          <button className="rail-link" onClick={logout} disabled={busy}>
-            <LogOut size={17} />
-            Sign out
-          </button>
-        </div>
-      </aside>
-      <div className="workspace-body">
-        <header className="topbar">
-          <span>
-            <BookOpen size={16} /> Personal workspace
-          </span>
-          <button onClick={() => setNotice((v) => !v)} aria-expanded={notice}>
-            <Info size={15} />
-            Experimental · Unreviewed
-          </button>
-        </header>
-        <main id="main-content" tabIndex={-1} className="content">
-          {notice && (
-            <div className="notice-disclosure">
-              <Notice text={session.notice} />
-              <button
-                onClick={() => setNotice(false)}
-                className="icon-btn"
-                aria-label="Close notice"
-              >
-                <X size={16} />
-              </button>
-            </div>
-          )}
-          {busy && (
-            <div className="progress-status" role="status">
-              <LoaderCircle size={16} className="spin" />
-              Working…
-            </div>
-          )}
-          {error && (
-            <div className="error-banner" role="alert">
-              <Info size={18} />
-              <span>{error}</span>
-              <button
-                onClick={() => setError('')}
-                className="icon-btn"
-                aria-label="Dismiss error"
-              >
-                <X size={16} />
-              </button>
-            </div>
-          )}
-          {message && (
-            <p className="form-success" role="status">
-              {message}
-            </p>
-          )}
-          {!settings ? (
-            <section>
-              {error ? (
+          <nav className="main-nav" aria-label="Workspace">
+            <button
+              className={
+                ['record', 'intake', 'journal'].includes(page) ? 'selected' : ''
+              }
+              aria-current={
+                ['record', 'intake', 'journal'].includes(page)
+                  ? 'page'
+                  : undefined
+              }
+              disabled={busy}
+              onClick={() => move('journal')}
+            >
+              <FolderOpen size={19} />
+              Encounter journal
+            </button>
+            <button
+              className={page === 'timeline' ? 'selected' : ''}
+              aria-current={page === 'timeline' ? 'page' : undefined}
+              disabled={busy}
+              onClick={() => move('timeline')}
+            >
+              <CalendarDays size={19} />
+              Personal timeline
+            </button>
+            <button
+              className={page === 'evidence' ? 'selected' : ''}
+              aria-current={page === 'evidence' ? 'page' : undefined}
+              disabled={busy}
+              onClick={() => move('evidence')}
+            >
+              <Library size={19} />
+              Medical evidence
+            </button>
+            <button
+              className={page === 'settings' ? 'selected' : ''}
+              aria-current={page === 'settings' ? 'page' : undefined}
+              disabled={busy}
+              onClick={() => move('settings')}
+            >
+              <Settings2 size={19} />
+              Model settings
+            </button>
+          </nav>
+          <div className="rail-bottom">
+            <button className="rail-link" onClick={() => setNotice((v) => !v)}>
+              <CircleHelp size={17} />
+              Experimental-use notice
+            </button>
+            <button className="rail-link" onClick={logout} disabled={busy}>
+              <LogOut size={17} />
+              Sign out
+            </button>
+          </div>
+        </aside>
+        <div className="workspace-body">
+          <header className="topbar">
+            <span>
+              <BookOpen size={16} /> Personal workspace
+            </span>
+            <button onClick={() => setNotice((v) => !v)} aria-expanded={notice}>
+              <Info size={15} />
+              Experimental · Unreviewed
+            </button>
+          </header>
+          <main id="main-content" tabIndex={-1} className="content">
+            {notice && (
+              <div className="notice-disclosure">
+                <Notice text={session.notice} />
                 <button
-                  className="secondary"
-                  onClick={() => run(reloadWorkspace)}
+                  onClick={() => setNotice(false)}
+                  className="icon-btn"
+                  aria-label="Close notice"
                 >
-                  Reload workspace
+                  <X size={16} />
                 </button>
-              ) : (
-                <p role="status">Loading your workspace…</p>
-              )}
-            </section>
-          ) : page === 'timeline' ? (
-            <Timeline busy={busy} onOpen={open} />
-          ) : page === 'evidence' ? (
-            <EvidenceLookup busy={busy} run={run} />
-          ) : page === 'settings' ? (
-            <>
-              <ProviderEditor
-                settings={settings}
-                busy={busy}
-                run={run}
-                onSave={storeProvider}
-              />
-              <Operator busy={busy} run={run} region={region} />
-            </>
-          ) : page === 'intake' && settings.provider?.kind ? (
-            <IntakeForm
-              reportFirst={reportFirst}
-              provider={settings.provider}
-              session={session}
-              busy={busy}
-              run={run}
-              onCreate={async (b) => {
-                await save('/encounters', b)
-              }}
-              onBack={() => move('journal')}
-            />
-          ) : page === 'record' && e ? (
-            <RegionContext.Provider value={region}>
-              <EncounterPage
-                key={e.id}
-                e={e}
-                startAtSources={sourceEncounter === e.id}
-                name={session.displayName}
-                emergency={session.emergency}
+              </div>
+            )}
+            {busy && (
+              <div className="progress-status" role="status">
+                <LoaderCircle size={16} className="spin" />
+                Working…
+              </div>
+            )}
+            {error && (
+              <div className="error-banner" role="alert">
+                <Info size={18} />
+                <span>{error}</span>
+                <button
+                  onClick={() => setError('')}
+                  className="icon-btn"
+                  aria-label="Dismiss error"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            )}
+            {message && (
+              <p className="form-success" role="status">
+                {message}
+              </p>
+            )}
+            {!settings ? (
+              <section>
+                {error ? (
+                  <button
+                    className="secondary"
+                    onClick={() => run(reloadWorkspace)}
+                  >
+                    Reload workspace
+                  </button>
+                ) : (
+                  <p role="status">Loading your workspace…</p>
+                )}
+              </section>
+            ) : page === 'timeline' ? (
+              <Timeline busy={busy} onOpen={open} />
+            ) : page === 'evidence' ? (
+              <EvidenceLookup busy={busy} run={run} />
+            ) : page === 'settings' ? (
+              <>
+                <ProviderEditor
+                  chatgptSelection={planSelection}
+                  settings={settings}
+                  busy={busy}
+                  run={run}
+                  onSave={storeProvider}
+                />
+                <Operator busy={busy} run={run} region={region} />
+              </>
+            ) : page === 'intake' && settings.provider?.kind ? (
+              <IntakeForm
+                reportFirst={reportFirst}
                 provider={settings.provider}
+                session={session}
                 busy={busy}
                 run={run}
-                onAction={action}
-                onUpdate={setEncounter}
-                careDestination={region?.careDestination || ''}
-                onLeave={() => move('journal')}
-                onDelete={remove}
+                onCreate={async (b) => {
+                  await save('/encounters', b)
+                }}
+                onBack={() => move('journal')}
               />
-            </RegionContext.Provider>
-          ) : (
-            <Journal
-              rows={records}
-              settings={settings}
-              onOpen={open}
-              onNew={() => {
-                setReportFirst(false)
-                move('intake')
-              }}
-              onReport={() => {
-                setReportFirst(true)
-                move('intake')
-              }}
-              onSettings={() => move('settings')}
-            />
-          )}
-        </main>
-        <footer className="workspace-footer">
-          <span>{session.displayName}</span>
-          <span>Personal clinical workspace</span>
-        </footer>
+            ) : page === 'record' && e ? (
+              <RegionContext.Provider value={region}>
+                <EncounterPage
+                  key={e.id}
+                  e={e}
+                  startAtSources={sourceEncounter === e.id}
+                  name={session.displayName}
+                  emergency={session.emergency}
+                  provider={settings.provider}
+                  busy={busy}
+                  run={run}
+                  onAction={action}
+                  onUpdate={setEncounter}
+                  careDestination={region?.careDestination || ''}
+                  onLeave={() => move('journal')}
+                  onDelete={remove}
+                />
+              </RegionContext.Provider>
+            ) : (
+              <Journal
+                rows={records}
+                settings={settings}
+                onOpen={open}
+                onNew={() => {
+                  setReportFirst(false)
+                  move('intake')
+                }}
+                onReport={() => {
+                  setReportFirst(true)
+                  move('intake')
+                }}
+                onSettings={() => move('settings')}
+              />
+            )}
+          </main>
+          <footer className="workspace-footer">
+            <span>{session.displayName}</span>
+            <span>Personal clinical workspace</span>
+          </footer>
+        </div>
       </div>
-    </div>
+    </ChatGPTConnections>
   )
 }
 const banner = document.getElementById('model-guidance')!

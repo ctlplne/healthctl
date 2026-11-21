@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api } from './api'
 import { EvidenceManager } from './evidence'
+import { ManageUsage } from './chatgpt'
 import type { Work } from './forms'
 import type { Region } from './records'
 type Configuration = {
@@ -74,6 +75,9 @@ export function Operator({
             <Metrics items={qualification.rates} />
             <h3>Local usage</h3>
             <Metrics items={qualification.usage} />
+            <p>
+              ChatGPT plan limits and credits · <ManageUsage />
+            </p>
           </>
         )}
       </details>

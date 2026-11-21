@@ -19,3 +19,8 @@ healthctl uses `BUSL-1.1` with a four-year conversion to `MPL-2.0`. The conversi
 | Change License | Mozilla Public License 2.0 (`MPL-2.0`), with the standard secondary-license compatibility provisions. |
 
 Resolve release parameters, ownership, third-party dependency notices, and commercial terms before public distribution. Complete a model/provider retention and data-processing review against the operator's intended use and region. Medical notices are separate from the software license.
+
+
+## ChatGPT subscription qualification
+
+The direct integration is implemented for a personal loopback installation. Before a paid or managed release, establish the applicable integration terms with OpenAI for that distribution and complete an account-authorized synthetic probe. Record the model actually offered, the result of the probe and the applicable workspace credit controls. A successful probe qualifies the connection for that account at that time. Clinical review and deployment-specific handling of health information remain separate release decisions. [OpenAI integration scope](https://developers.openai.com/siwc/token-sharing-open-source) · [Provider qualification](model-providers.md#use-a-chatgpt-subscription)

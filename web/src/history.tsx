@@ -4,6 +4,7 @@ import type { Answer, Encounter, Fact, Fields } from './types'
 import { date, human } from './types'
 import { BulletList, Evidence, factDetail } from './report'
 import { Callout } from './shared'
+import { PlanUsage } from './chatgpt'
 import { Radios } from './forms'
 type EditorProps = {
   busy: boolean
@@ -399,6 +400,7 @@ export function History({
       )}
       {!e.scopeReason && (
         <section className="panel confirm-panel">
+          {e.provider.kind === 'chatgpt' && <PlanUsage />}
           {e.confirmedRevision !== e.historyRevision ? (
             <>
               <h2>Does this reflect what you reported?</h2>

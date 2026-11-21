@@ -3,8 +3,9 @@ import { useContext, useEffect, useRef, useState } from 'react'
 import { FilePlus2, FileSearch, FileText, Send } from 'lucide-react'
 import { api } from './api'
 import { EhrConnect } from './ehr'
+import { Destination } from './chatgpt'
 import { Callout } from './shared'
-import { destination, kinds } from './types'
+import { kinds } from './types'
 import type { Encounter, Fields } from './types'
 import { latestReview, rowText } from './records'
 import type { DocumentSource, ReportRow } from './records'
@@ -627,15 +628,27 @@ function DocumentReview({
               <div className="row-heading">
                 <strong>{row.locator || 'Source passage'}</strong>
                 <span className="tag">
-                  {current
-                    ? current.approvedFor
-                      ? 'Approved for ' + kinds[current.approvedFor.kind]
-                      : 'Reviewed locally'
-                    : review?.withdrawn
-                      ? 'Withdrawn'
-                      : row.uncertain
-                        ? 'Check transcription'
-                        : 'Unreviewed'}
+                  {current ? (
+                    current.approvedFor ? (
+                      <>
+                        Approved for {kinds[current.approvedFor.kind]}
+                        {current.approvedFor.kind === 'chatgpt' && (
+                          <>
+                            {' '}
+                            · <Destination p={current.approvedFor} />
+                          </>
+                        )}
+                      </>
+                    ) : (
+                      'Reviewed locally'
+                    )
+                  ) : review?.withdrawn ? (
+                    'Withdrawn'
+                  ) : row.uncertain ? (
+                    'Check transcription'
+                  ) : (
+                    'Unreviewed'
+                  )}
                 </span>
               </div>
               <blockquote>{row.original}</blockquote>
@@ -842,7 +855,7 @@ function DocumentReview({
           stay on this installation.
         </p>
         <p className="metadata">
-          {kinds[e.provider.kind]} · {destination(e.provider)} ·{' '}
+          {kinds[e.provider.kind]} · <Destination p={e.provider} /> ·{' '}
           {e.provider.model}
         </p>
         <button

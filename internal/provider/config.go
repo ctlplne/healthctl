@@ -45,6 +45,7 @@ type Metadata struct {
 }
 
 type Client struct {
+	chatGPTToken func(context.Context, string) (string, error)
 	remoteOnly   bool
 	allowed      map[string]bool
 	keyBase      string
@@ -123,9 +124,14 @@ func readSecret(name string) (string, error) {
 	return value, nil
 }
 
-// Destination is the base URL to display and persist for consent and provenance.
+// Destination is a canonical URL or, for ChatGPT, a local opaque account key.
 func (cfg Config) Destination() string {
 	switch cfg.Kind {
+	case "chatgpt":
+		if ValidChatGPTAccount(cfg.Endpoint) {
+			return cfg.Endpoint
+		}
+		return ""
 	case "openai":
 		return openAIBase
 	case "anthropic":
@@ -138,7 +144,7 @@ func (cfg Config) Destination() string {
 }
 
 func (cfg Config) native() bool {
-	return cfg.Structured == "native" || ((cfg.Structured == "" || cfg.Structured == "auto") && cfg.Kind != "compatible")
+	return cfg.Structured == "native" || ((cfg.Structured == "" || cfg.Structured == "auto") && cfg.Kind != "compatible" && cfg.Kind != "chatgpt")
 }
 
 func (c *Client) Validate(cfg Config) error {
@@ -156,6 +162,10 @@ func (c *Client) Validate(cfg Config) error {
 			return errors.New("synthetic demo does not accept an endpoint")
 		}
 		return nil
+	case "chatgpt":
+		if !ValidChatGPTAccount(cfg.Endpoint) || !validSubscriptionSlug(cfg.Model) {
+			return errors.New("choose a connected ChatGPT account and an available model")
+		}
 	case "openai", "anthropic":
 		if cfg.Endpoint != "" {
 			return errors.New("select a compatible provider for a custom endpoint")

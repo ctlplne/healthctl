@@ -8,10 +8,11 @@ import (
 const anthropicVersion = "2026-10-21"
 
 type call struct {
-	system    string
-	input     string
-	schema    json.RawMessage
-	maxTokens int
+	reasoningEffort string
+	system          string
+	input           string
+	schema          json.RawMessage
+	maxTokens       int
 }
 
 func (p call) body(cfg Config) ([]byte, error) {
@@ -24,11 +25,19 @@ func (p call) body(cfg Config) ([]byte, error) {
 	}
 	body := map[string]any{"model": cfg.Model}
 	switch cfg.Kind {
-	case "openai":
+	case "openai", "chatgpt":
 		body["instructions"] = system
-		body["input"] = p.input
 		body["store"] = false
-		body["max_output_tokens"] = p.maxTokens
+		if cfg.Kind == "chatgpt" {
+			body["input"] = []map[string]string{textContent("user", p.input)}
+			body["stream"] = true
+			if p.reasoningEffort != "" {
+				body["reasoning"] = map[string]string{"effort": p.reasoningEffort}
+			}
+		} else {
+			body["input"] = p.input
+			body["max_output_tokens"] = p.maxTokens
+		}
 		if cfg.native() {
 			body["text"] = map[string]any{"format": map[string]any{"type": "json_schema", "name": "clinical_history_result", "strict": true, "schema": p.schema}}
 		}

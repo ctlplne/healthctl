@@ -8,6 +8,8 @@ One owner account controls one installation. Choose a unique password and store 
 
 The app encrypts each clinical document with AES-256-GCM and a fresh, library-generated nonce. Associated data binds the owner and encounter IDs. A key verifier detects incorrect restore keys before the service starts. Metadata such as row IDs, timestamps, dataset size, owner username, password hash and nonclinical provider configuration remains visible to the database operator. Use an encrypted host volume and encrypted backups for this metadata, the private environment file, and downloaded reports. Access to the host, its Docker daemon, or both the data and its key gives access to the history. The key also encrypts uploaded originals using owner, encounter and document identifiers as associated data. Use the offline rotation command below to change keys while preserving the database and retry receipts.
 
+ChatGPT OAuth credentials use AES-256-GCM with the owner and host ID as associated data. Offline data-key rotation rewraps the credential vault. Owner recovery removes all subscription links.
+
 Secrets reside on the server. A local `.env` is created with mode 0600 and excluded from the build and repository. A production operator may use the provider adapter's `*_API_KEY_FILE` variables with explicit Docker secret mounts in a private Compose override. Supply one source for each key. Keep state, backups and secrets outside the source tree when distributing software. Backup storage keys should be managed separately from the database archive.
 
 ## Locale and TLS
@@ -22,10 +24,10 @@ Back up to an owner-controlled, encrypted directory. Set a private umask, choose
 
 ```sh
 umask 077
-docker compose exec -T db pg_dump -U clinicalhistory -d clinicalhistory -Fc --no-owner --no-acl --exclude-table-data=public.sessions --exclude-table-data=public.brief_access > clinical-history.dump
+docker compose exec -T db pg_dump -U clinicalhistory -d clinicalhistory -Fc --no-owner --no-acl --exclude-table-data=public.sessions --exclude-table-data=public.brief_access --exclude-table-data=public.chatgpt_vault > clinical-history.dump
 ```
 
-Keep an independently protected recovery copy of `CLINICAL_DATA_KEY` and the installation configuration. Restore the matching source version first. The database archive contains encrypted clinical rows and other sensitive metadata. Session cookies from the original installation cannot be reused with a session-free restore. A database backup alone cannot decrypt encounters.
+Keep an independently protected recovery copy of `CLINICAL_DATA_KEY` and the installation configuration. Restore the matching source version first. The database archive contains encrypted clinical rows and other sensitive metadata. Session cookies from the original installation cannot be reused with a session-free restore. The documented manual and scheduled backups also exclude the ChatGPT host ID and account credentials. After restore, reconnect in Model settings and confirm any account change on each existing encounter. Full raw database or VM snapshots can contain live credentials.
 
 ## Restore into a fresh installation
 
@@ -48,7 +50,7 @@ docker compose --profile backups up -d --wait backup
 docker compose logs --tail 10 backup
 ```
 
-The worker writes a PostgreSQL custom-format snapshot immediately, verifies its archive listing and repeats every `CLINICAL_BACKUP_INTERVAL_HOURS` (default 24). It retains `CLINICAL_BACKUP_KEEP` snapshots (default seven) and limits cleanup to its own dated filenames. Session and brief access tokens are excluded. Defaults use the separate `clinical_backups` named volume. To store snapshots on another encrypted drive, set `CLINICAL_BACKUP_DIRECTORY` to an existing absolute path writable by the PostgreSQL container account. Back up the matching installation key independently. To pause scheduled backups, run `docker compose --profile backups stop backup`.
+The worker writes a PostgreSQL custom-format snapshot immediately, verifies its archive listing and repeats every `CLINICAL_BACKUP_INTERVAL_HOURS` (default 24). It retains `CLINICAL_BACKUP_KEEP` snapshots (default seven) and limits cleanup to its own dated filenames. Session tokens, brief access grants and the ChatGPT subscription vault are excluded. Defaults use the separate `clinical_backups` named volume. To store snapshots on another encrypted drive, set `CLINICAL_BACKUP_DIRECTORY` to an existing absolute path writable by the PostgreSQL container account. Back up the matching installation key independently. To pause scheduled backups, run `docker compose --profile backups stop backup`.
 
 ## Owner recovery and key rotation
 

@@ -1,0 +1,107 @@
+package provider
+
+import (
+	"bufio"
+	"encoding/json"
+	"io"
+	"strings"
+)
+
+// Consume a complete Responses SSE event. No tokens, fragments, reasoning, or
+// remote error messages become patient-visible output before validation.
+func readPlanStream(r io.Reader, requestID string, budget int, usage *Usage) ([]byte, string, error) {
+	reader := &io.LimitedReader{R: r, N: maxEnvelopeBytes + 1}
+	scanner := bufio.NewScanner(reader)
+	scanner.Buffer(make([]byte, 4096), maxEnvelopeBytes+1)
+	var data, delta strings.Builder
+	var eventType string
+	events := 0
+	for scanner.Scan() {
+		if reader.N == 0 {
+			return nil, "", errIncomplete
+		}
+		line := strings.TrimSuffix(scanner.Text(), "\r")
+		if strings.HasPrefix(line, ":") {
+			continue
+		}
+		if line != "" {
+			field, value, _ := strings.Cut(line, ":")
+			value = strings.TrimPrefix(value, " ")
+			switch field {
+			case "event":
+				eventType = value
+			case "data":
+				if data.Len() > 0 {
+					data.WriteByte('\n')
+				}
+				data.WriteString(value)
+			}
+			continue
+		}
+		if data.Len() == 0 {
+			eventType = ""
+			continue
+		}
+		events++
+		if events > 4096 {
+			return nil, "", errIncomplete
+		}
+		var event struct {
+			Type  string `json:"type"`
+			Delta string `json:"delta"`
+			Item  struct {
+				Type string `json:"type"`
+			} `json:"item"`
+			Response json.RawMessage `json:"response"`
+			Error    *planWireError  `json:"error"`
+			Code     string          `json:"code"`
+			Param    string          `json:"param"`
+		}
+		if json.Unmarshal([]byte(data.String()), &event) != nil || event.Type == "" || eventType != "" && eventType != event.Type {
+			return nil, "", errIncomplete
+		}
+		data.Reset()
+		eventType = ""
+		switch event.Type {
+		case "response.output_text.delta":
+			if len(event.Delta) > maxProposalBytes-delta.Len() {
+				return nil, "", errIncomplete
+			}
+			delta.WriteString(event.Delta)
+		case "response.output_item.added", "response.output_item.done":
+			if event.Item.Type != "message" && event.Item.Type != "reasoning" {
+				return nil, "", errIncomplete
+			}
+		case "response.refusal.delta", "response.refusal.done", "response.incomplete":
+			usage.add("chatgpt", event.Response)
+			return nil, "", errIncomplete
+		case "error", "response.failed":
+			issue := planWireError{Code: event.Code, Param: event.Param}
+			if event.Error != nil {
+				issue = *event.Error
+			}
+			var failure struct {
+				Error *planWireError `json:"error"`
+			}
+			if json.Unmarshal(event.Response, &failure) == nil && failure.Error != nil {
+				issue = *failure.Error
+			}
+			usage.add("chatgpt", event.Response)
+			return nil, "", planError(200, event.Type, issue.Code, issue.Param, requestID)
+		case "response.completed":
+			previous := usage.OutputTokens
+			usage.add("chatgpt", event.Response)
+			if usage.OutputTokens-previous > int64(budget) {
+				return nil, "", errIncomplete
+			}
+			out, model, err := unpack("openai", event.Response)
+			if err != nil || !validSubscriptionSlug(model) || delta.Len() > 0 && delta.String() != string(out) {
+				return nil, "", errIncomplete
+			}
+			return out, model, nil
+		}
+	}
+	// A dropped connection, malformed/unterminated event, [DONE] without a
+	// completed response, and a bare delta cannot produce a clinical proposal.
+	return nil, "", errIncomplete
+}

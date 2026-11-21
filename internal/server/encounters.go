@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"regexp"
 	"strings"
@@ -83,7 +84,7 @@ func (s *Server) action(w http.ResponseWriter, r *http.Request, owner int) error
 		return bad("A revision and submission identifier are required.")
 	}
 	if in.Action == "change_provider" {
-		if err := s.Models.Validate(provider.Config(in.Provider)); err != nil {
+		if err := s.validateModelChoice(r, owner, provider.Config(in.Provider)); err != nil {
 			return bad(err.Error())
 		}
 	}
@@ -128,6 +129,9 @@ func (s *Server) deliver(w http.ResponseWriter, r *http.Request, owner int, e *c
 		in, err := e.ModelInput(task)
 		var p clinical.Proposal
 		var meta clinical.ModelMeta
+		if err == nil && e.Provider.Kind == "chatgpt" && s.localPlanOrigin(r) == "" {
+			err = bad("Open this encounter at the local 127.0.0.1 address to use its ChatGPT connection.")
+		}
 		if err == nil {
 			if e.Demo {
 				p = clinical.Demo(in)
@@ -158,6 +162,13 @@ func (s *Server) deliver(w http.ResponseWriter, r *http.Request, owner int, e *c
 		}
 		if err != nil {
 			e.Fail(task)
+			var planErr *provider.ChatGPTError
+			var localErr problem
+			if errors.As(err, &planErr) {
+				e.Failure += " " + planErr.Error()
+			} else if e.Provider.Kind == "chatgpt" && errors.As(err, &localErr) {
+				e.Failure += " " + localErr.message
+			}
 			// Only operator setup errors have actionable, nonclinical details.
 			if strings.HasPrefix(err.Error(), "configure ") || strings.HasPrefix(err.Error(), "set BYOM_KEY_ENDPOINT") {
 				e.Failure += " Provider setup: " + err.Error() + "."

@@ -589,6 +589,15 @@ def main():
             else:
                 raise AssertionError("revised brief still available on old grant")
             before = c.call(path + "/export")
+            # Starting a local sign-in creates a durable host ID. Stop before
+            # opening the provider URL. No external account or tokens are used.
+            start = c.call("/chatgpt/start", "POST", {"enablePlan": False})
+            assert start["authorizationUrl"].startswith("/api/chatgpt/launch/")
+            def vault_rows(project):
+                return compose(project, "exec", "-T", "db", "psql", "-U", "clinicalhistory",
+                               "-d", "clinicalhistory", "-Atc", "SELECT count(*) FROM chatgpt_vault",
+                               stdout=subprocess.PIPE).stdout.strip()
+            assert vault_rows(source) == b"1"
             with tempfile.TemporaryFile() as backup:
                 compose(source, "--profile", "backups", "up", "-d", "backup")
                 for _ in range(50):
@@ -658,6 +667,9 @@ def main():
             compose(dest, "up", "-d", "--build", "--wait", "app")
             other = Client("18442")
             other.call("/login", "POST", owner)
+            assert vault_rows(dest) == b"0"
+            assert other.call("/chatgpt") == {"availableHere": True, "accounts": []}
+            passed("A populated host-local ChatGPT vault was excluded from the scheduler backup and restored app")
             region = other.call("/region")
             assert region["locale"] == "en-IN" and region["units"] == "metric"
             after = other.call(path + "/export")
@@ -675,6 +687,14 @@ def main():
             passed(
                 "Scheduler backup restored full report, follow-up, all binary originals and alternate regional settings"
             )
+            if args.study_pair:
+                subprocess.run([
+                    "docker", "run", "--rm", "-i", "--network", "container:" + dest + "-app-1",
+                    "--shm-size=512m", "-v", f"{ROOT / 'tests/print-study.cjs'}:/ui/print-study.cjs:ro",
+                    "clinical-history-qa-browser-tests", "node", "/ui/print-study.cjs",
+                ], input=json.dumps({"owner": owner, "concern": e["concern"],
+                                     "warning": warning["message"], "restored": True}).encode(), check=True)
+                passed("Desktop and mobile Chromium reopened the restored urgent encounter from the journal and read its warning in the report")
             # The dedicated database for this test uses the same saved config before rotation.
             env["CLINICAL_PORT"] = "18442"
             subprocess.run(

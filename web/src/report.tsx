@@ -2,6 +2,7 @@ import { ClipboardList } from 'lucide-react'
 import { AttachedLiterature } from './evidence'
 import { factSource } from './records'
 import { Notice } from './shared'
+import { Destination } from './chatgpt'
 import { date, human, kinds } from './types'
 import type { Assessment, Encounter, Fact, Report } from './types'
 export function BulletList({ values }: { values: string[] | null }) {
@@ -82,6 +83,12 @@ export function Estimate({
         <br />
         {kinds[a.destination?.kind] || a.provider.provider} ·{' '}
         {a.provider.returnedModel || a.provider.requestedModel}
+        {a.destination?.kind === 'chatgpt' && (
+          <>
+            {' '}
+            · <Destination p={a.destination} />
+          </>
+        )}
       </p>
       {a.items?.length ? (
         <ol className="diagnoses">
@@ -297,6 +304,12 @@ export function ReportBody({
         Experimental · Not reviewed by a healthcare professional
         <br />
         Encounter provider: {kinds[e.provider.kind]}
+        {e.provider.kind === 'chatgpt' && (
+          <>
+            {' '}
+            · <Destination p={e.provider} />
+          </>
+        )}
         {e.provider.model && ' · ' + e.provider.model}
       </footer>
     </article>

@@ -167,6 +167,12 @@ func (s *Server) recordModelUsage(parent context.Context, owner int, cfg provide
 	if callErr != nil {
 		status = "failed"
 	}
+	// Log the provider's filtered support identifiers only. The error type
+	// discards the remote body, message, credentials and unknown parameters.
+	var planErr *provider.ChatGPTError
+	if s.Logger != nil && errors.As(callErr, &planErr) {
+		s.Logger.Printf("event=chatgpt_request_failed http=%d shape=%s code=%s param=%s request_id=%s", planErr.HTTPStatus, planErr.BodyShape, planErr.Code, planErr.Param, planErr.RequestID)
+	}
 	u := m.Usage
 	_, err := s.Store.DB.ExecContext(ctx, `INSERT INTO model_operations(owner_id,provider,model,returned_model,destination_hash,status,requests,retries,input_tokens,output_tokens,usage_complete,duration_ms,estimated_usd)
 		VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`, owner, cfg.Kind, cfg.Model, m.ReturnedModel, evidence.Hash([]byte(cfg.Destination())), status, u.Requests, u.Retries, u.InputTokens, u.OutputTokens, u.Requests > 0 && u.Requests == u.Reported, u.DurationMS, u.EstimatedUSD)
@@ -186,7 +192,7 @@ func (s *Server) qualification(w http.ResponseWriter, r *http.Request, owner int
 		return err
 	}
 	configs := []object{}
-	for _, kind := range []string{"compatible", "openai", "anthropic"} {
+	for _, kind := range []string{"compatible", "openai", "anthropic", "chatgpt"} {
 		configs = append(configs, object{"provider": kind, "model": "", "status": "protocol_fixtures", "detail": "Wire-contract regression fixtures exercised this adapter. Live model quality has not been established."})
 	}
 	rows, err := db.QueryContext(ctx, `SELECT provider,model,destination_hash,count(*) FILTER (WHERE status='returned'),count(*) FILTER (WHERE status='failed'),max(occurred_at) FROM model_operations WHERE owner_id=$1 GROUP BY provider,model,destination_hash ORDER BY max(occurred_at) DESC`, owner)

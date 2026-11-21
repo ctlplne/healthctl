@@ -25,6 +25,9 @@ type Rate struct {
 }
 
 func ReadRate(cfg Config) Rate {
+	if cfg.Kind == "chatgpt" {
+		return Rate{}
+	}
 	var rates []Rate
 	if err := json.Unmarshal([]byte(os.Getenv("CLINICAL_MODEL_PRICES")), &rates); err != nil {
 		return Rate{}

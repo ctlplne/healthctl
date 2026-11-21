@@ -2,7 +2,13 @@ module github.com/ctlplne/healthctl
 
 go 1.26.0
 
-require github.com/jackc/pgx/v5 v5.11.0
+require (
+	github.com/coreos/go-oidc/v3 v3.18.0
+	github.com/go-jose/go-jose/v4 v4.1.6
+	github.com/jackc/pgx/v5 v5.11.0
+)
+
+require golang.org/x/oauth2 v0.36.0 // indirect
 
 require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect
@@ -10,5 +16,5 @@ require (
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	golang.org/x/crypto v0.58.0
 	golang.org/x/sync v0.24.0 // indirect
-	golang.org/x/text v0.43.0 // indirect
+	golang.org/x/text v0.43.0
 )

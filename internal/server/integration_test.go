@@ -28,6 +28,13 @@ import (
 // encounters, settings or accounts are read or changed.
 func testStore(t *testing.T) (*store.Store, string, []byte) {
 	t.Helper()
+	return isolatedStore(t, false)
+}
+
+// Offline maintenance takes a database-wide lock. Give maintenance tests a
+// disposable database so the running QA application can keep its own lock.
+func isolatedStore(t *testing.T, separateDatabase bool) (*store.Store, string, []byte) {
+	t.Helper()
 	if os.Getenv("CLINICAL_TEST_POSTGRES") != "1" {
 		t.Skip("set CLINICAL_TEST_POSTGRES=1 with PG* environment for PostgreSQL checks")
 	}
@@ -37,18 +44,27 @@ func testStore(t *testing.T) (*store.Store, string, []byte) {
 		t.Fatal(err)
 	}
 	base := stdlib.OpenDB(*config)
-	schema := "test_" + token(12)
-	if _, err = base.ExecContext(ctx, "CREATE SCHEMA "+schema); err != nil {
+	name := "test_" + token(12)
+	create, drop := "CREATE SCHEMA "+name, "DROP SCHEMA "+name+" CASCADE"
+	if separateDatabase {
+		create, drop = "CREATE DATABASE "+name, "DROP DATABASE "+name
+	}
+	if _, err = base.ExecContext(ctx, create); err != nil {
+		base.Close()
 		t.Fatal(err)
 	}
 	t.Cleanup(func() {
-		_, err := base.ExecContext(ctx, "DROP SCHEMA "+schema+" CASCADE")
+		_, err := base.ExecContext(ctx, drop)
 		base.Close()
 		if err != nil {
 			t.Error(err)
 		}
 	})
-	config.RuntimeParams["search_path"] = schema
+	if separateDatabase {
+		config.Database = name
+	} else {
+		config.RuntimeParams["search_path"] = name
+	}
 	dsn := stdlib.RegisterConnConfig(config)
 	t.Cleanup(func() { stdlib.UnregisterConnConfig(dsn) })
 	key := make([]byte, 32)

@@ -10,7 +10,7 @@ while :; do
     stamp=$(date -u '+%Y%m%dT%H%M%SZ')
     tmp=$(mktemp .clinical-XXXXXX)
     trap 'rm -f "$tmp"' EXIT HUP INT TERM
-    pg_dump -Fc --no-owner --no-acl --exclude-table-data=public.sessions --exclude-table-data=public.brief_access > "$tmp"
+    pg_dump -Fc --no-owner --no-acl --exclude-table-data=public.sessions --exclude-table-data=public.brief_access --exclude-table-data=public.chatgpt_vault > "$tmp"
     pg_restore --list "$tmp" >/dev/null
     mv "$tmp" "clinical-$stamp.dump"
     trap - EXIT HUP INT TERM

@@ -26,6 +26,7 @@ import (
 type Server struct {
 	Store                                 *store.Store
 	Models                                *provider.Client
+	ChatGPT                               *ChatGPTIntegration
 	EHR                                   *EHRIntegration
 	Name, Emergency, Assets, PublicOrigin string
 	Locale, Units, CareDestination        string
@@ -123,6 +124,7 @@ func (s *Server) Handler() http.Handler {
 	s.route(m, "GET /api/encounters/{id}/export", true, s.export)
 	s.documentRoutes(m)
 	s.ehrRoutes(m)
+	s.chatGPTRoutes(m)
 	s.interchangeRoutes(m)
 	s.evidenceRoutes(m)
 	m.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) { emit(w, 404, object{"error": "Unknown API operation."}) })

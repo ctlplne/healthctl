@@ -29,7 +29,7 @@ func (s *Server) updateSettings(w http.ResponseWriter, r *http.Request, owner in
 	if err := decode(w, r, &in); err != nil {
 		return err
 	}
-	if err := s.Models.Validate(in.Provider); err != nil {
+	if err := s.validateModelChoice(r, owner, in.Provider); err != nil {
 		return bad(err.Error())
 	}
 	b, err := json.Marshal(in.Provider)
@@ -61,7 +61,7 @@ func (s *Server) testSettings(w http.ResponseWriter, r *http.Request, owner int)
 	if err := decode(w, r, &in); err != nil {
 		return err
 	}
-	if err := s.Models.Validate(in.Provider); err != nil {
+	if err := s.validateModelChoice(r, owner, in.Provider); err != nil {
 		return bad(err.Error())
 	}
 	if in.Provider.Kind != "demo" {
@@ -70,5 +70,26 @@ func (s *Server) testSettings(w http.ResponseWriter, r *http.Request, owner int)
 		}
 	}
 	emit(w, 200, object{"ok": true, "synthetic": in.Provider.Kind == "demo"})
+	return nil
+}
+
+func (s *Server) validateModelChoice(r *http.Request, owner int, cfg provider.Config) error {
+	if err := s.Models.Validate(cfg); err != nil {
+		return err
+	}
+	if cfg.Kind != "chatgpt" {
+		return nil
+	}
+	if s.localPlanOrigin(r) == "" {
+		return bad("Use the local 127.0.0.1 installation address for your ChatGPT plan.")
+	}
+	accounts, err := s.Store.PlanAccounts(r.Context(), owner)
+	if err != nil {
+		return bad("Could not load the ChatGPT accounts.")
+	}
+	a := findAccount(accounts, cfg.Endpoint)
+	if a == nil || !accountView(*a).PlanEnabled {
+		return bad("Connect the selected ChatGPT account and enable plan usage first.")
+	}
 	return nil
 }

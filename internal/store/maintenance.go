@@ -73,7 +73,7 @@ func (s *Store) RecoverOwner(ctx context.Context, password []byte) error {
 		if n == 0 {
 			return errors.New("no owner is registered")
 		}
-		for _, q := range []string{"DELETE FROM sessions", "DELETE FROM brief_access", "DELETE FROM login_budget", "INSERT INTO audit_events(owner_id,event) VALUES(1,'owner_recovered')"} {
+		for _, q := range []string{"DELETE FROM sessions", "DELETE FROM brief_access", "DELETE FROM chatgpt_vault", "DELETE FROM login_budget", "INSERT INTO audit_events(owner_id,event) VALUES(1,'owner_recovered')"} {
 			if _, err = tx.ExecContext(ctx, q); err != nil {
 				return err
 			}
@@ -143,6 +143,23 @@ func (s *Store) Rotate(ctx context.Context, key []byte) error {
 				lastDoc = doc
 			}
 			last = id
+		}
+		// The installation has one owner. Rewrap its live subscription credentials
+		// in the same transaction as the clinical records and key verifier.
+		var host string
+		var credentials []byte
+		err := tx.QueryRowContext(ctx, "SELECT host_id, accounts FROM chatgpt_vault WHERE owner_id=1 AND accounts IS NOT NULL FOR UPDATE").Scan(&host, &credentials)
+		if err != nil && !errors.Is(err, sql.ErrNoRows) {
+			return err
+		}
+		if err == nil {
+			credentials, err = reseal(credentials, planAAD(1, host))
+			if err != nil {
+				return err
+			}
+			if _, err = tx.ExecContext(ctx, "UPDATE chatgpt_vault SET accounts=$1 WHERE owner_id=1", credentials); err != nil {
+				return err
+			}
 		}
 		if _, err := tx.ExecContext(ctx, "UPDATE receipt_key SET wrapped=$1 WHERE id=1", next.Seal(nil, nil, s.receiptKey, []byte("submission-key"))); err != nil {
 			return err

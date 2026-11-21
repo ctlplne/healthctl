@@ -42,6 +42,8 @@ An optional SMART on FHIR patient portal connector brings selected laboratory re
 
 Use the best model you have access to and select its highest available reasoning effort. Select the model in the app and configure the effort level where your provider supports it. The persistent reminder also appears in patient and clinician reports.
 
+An eligible ChatGPT account can fund model requests on a personal installation. In **Model settings**, select **ChatGPT plan**, allow plan use, and choose **Continue with ChatGPT**. After returning, select a model from the account’s catalog, choose **Test connection**, then **Save provider**. OpenAI applies the selected account’s limits and credit settings. Claude uses an Anthropic API credential. [Subscription setup and privacy](docs/model-providers.md#use-a-chatgpt-subscription)
+
 The **OpenAI-compatible endpoint** option connects to the operator’s explicitly allowlisted base URL. Use the model ID your server accepts. For a remote API, set the following values in the private `.env` file and recreate the app. This example uses a placeholder hostname.
 
 ```dotenv

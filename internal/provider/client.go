@@ -88,11 +88,17 @@ func (c *Client) run(parent context.Context, cfg Config, p call, validate func([
 	retryAvailable := true
 
 	for {
-		body, err := p.body(cfg)
-		if err != nil {
-			return nil, zero, errors.New("unable to prepare provider request")
+		var reply []byte
+		var returned string
+		if cfg.Kind == "chatgpt" {
+			reply, returned, err = c.chatGPTRequest(ctx, cfg, &p, &usage)
+		} else {
+			body, bodyErr := p.body(cfg)
+			if bodyErr != nil {
+				return nil, zero, errors.New("unable to prepare provider request")
+			}
+			reply, returned, err = c.request(ctx, cfg, key, body, &retryAvailable, &usage)
 		}
-		reply, returned, err := c.request(ctx, cfg, key, body, &retryAvailable, &usage)
 		if err == nil {
 			err = validateJSON(reply, &schema)
 			if err == nil && validate != nil && validate(reply) != nil {
@@ -108,6 +114,18 @@ func (c *Client) run(parent context.Context, cfg Config, p call, validate func([
 				format = "native"
 			}
 			settings := map[string]any{"outputFormat": format, "maxOutputTokens": p.maxTokens, "requests": usage.Requests}
+			if cfg.Kind == "chatgpt" {
+				delete(settings, "maxOutputTokens")
+				settings["maxAcceptedOutputTokens"] = p.maxTokens
+				settings["maxOutputBytes"] = maxProposalBytes
+				settings["maxStreamBytes"] = maxEnvelopeBytes
+				settings["billing"] = "chatgpt_plan"
+				if p.reasoningEffort != "" {
+					settings["reasoningEffort"] = p.reasoningEffort
+				}
+				settings["store"] = false
+				settings["stream"] = true
+			}
 			if cfg.Kind == "anthropic" {
 				settings["apiVersion"] = anthropicVersion
 			}

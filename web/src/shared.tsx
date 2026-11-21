@@ -12,7 +12,8 @@ import {
   TriangleAlert,
 } from 'lucide-react'
 import type { Provider } from './types'
-import { destination, kinds } from './types'
+import { kinds } from './types'
+import { Destination } from './chatgpt'
 export function Brand({ name }: { name: string }) {
   return (
     <div className="brand">
@@ -85,8 +86,10 @@ export function ContextBox({ p }: { p: Provider }) {
           ) : (
             <>
               Your history will be sent to <b>{kinds[p.kind]}</b> at{' '}
-              <span className="endpoint">{destination(p)}</span> using{' '}
-              <b>{p.model}</b>.
+              <span className="endpoint">
+                <Destination p={p} />
+              </span>{' '}
+              using <b>{p.model}</b>.
             </>
           )}
         </p>

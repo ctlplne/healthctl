@@ -13,6 +13,7 @@ import {
   ShieldCheck,
 } from 'lucide-react'
 import { api, updateToken } from './api'
+import { Destination, PlanSettings, ManageUsage } from './chatgpt'
 import {
   Brand,
   Callout,
@@ -255,12 +256,30 @@ export function ProviderEditor({
   busy,
   run,
   onSave,
-}: Work & { settings: Settings; onSave: (p: Provider) => Promise<void> }) {
+  chatgptSelection,
+}: Work & {
+  settings: Settings
+  onSave: (p: Provider) => Promise<void>
+  chatgptSelection?: string
+}) {
   const [config, setConfig] = useState<Provider>(
-    settings.provider?.kind ? settings.provider : providerDefaults(),
+    chatgptSelection !== undefined
+      ? settings.provider?.kind === 'chatgpt' &&
+        settings.provider.endpoint === chatgptSelection
+        ? settings.provider
+        : {
+            ...providerDefaults(),
+            kind: 'chatgpt',
+            endpoint: chatgptSelection,
+            model: '',
+          }
+      : settings.provider?.kind
+        ? settings.provider
+        : providerDefaults(),
   )
   const [status, setStatus] = useState(''),
-    [testError, setTestError] = useState(false)
+    [testError, setTestError] = useState(false),
+    [planReady, setPlanReady] = useState(false)
   const update = (fields: Partial<Provider>) => {
     setConfig((p) => ({ ...p, ...fields }))
     setStatus('')
@@ -276,7 +295,10 @@ export function ProviderEditor({
   const normalized = {
     ...config,
     model: config.model.trim(),
-    endpoint: config.kind === 'compatible' ? config.endpoint.trim() : '',
+    endpoint:
+      config.kind === 'compatible' || config.kind === 'chatgpt'
+        ? config.endpoint.trim()
+        : '',
   }
   const test = async () => {
     try {
@@ -294,6 +316,7 @@ export function ProviderEditor({
   }
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    if (config.kind === 'chatgpt' && !planReady) return
     const testOnly =
       (e.nativeEvent as SubmitEvent).submitter?.getAttribute('value') === 'test'
     run(testOnly ? test : () => onSave(normalized))
@@ -324,7 +347,16 @@ export function ProviderEditor({
                 ))}
               </select>
             </label>
-            {config.kind !== 'demo' && (
+            {config.kind === 'chatgpt' && (
+              <PlanSettings
+                config={config}
+                update={update}
+                onReady={setPlanReady}
+                busy={busy}
+                run={run}
+              />
+            )}
+            {config.kind !== 'demo' && config.kind !== 'chatgpt' && (
               <>
                 <label>
                   <span id="model-label">Model identifier</span>
@@ -378,6 +410,12 @@ export function ProviderEditor({
                     <option value="prompt">Constrained prompt</option>
                   </select>
                 </label>
+                {config.kind === 'anthropic' && (
+                  <p className="metadata">
+                    Claude consumer subscriptions are unsupported here. This
+                    connection uses an Anthropic API credential.
+                  </p>
+                )}
                 <div className="hint">
                   <KeyRound size={17} />
                   <div>
@@ -399,6 +437,11 @@ export function ProviderEditor({
               </>
             )}
             {config.kind === 'demo' && <ContextBox p={normalized} />}
+            {config.kind === 'chatgpt' &&
+              testError &&
+              /limit|quota|usage unavailable/i.test(status) && (
+                <ManageUsage primary />
+              )}
             {status && (
               <p
                 role="status"
@@ -408,10 +451,17 @@ export function ProviderEditor({
               </p>
             )}
             <div className="actions">
-              <button className="primary" disabled={busy}>
+              <button
+                className="primary"
+                disabled={busy || (config.kind === 'chatgpt' && !planReady)}
+              >
                 Save provider
               </button>
-              <button className="secondary" value="test" disabled={busy}>
+              <button
+                className="secondary"
+                value="test"
+                disabled={busy || (config.kind === 'chatgpt' && !planReady)}
+              >
                 Test connection
               </button>
             </div>
@@ -427,7 +477,13 @@ export function ProviderEditor({
           {config.kind !== 'demo' && (
             <>
               <h4>Selected destination</h4>
-              <code>{destination(normalized) || 'Enter a base URL'}</code>
+              <code>
+                {!destination(normalized) ? (
+                  'Enter a base URL'
+                ) : (
+                  <Destination p={normalized} />
+                )}
+              </code>
             </>
           )}
           {config.kind === 'compatible' && (

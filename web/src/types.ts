@@ -6,7 +6,8 @@ import type {
   Origin,
   Summary,
 } from './records'
-export type ProviderKind = 'compatible' | 'openai' | 'anthropic' | 'demo'
+export type ProviderKind =
+  'compatible' | 'openai' | 'chatgpt' | 'anthropic' | 'demo'
 export type Provider = {
   kind: ProviderKind
   model: string
@@ -136,6 +137,7 @@ export type Report = Encounter & { exportedAt: string; exportVersion: string }
 export type Fields = Record<string, unknown>
 export const kinds: Record<ProviderKind, string> = {
   compatible: 'OpenAI-compatible endpoint',
+  chatgpt: 'ChatGPT plan',
   openai: 'OpenAI',
   anthropic: 'Anthropic Claude',
   demo: 'Synthetic demo',
@@ -143,6 +145,7 @@ export const kinds: Record<ProviderKind, string> = {
 export const destination = (p: Provider) =>
   ({
     compatible: p.endpoint,
+    chatgpt: 'https://api.openai.com/v1/responses',
     openai: 'https://api.openai.com/v1',
     anthropic: 'https://api.anthropic.com/v1',
     demo: 'Built-in synthetic case',

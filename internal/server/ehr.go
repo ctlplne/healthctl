@@ -81,7 +81,7 @@ func (x *EHRIntegration) visit(key string, session [32]byte, preview, consume bo
 	return v, nil
 }
 
-func ehrSession(r *http.Request) [32]byte {
+func browserSession(r *http.Request) [32]byte {
 	c, _ := r.Cookie(sessionCookie) // Protected routes have already authenticated this cookie.
 	return sha256.Sum256([]byte(c.Value))
 }
@@ -123,7 +123,7 @@ func (s *Server) ehrStart(w http.ResponseWriter, r *http.Request, owner int) err
 	if err != nil {
 		return err
 	}
-	v := ehrVisit{session: ehrSession(r), encounter: e.ID, revision: e.Revision, verifier: token(32)}
+	v := ehrVisit{session: browserSession(r), encounter: e.ID, revision: e.Revision, verifier: token(32)}
 	state, err := s.EHR.keep(v)
 	if err != nil {
 		return err
@@ -148,7 +148,7 @@ func (s *Server) ehrPreview(w http.ResponseWriter, r *http.Request, owner int) e
 	if err := decode(w, r, &in); err != nil {
 		return err
 	}
-	v, err := s.EHR.visit(in.State, ehrSession(r), false, true)
+	v, err := s.EHR.visit(in.State, browserSession(r), false, true)
 	if err != nil {
 		return err
 	}
@@ -200,7 +200,7 @@ func (s *Server) ehrImport(w http.ResponseWriter, r *http.Request, owner int) er
 	}
 	s.EHR.importMu.Lock()
 	defer s.EHR.importMu.Unlock()
-	v, err := s.EHR.visit(in.Ticket, ehrSession(r), true, false)
+	v, err := s.EHR.visit(in.Ticket, browserSession(r), true, false)
 	if err != nil {
 		return err
 	}
@@ -253,7 +253,7 @@ func (s *Server) ehrCancel(w http.ResponseWriter, r *http.Request, _ int) error 
 	}
 	s.EHR.importMu.Lock()
 	defer s.EHR.importMu.Unlock()
-	v, err := s.EHR.visit(in.Ticket, ehrSession(r), true, true)
+	v, err := s.EHR.visit(in.Ticket, browserSession(r), true, true)
 	if err != nil {
 		return err
 	}

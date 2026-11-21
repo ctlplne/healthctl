@@ -14,13 +14,14 @@ import {
   Trash2,
 } from 'lucide-react'
 import type { Encounter, Fact, Fields, Provider, Report } from './types'
-import { date, destination, kinds, stateName } from './types'
+import { date, kinds, stateName } from './types'
 import { Callout, ContextBox, DemoTag, Notice, PageTitle } from './shared'
 import { History } from './history'
 import { Estimate, ReportBody, UrgencyReminder } from './report'
 import type { Run } from './forms'
 import { api } from './api'
 import { SourceReview } from './documents'
+import { Destination, PlanUsage, ManageUsage } from './chatgpt'
 import { Timeline } from './timeline'
 import { EvidenceLookup } from './evidence'
 import { AfterVisit, Revisions, Interop, BriefBody, Appendix } from './handoff'
@@ -191,6 +192,10 @@ export function EncounterPage({
         )}
         {failure && (
           <Callout title="The provider could not finish this request" alert>
+            {e.provider.kind === 'chatgpt' &&
+              /quota|limit|usage unavailable|plan usage/i.test(e.failure) && (
+                <ManageUsage primary />
+              )}
             <p>
               {e.failure ||
                 'Your input is saved and the assessment is incomplete.'}
@@ -288,6 +293,7 @@ export function EncounterPage({
             )}
             {tab === 'interview' && (
               <section className="panel interview-panel">
+                {e.provider.kind === 'chatgpt' && <PlanUsage />}
                 <div className="topic-mark">
                   <MessageSquareText size={19} />{' '}
                   {e.question ? 'Interview question' : 'Interview'}
@@ -623,7 +629,15 @@ export function EncounterPage({
                 <dt>Patient age</dt>
                 <dd>{e.age} years</dd>
                 <dt>Provider</dt>
-                <dd>{kinds[e.provider.kind]}</dd>
+                <dd>
+                  {kinds[e.provider.kind]}
+                  {e.provider.kind === 'chatgpt' && (
+                    <>
+                      <br />
+                      <Destination p={e.provider} />
+                    </>
+                  )}
+                </dd>
                 <dt>Model</dt>
                 <dd>{e.provider.model || 'Built-in synthetic case'}</dd>
                 <dt>History confirmation</dt>
@@ -643,7 +657,9 @@ export function EncounterPage({
                 Manage encounter <ChevronDown size={15} />
               </summary>
               <h4>Current destination</h4>
-              <p className="endpoint">{destination(e.provider)}</p>
+              <p className="endpoint">
+                <Destination p={e.provider} />
+              </p>
               {canMove && !moving && (
                 <button className="secondary" onClick={() => setMoving(true)}>
                   <Network size={16} />
@@ -699,12 +715,14 @@ export function EncounterPage({
                           From {kinds[c.previous.kind]} · {c.previous.model}
                         </div>
                         <div className="endpoint">
-                          {destination(c.previous)}
+                          <Destination p={c.previous} />
                         </div>
                         <div>
                           To {kinds[c.current.kind]} · {c.current.model}
                         </div>
-                        <div className="endpoint">{destination(c.current)}</div>
+                        <div className="endpoint">
+                          <Destination p={c.current} />
+                        </div>
                       </li>
                     ))}
                   </ul>

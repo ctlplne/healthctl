@@ -60,7 +60,7 @@ def verify():
     assert before["assessments"][-1]["items"]
     with tempfile.TemporaryFile() as backup:
         compose(source, "exec", "-T", "db", "pg_dump", "-U", "clinicalhistory", "-d", "clinicalhistory",
-                "-Fc", "--no-owner", "--no-acl", "--exclude-table-data=public.sessions", "--exclude-table-data=public.brief_access", stdout=backup)
+                "-Fc", "--no-owner", "--no-acl", "--exclude-table-data=public.sessions", "--exclude-table-data=public.brief_access", "--exclude-table-data=public.chatgpt_vault", stdout=backup)
         backup.seek(0)
         compose(restored, "up", "-d", "--wait", "db")
         compose(restored, "exec", "-T", "db", "pg_restore", "-U", "clinicalhistory", "-d", "clinicalhistory",
