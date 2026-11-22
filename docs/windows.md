@@ -5,7 +5,7 @@ The launcher opens the same experimental visit-preparation journal as Docker Com
 Use a supported 64-bit Windows PC with an Intel or AMD processor, hardware virtualization enabled and Docker Desktop running Linux containers. The portable launcher uses the .NET Framework included with supported Windows desktop releases. Windows on ARM is outside this release’s test coverage. [Docker Desktop requirements and WSL 2 installation](https://docs.docker.com/desktop/setup/install/windows-install/)
 
 1. Start Docker Desktop. Wait until its Linux engine is running.
-2. Download the **healthctl-windows-x64.exe** asset from the [Windows beta release](https://github.com/ctlplne/healthctl/releases/tag/windows-0.2.0-beta.1). This beta is unsigned. SmartScreen or your organization’s policy may block it.
+2. Download the **healthctl-windows-x64.exe** asset from the [Windows beta release](https://github.com/ctlplne/healthctl/releases/tag/windows-0.2.0-beta.4). This beta is unsigned. SmartScreen or your organization’s policy may block it.
 3. Double-click the launcher and choose **Open journal or try the demo**. Keep Docker and your internet connection running on the first launch. The launcher builds healthctl from its bundled source and downloads the pinned PostgreSQL image. Subsequent starts reuse those images.
 4. Your browser opens the journal at a loopback address. Create your local owner account and choose the synthetic demo or configure a model. [Watch the ChatGPT setup](https://healthctl.com/#chatgpt-setup)
 

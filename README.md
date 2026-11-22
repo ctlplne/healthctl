@@ -37,8 +37,8 @@ Choose the Windows launcher, the Apple silicon launcher, or Docker Compose. Each
 | Path | What you need | How to start |
 | --- | --- | --- |
 | Docker Compose from source | Git, Python 3 and a running Docker engine with Compose v2 | Run the commands below. |
-| Windows desktop launcher | An Intel or AMD x64 Windows PC with Docker Desktop using WSL 2 and Linux containers. SmartScreen may block this unsigned beta. | [Download the Windows EXE](https://github.com/ctlplne/healthctl/releases/download/windows-0.2.0-beta.1/healthctl-windows-x64.exe), double-click it, and select **Open journal or try the demo**. [Windows installation](docs/windows.md) |
-| macOS desktop launcher | An Apple silicon Mac and Docker Desktop. The beta download is unnotarized and macOS may block it. | [Download the beta DMG](https://github.com/ctlplne/healthctl/releases/download/macos-0.2.0-beta.2/healthctl-0.2.0-beta.2-macos-arm64.dmg), drag healthctl to Applications, then choose **Open journal or try the demo**. The first launch uses the internet to build the services. [Desktop installation](docs/desktop.md) |
+| Windows desktop launcher | An Intel or AMD x64 Windows PC with Docker Desktop using WSL 2 and Linux containers. SmartScreen may block this unsigned beta. | [Download the Windows EXE](https://github.com/ctlplne/healthctl/releases/download/windows-0.2.0-beta.4/healthctl-windows-x64.exe), double-click it, and select **Open journal or try the demo**. [Windows installation](docs/windows.md) |
+| macOS desktop launcher | An Apple silicon Mac and Docker Desktop. The beta download is unnotarized and macOS may block it. | [Download the beta DMG](https://github.com/ctlplne/healthctl/releases/download/macos-0.2.0-beta.4/healthctl-0.2.0-beta.4-macos-arm64.dmg), drag healthctl to Applications, then choose **Open journal or try the demo**. The first launch uses the internet to build the services. [Desktop installation](docs/desktop.md) |
 
 ### Docker Compose
 
@@ -50,6 +50,8 @@ cd healthctl
 python3 scripts/init.py
 docker compose up -d --build --wait
 ```
+
+For an exact match to the beta 4 desktop downloads, check out `macos-0.2.0-beta.4` or `windows-0.2.0-beta.4` before building. Both tags identify the same source revision.
 
 Open [healthctl on your computer](http://127.0.0.1:8437) and create the local owner account. To use a different port, set `CLINICAL_PORT` in `.env` before starting Compose. The setup script generates a private `.env` containing the database password and encryption key. Keep a secure backup. [Backup and recovery](docs/operations.md)
 
@@ -120,4 +122,4 @@ After running the setup script, run `python3 scripts/verify.py` from the checkou
 
 healthctl is a [ctlplne](https://github.com/ctlplne) project maintained by [@imfeelingtheagi](https://github.com/imfeelingtheagi). For clinical scope and limitations, see the [intended use notes](docs/release.md). The [evaluation guide](evaluation/README.md) explains how the synthetic cases test history capture and safety warnings.
 
-healthctl is source-available under the Business Source License 1.1. Each version converts to the Mozilla Public License 2.0 four years after its first public distribution. The free grant covers personal use and internal use, including by clinics. Third-party hosting or embedding in a commercial service requires separate permission during the BUSL period. [License](LICENSE) · [Release parameters](docs/release.md#source-available-license)
+healthctl is source-available under the Business Source License 1.1. Each version converts to the Mozilla Public License 2.0 on the earlier of its specified Change Date and the fourth anniversary of its first public distribution under BUSL. The free grant covers personal use and internal use, including by clinics. Third-party hosting or embedding in a commercial service requires separate permission during the BUSL period. [License](LICENSE) · [Release parameters](docs/release.md#source-available-license)
