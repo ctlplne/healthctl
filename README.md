@@ -32,11 +32,12 @@ A second study examined what happens when people describe a medical scenario to 
 
 ## Install healthctl
 
-There are two self-hosted installation paths. Both use Docker and keep the journal on your computer.
+Choose the Windows launcher, the Apple silicon launcher, or Docker Compose. Each runs the journal on your computer using Docker.
 
 | Path | What you need | How to start |
 | --- | --- | --- |
 | Docker Compose from source | Git, Python 3 and a running Docker engine with Compose v2 | Run the commands below. |
+| Windows desktop launcher | An Intel or AMD x64 Windows PC with Docker Desktop using WSL 2 and Linux containers. SmartScreen may block this unsigned beta. | [Download the Windows EXE](https://github.com/ctlplne/healthctl/releases/download/windows-0.2.0-beta.1/healthctl-windows-x64.exe), double-click it, and select **Open journal or try the demo**. [Windows installation](docs/windows.md) |
 | macOS desktop launcher | An Apple silicon Mac and Docker Desktop. The beta download is unnotarized and macOS may block it. | [Download the beta DMG](https://github.com/ctlplne/healthctl/releases/download/macos-0.2.0-beta.2/healthctl-0.2.0-beta.2-macos-arm64.dmg), drag healthctl to Applications, then choose **Open journal or try the demo**. The first launch uses the internet to build the services. [Desktop installation](docs/desktop.md) |
 
 ### Docker Compose
@@ -56,7 +57,7 @@ To stop this installation, run `docker compose stop`. To resume it with your sav
 
 ## Try the demo
 
-On either installation, select **Synthetic demo**, open **New encounter**, and choose **Changing fingernails and daily activity**. Try **The centers dip inward**, **Several nails on both hands**, and **Gradually over three months**. Follow the questions about daily activities, correct a finding in history review, and export your clinician brief. Start a second fictional encounter and choose **One thumbnail** to see the question about local injury. The bubbles in the walkthrough are scripted for that fictional case. Choose **Practice with your own fictional concern** to try open-ended history questions offline. Connect a model for follow-ups tailored to what you describe, including concerns outside the examples.
+After installing, select **Synthetic demo**, open **New encounter**, and choose **Changing fingernails and daily activity**. Try **The centers dip inward**, **Several nails on both hands**, and **Gradually over three months**. Follow the questions about daily activities, correct a finding in history review, and export your clinician brief. Start a second fictional encounter and choose **One thumbnail** to see the question about local injury. The bubbles in the walkthrough are scripted for that fictional case. Choose **Practice with your own fictional concern** to try open-ended history questions offline. Connect a model for follow-ups tailored to what you describe, including concerns outside the examples.
 
 After setup on either installation, the built-in demo runs locally with a fictional patient. It requires no model account, API key or separate inference server.
 
