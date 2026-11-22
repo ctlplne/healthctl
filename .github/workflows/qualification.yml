@@ -161,10 +161,24 @@ jobs:
           retention-days: 3
           compression-level: 0
       - name: Build the first-launch installer from this revision
-        run: ./scripts/build-desktop.sh --build-on-first-use
+        run: |
+          ./scripts/build-desktop.sh --build-on-first-use
+          mount="$RUNNER_TEMP/preview-mount"
+          mkdir "$mount"
+          hdiutil attach -readonly -nobrowse -mountpoint "$mount" build/desktop/healthctl-arm64-preview.dmg
+          trap 'hdiutil detach "$mount"' EXIT
+          app="$mount/healthctl.app"
+          codesign --verify --strict --deep "$app"
+          inventory="$app/Contents/Resources/notices/desktop.spdx.json"
+          source="$app/Contents/Resources/healthctl-source.tar.gz"
+          digest="$(shasum -a 256 "$source" | cut -d' ' -f1)"
+          jq -e --arg rev "$GITHUB_SHA" --arg sha "$digest" '.packages[] | select(.SPDXID == "SPDXRef-source" and .versionInfo == $rev and .checksums[0].checksumValue == $sha)' "$inventory"
+          cp "$inventory" build/desktop/healthctl-macos-arm64.spdx.json
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: macos-arm64-preview-adhoc
-          path: build/desktop/healthctl-arm64-preview.dmg
+          path: |
+            build/desktop/healthctl-arm64-preview.dmg
+            build/desktop/healthctl-macos-arm64.spdx.json
           if-no-files-found: error
           retention-days: 3

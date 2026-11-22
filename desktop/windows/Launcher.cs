@@ -17,7 +17,7 @@ using System.Windows.Forms;
 [assembly: AssemblyCompany("ctlplne studio")]
 [assembly: AssemblyProduct("healthctl")]
 [assembly: AssemblyVersion("0.2.0.0")]
-[assembly: AssemblyFileVersion("0.2.0.4")]
+[assembly: AssemblyFileVersion("0.2.0.5")]
 
 internal static class Package
 {

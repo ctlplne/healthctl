@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   publish:
-    if: ${{ !github.event.release.prerelease }}
+    if: startsWith(github.event.release.tag_name, 'v')
     name: Promote attested archives to GHCR
     runs-on: ubuntu-24.04
     timeout-minutes: 20
@@ -27,7 +27,11 @@ jobs:
     steps:
       - name: Verify both published assets before registry promotion
         run: |
-          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          if [[ "${{ github.event.release.prerelease }}" == "true" ]]; then
+            [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-beta\.[0-9]+$ ]]
+          else
+            [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          fi
           for arch in amd64 arm64; do
             archive="healthctl-linux-$arch.tar.gz"
             gh release download "$TAG" --pattern "$archive"

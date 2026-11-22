@@ -20,10 +20,11 @@ jobs:
           persist-credentials: false
       - name: Check version and main history
         run: |
-          [[ "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          [[ "$GITHUB_REF_NAME" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)(-beta\.[0-9]+)?$ ]]
+          version="${BASH_REMATCH[1]}"
           git merge-base --is-ancestor HEAD origin/main
-          test "$GITHUB_REF_NAME" = "v$(node -p "require('./web/package.json').version")"
-          grep -Fq "Licensed Work: healthctl ${GITHUB_REF_NAME#v} " LICENSE
+          test "$version" = "$(node -p "require('./web/package.json').version")"
+          grep -Fq "Licensed Work: healthctl $version " LICENSE
 
   test:
     needs: tag
@@ -31,6 +32,13 @@ jobs:
   qualify:
     needs: tag
     uses: ./.github/workflows/qualification.yml
+
+  windows_beta:
+    needs: tag
+    if: contains(github.ref_name, '-beta.')
+    permissions:
+      contents: write
+    uses: ./.github/workflows/windows.yml
 
   sign_mac:
     name: Sign and notarize the tested Mac installer
@@ -65,10 +73,11 @@ jobs:
 
   draft:
     name: Attest tested archives and prepare draft
-    needs: [test, qualify, sign_mac]
+    needs: [test, qualify, sign_mac, windows_beta]
     if: >-
       !cancelled() && needs.test.result == 'success' && needs.qualify.result == 'success' &&
-      (needs.sign_mac.result == 'success' || needs.sign_mac.result == 'skipped')
+      (needs.sign_mac.result == 'success' || needs.sign_mac.result == 'skipped') &&
+      (needs.windows_beta.result == 'success' || (!contains(github.ref_name, '-beta.') && needs.windows_beta.result == 'skipped'))
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     permissions:
@@ -86,11 +95,31 @@ jobs:
         with:
           name: macos-arm64-notarized
           path: dist
+      - if: needs.windows_beta.result == 'success'
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: windows-x64
+          path: windows
+      - if: needs.windows_beta.result == 'success'
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: macos-arm64-preview-adhoc
+          path: preview
+      - name: Collect the verified beta launchers
+        if: needs.windows_beta.result == 'success'
+        run: |
+          (cd windows && sha256sum -c SHA256SUMS)
+          cp windows/healthctl-windows-x64.{exe,spdx.json} dist/
+          cp preview/healthctl-macos-arm64.spdx.json dist/
+          cp preview/healthctl-arm64-preview.dmg "dist/healthctl-${GITHUB_REF_NAME#v}-macos-arm64.dmg"
       - name: Generate checksums for tested release artifacts
         working-directory: dist
         run: |
           files=(healthctl-linux-amd64.tar.gz healthctl-linux-arm64.tar.gz)
           if [[ -f healthctl-arm64.dmg ]]; then files+=(healthctl-arm64.dmg); fi
+          if [[ "$GITHUB_REF_NAME" == *-beta.* ]]; then
+            files+=("healthctl-${GITHUB_REF_NAME#v}-macos-arm64.dmg" healthctl-macos-arm64.spdx.json healthctl-windows-x64.exe healthctl-windows-x64.spdx.json)
+          fi
           sha256sum "${files[@]}" > SHA256SUMS
       - uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
         with:
@@ -104,5 +133,7 @@ jobs:
             test "$(cat "$RUNNER_TEMP/draft-state")" = true
             gh release upload "$GITHUB_REF_NAME" dist/* --clobber
           else
-            gh release create "$GITHUB_REF_NAME" dist/* --verify-tag --draft --generate-notes --title "healthctl $GITHUB_REF_NAME"
+            flags=()
+            if [[ "$GITHUB_REF_NAME" == *-beta.* ]]; then flags+=(--prerelease); fi
+            gh release create "$GITHUB_REF_NAME" dist/* --verify-tag --draft "${flags[@]}" --generate-notes --title "healthctl $GITHUB_REF_NAME"
           fi

@@ -67,4 +67,5 @@ RUN --network=none --mount=from=runtime,source=/,target=/scan,ro \
     node /sbom-assets.mjs /tmp/packages.json /app.spdx.json /scan /ui/package-lock.json
 
 FROM runtime AS application
+LABEL org.opencontainers.image.source="https://github.com/ctlplne/healthctl"
 COPY --from=inventory /app.spdx.json /usr/share/healthctl/app.spdx.json

@@ -10,3 +10,19 @@ build/
 *.dump
 
 __pycache__/
+
+# Maintainer-only coding assistant instructions and workspace settings
+AGENTS.md
+AGENTS.override.md
+CLAUDE.md
+CLAUDE.local.md
+GEMINI.md
+.codex/
+.claude/
+.cursor/
+.cursorrules
+/.github/copilot-instructions.md
+
+# Local assistant transcripts
+.aider.chat.history.md
+.aider.input.history
