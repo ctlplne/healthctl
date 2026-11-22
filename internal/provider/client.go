@@ -134,7 +134,7 @@ func (c *Client) run(parent context.Context, cfg Config, p call, validate func([
 			if cfg.Kind == "anthropic" {
 				settings["apiVersion"] = anthropicVersion
 			}
-			return reply, Metadata{Provider: cfg.Kind, Endpoint: cfg.Destination(), RequestedModel: cfg.Model, ReturnedModel: returned, PromptVersion: "clinical-v4", SchemaVersion: "proposal-v1", AppVersion: appVersion, Settings: settings}, nil
+			return reply, Metadata{Provider: cfg.Kind, Endpoint: cfg.Destination(), RequestedModel: cfg.Model, ReturnedModel: returned, PromptVersion: "clinical-v5", SchemaVersion: "proposal-v1", AppVersion: appVersion, Settings: settings}, nil
 		}
 		if !mayRepair || (!errors.Is(err, errInvalid) && !errors.Is(err, errEnvelope)) {
 			return nil, zero, err

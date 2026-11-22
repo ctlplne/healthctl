@@ -5,6 +5,9 @@ import "strings"
 // Demo is an authored example with an exact synthetic storyline. It cannot
 // produce fixture diagnoses for arbitrary symptoms supplied by the operator.
 func Demo(in Input) Proposal {
+	if in.Concern == DemoNailConcern {
+		return nailDemo(in)
+	}
 	if in.Concern == DemoReportConcern {
 		return reportDemo(in)
 	}

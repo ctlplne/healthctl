@@ -33,3 +33,7 @@ Deleting an encounter removes its primary records from the installation. Check s
 There is no automatic support upload. Only if you choose to report a problem do GitHub and the people handling your report receive the account information and text you submit to GitHub. Use a made-up example. Keep patient details, recordings, report files, real screenshots, passwords and access tokens out of every support channel, including private reports. Use a healthcare professional or local emergency service for concerns about your own health.
 
 Downloading software or opening an external source or support link contacts that service and discloses ordinary connection information such as your IP address. If you run a modified installation, use browser extensions, or access it through a proxy, those systems can have their own data practices.
+
+## Photos of visible changes
+
+The owner can save a photo of an eye, hand, foot or another visible change to show a clinician. The installation decodes the pixels, scales large images and stores an encrypted PNG copy without the original camera metadata. The model receives no image or photo filename. Words you explicitly add to the interview become part of the history sent to the selected model. The owner can reopen saved images in Source reports. Removing a photo or deleting the encounter removes the stored image from the active journal. Written observations remain in the history until corrected or the encounter is deleted. Installation backups and copies you saved elsewhere can retain them.

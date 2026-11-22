@@ -20,11 +20,17 @@ func documentAAD(owner int, encounter, doc string) []byte {
 // receipt together. A retried upload cannot leave a second copy behind.
 func (s *Store) AttachDocument(ctx context.Context, owner int, id string, revision int, request string, digest []byte, doc clinical.SourceDocument, original []byte, emergency string) (*clinical.Encounter, error) {
 	e, _, err := s.apply(ctx, owner, id, "", revision, request, digest, func(tx *sql.Tx, e, _ *clinical.Encounter) error {
-		if err := e.AttachReport(doc, emergency); err != nil {
+		var err error
+		if doc.Kind == "observation_photo" {
+			err = e.AttachPhoto(doc.ID, doc.Title)
+		} else {
+			err = e.AttachReport(doc, emergency)
+		}
+		if err != nil {
 			return fmt.Errorf("%w: %s", ErrDocumentInput, err)
 		}
 		sealed := s.box.Seal(nil, nil, original, documentAAD(owner, id, doc.ID))
-		_, err := tx.ExecContext(ctx, "INSERT INTO encounter_documents(encounter_id,document_id,original) VALUES($1,$2,$3)", id, doc.ID, sealed)
+		_, err = tx.ExecContext(ctx, "INSERT INTO encounter_documents(encounter_id,document_id,original) VALUES($1,$2,$3)", id, doc.ID, sealed)
 		return err
 	})
 	return e, err
@@ -89,4 +95,19 @@ func (s *Store) Uploaded(ctx context.Context, owner int, id, request string, dig
 		return nil, ErrConflict
 	}
 	return s.decode(owner, id, payload)
+}
+
+func (s *Store) RemovePhoto(ctx context.Context, owner int, encounter, photo string, revision int, request string) (*clinical.Encounter, error) {
+	digest, err := s.Digest([]any{"remove_photo", photo, revision})
+	if err != nil {
+		return nil, err
+	}
+	e, _, err := s.apply(ctx, owner, encounter, "", revision, request, digest, func(tx *sql.Tx, e, _ *clinical.Encounter) error {
+		if err := e.RemovePhoto(photo); err != nil {
+			return fmt.Errorf("%w: %s", ErrDocumentInput, err)
+		}
+		_, err := tx.ExecContext(ctx, "DELETE FROM encounter_documents WHERE encounter_id=$1 AND document_id=$2", encounter, photo)
+		return err
+	})
+	return e, err
 }

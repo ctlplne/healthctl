@@ -157,7 +157,9 @@ export function Auth({
           </form>
           <div className="auth-notice">
             <Notice text={session.notice} />
-            <a href="/privacy.html" target="_blank" rel="noreferrer">Where your data goes</a>
+            <a href="/privacy.html" target="_blank" rel="noreferrer">
+              Where your data goes
+            </a>
           </div>
         </section>
       </main>
@@ -349,7 +351,11 @@ export function ProviderEditor({
         title="Model settings"
         description="Choose where AI processing happens for new encounters, or try the scripted demo."
       />
-      <p><a href="/privacy.html" target="_blank" rel="noreferrer">Where your data goes when you connect a model</a></p>
+      <p>
+        <a href="/privacy.html" target="_blank" rel="noreferrer">
+          Where your data goes when you connect a model
+        </a>
+      </p>
       <div className="settings-layout">
         <section className="panel form-panel">
           <h2>
@@ -610,6 +616,26 @@ export function IntakeForm({
             <ClipboardList size={22} /> About this encounter
           </h2>
           <ContextBox p={provider} />
+          {demo && !reportFirst && !returnMode && (
+            <label>
+              Fictional interview example
+              <select
+                value={
+                  concern === sampleConcern ||
+                  concern === 'My fingernails have changed shape.'
+                    ? concern
+                    : ''
+                }
+                onChange={(ev) => setConcern(ev.target.value)}
+              >
+                <option value="">Other wording</option>
+                <option value={sampleConcern}>Runny nose and sneezing</option>
+                <option value="My fingernails have changed shape.">
+                  Changing fingernails and daily activity
+                </option>
+              </select>
+            </label>
+          )}
           <label>
             {reportFirst
               ? 'What would you like to understand?'

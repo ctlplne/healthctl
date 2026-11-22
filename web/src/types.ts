@@ -130,6 +130,8 @@ export type Encounter = EncounterRow & {
   episodeId?: string
   episodeTitle?: string
   reportFirst?: boolean
+  photos?: { id: string; area: string; createdAt: string }[]
+  pathways?: { id: string }[]
   documents?: DocumentSource[]
   reportReviews?: ReportReview[]
   outcomes?: Outcome[]

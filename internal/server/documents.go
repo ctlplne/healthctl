@@ -27,6 +27,8 @@ func (s *Server) documentRoutes(m *http.ServeMux) {
 	s.route(m, "GET /api/encounters/{id}/documents/{doc}/original", true, s.original)
 	s.route(m, "GET /api/encounters/{id}/documents/{doc}/page/{number}", true, s.documentPage)
 	s.route(m, "POST /api/encounters/{id}/documents/{doc}/preview", true, s.preview)
+	s.route(m, "GET /api/encounters/{id}/photos/{photo}", true, s.observationPhoto)
+	s.route(m, "DELETE /api/encounters/{id}/photos/{photo}", true, s.removePhoto)
 	s.route(m, "GET /api/timeline", true, s.timeline)
 	s.route(m, "GET /api/region", true, s.region)
 }
@@ -83,8 +85,18 @@ func (s *Server) upload(w http.ResponseWriter, r *http.Request, owner int) error
 	}
 	doc := clinical.SourceDocument{ID: token(16), Title: title, BelongsTo: belongs, Purpose: r.FormValue("purpose"), Priority: r.FormValue("priority"), IssueDate: r.FormValue("issueDate"), CreatedAt: time.Now().UTC()}
 	doc.MedicationLabel = r.FormValue("medicationLabel") == "true"
+	area := r.FormValue("photoArea")
+	if area != "" {
+		if !clinical.ValidPhotoArea(area) || belongs != "self" || doc.MedicationLabel {
+			return bad("Choose a body area for a photo of your own visible change.")
+		}
+		doc.Title, doc.Kind = area, "observation_photo"
+	}
 	sum := sha256.Sum256(data)
 	parts := []any{revision, key, title, belongs, doc.Purpose, doc.Priority, doc.IssueDate, hex.EncodeToString(sum[:])}
+	if area != "" {
+		parts = append(parts, "observation_photo", area)
+	}
 	if doc.MedicationLabel {
 		parts = append(parts, "medication_label")
 	}
@@ -108,7 +120,12 @@ func (s *Server) upload(w http.ResponseWriter, r *http.Request, owner int) error
 	}
 	ctx, cancel := context.WithTimeout(r.Context(), 75*time.Second)
 	defer cancel()
-	doc.Kind, doc.Rows, err = documents.Read(ctx, title, data)
+	if area != "" {
+		// Decode actual pixels locally, bound dimensions and discard EXIF/location metadata.
+		data, err = documents.Preview(ctx, "png", data, 1)
+	} else {
+		doc.Kind, doc.Rows, err = documents.Read(ctx, title, data)
+	}
 	if err != nil {
 		return bad(err.Error())
 	}
@@ -202,4 +219,47 @@ func (s *Server) documentPage(w http.ResponseWriter, r *http.Request, owner int)
 		return err
 	}
 	return problem{404, "This document could not be found."}
+}
+
+func (s *Server) observationPhoto(w http.ResponseWriter, r *http.Request, owner int) error {
+	id, photo := r.PathValue("id"), r.PathValue("photo")
+	e, err := s.Store.Get(r.Context(), owner, id)
+	if err != nil {
+		return err
+	}
+	for _, entry := range e.Photos {
+		if entry.ID == photo {
+			data, err := s.Store.Original(r.Context(), owner, id, photo)
+			if err != nil {
+				return err
+			}
+			w.Header().Set("Content-Type", "image/png")
+			w.Header().Set("Cache-Control", "private, no-store")
+			_, err = w.Write(data)
+			return err
+		}
+	}
+	return problem{404, "This observation photo could not be found."}
+}
+
+func (s *Server) removePhoto(w http.ResponseWriter, r *http.Request, owner int) error {
+	var in struct {
+		Revision  int    `json:"revision"`
+		RequestID string `json:"requestId"`
+	}
+	if err := decode(w, r, &in); err != nil {
+		return err
+	}
+	if in.Revision < 1 || !requestID.MatchString(in.RequestID) {
+		return bad("A revision and submission identifier are required.")
+	}
+	e, err := s.Store.RemovePhoto(r.Context(), owner, r.PathValue("id"), r.PathValue("photo"), in.Revision, in.RequestID)
+	if errors.Is(err, store.ErrDocumentInput) {
+		return bad("Choose a saved observation photo.")
+	}
+	if err != nil {
+		return err
+	}
+	emit(w, 200, e)
+	return nil
 }

@@ -110,6 +110,7 @@ func (e *Encounter) routeInterview() {
 	case e.groundedQuestion():
 	case e.askEpisodeChange():
 	case e.askFocusedQuestion():
+	case e.askNailDistribution():
 	default:
 		e.State = "interviewing"
 		e.Pending = "interview"
@@ -196,6 +197,13 @@ func (e *Encounter) Apply(c Command, emergency string) error {
 		if err := e.visitEntry(c, emergency); err != nil {
 			return err
 		}
+	case "visual_observation":
+		if e.Pending != "" || e.ScopeReason != "" || e.hasWarning() || len(e.Answers) >= 64 || !ValidPhotoArea(c.Category) || !validText(c.Text, 2000) {
+			return errors.New("Choose a body area and describe your own observation in an available interview")
+		}
+		e.changed()
+		e.appendAnswer("visual_observation", "What did you notice yourself? ("+c.Category+")", strings.TrimSpace(c.Text), "", emergency)
+		e.routeInterview()
 	case "set_episode":
 		if e.Pending != "" {
 			return errors.New("Finish or cancel the current request before changing the episode")

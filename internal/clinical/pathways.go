@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-const PathwayVersion = "adult-development-v2"
+const PathwayVersion = "adult-development-v3"
 
 type pathwayDefinition struct {
 	id      string
@@ -16,6 +16,9 @@ type pathwayDefinition struct {
 }
 
 var pathways = []pathwayDefinition{
+	{"nail_change", regexp.MustCompile(`(?i)\b(fingernails?|toenails?|nails?|koilonychia)\b`), []string{"Invite the patient's description of the change before naming a shape. Ask which nails, when the change began, and how it has progressed. Use the distribution to choose the next question: local injury or exposure for one nail, shared timing or other changes for several. Never infer anemia or a nail sign from a photo."}},
+	{"eye_appearance", regexp.MustCompile(`(?i)\b(eye whites?|whites? of (?:my |the )?eyes?|yellow eyes?|jaundice)\b`), []string{"Clarify which part of the eye looks different, when it changed and associated symptoms if these affect urgency. A patient description or a photo does not confirm or exclude jaundice. Never delay urgent care to collect an image."}},
+	{"bowel_change", regexp.MustCompile(`(?i)\b(loose stools?|stools?|diarrh(?:ea|oea)|bowel movements?)\b`), []string{"Start with the patient's usual bowel pattern, then establish what changed in consistency, frequency, timing, and daily function. If travel preceded the change, establish the order and ask about relevant food, water, sick contacts, or medicines one at a time. Clarify reported blood, pain or difficulty keeping fluids down when they could change urgency."}},
 	{"respiratory", regexp.MustCompile(`(?i)\b(cough|coughing|breathless|breathing|wheez(?:e|ing)|sore throat|runny nose|nose is runny|sneez(?:e|ing))\b`), []string{"Clarify onset, progression, breathlessness and relevant exposure when these could change the estimate.", "Consider respiratory limitations and urgent breathing concerns separately from likely explanations."}},
 	{"headache", regexp.MustCompile(`(?i)\b(headach(?:e|es)|head pain|migraine)\b`), []string{"Establish whether onset was sudden, how this differs from prior episodes and any associated changes.", "Ask about recent medication changes or injury if relevant. Sudden severe onset may need an immediate interruption."}},
 	{"abdominal", regexp.MustCompile(`(?i)\b(abdomen|abdominal|belly|stomach|flank|pelvic)\b`), []string{"Clarify location, onset, progression and associated digestive or urinary changes.", "Review recent medication changes, exposures and relevant prior episodes without guessing pregnancy status."}},

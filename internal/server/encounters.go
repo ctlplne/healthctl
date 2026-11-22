@@ -167,7 +167,7 @@ func (s *Server) finishModel(ctx context.Context, owner int, e *clinical.Encount
 	if err == nil {
 		if e.Demo {
 			p = clinical.Demo(in)
-			meta = clinical.ModelMeta{Provider: "demo", RequestedModel: e.Provider.Model, ReturnedModel: "synthetic-case-v2", AppVersion: "0.2.0", SchemaVersion: "proposal-v1", PromptVersion: "demo-v2", Settings: map[string]any{"synthetic": true}}
+			meta = clinical.ModelMeta{Provider: "demo", RequestedModel: e.Provider.Model, ReturnedModel: "synthetic-case-v3", AppVersion: "0.2.0", SchemaVersion: "proposal-v1", PromptVersion: "demo-v3", Settings: map[string]any{"synthetic": true}}
 		} else {
 			cfg := provider.Config(e.Provider)
 			var m provider.Metadata

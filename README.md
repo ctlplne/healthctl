@@ -8,7 +8,11 @@ Use healthctl to organize your own account, spot misunderstandings and prepare q
 
 healthctl stores your journal on your installation. The model you choose reads relevant parts of your history, suggests follow-up questions and generates possible explanations if you ask. With a cloud model, your installation sends that information directly to the provider for processing. ctlplne studio does not receive it. Cloud model and transcription providers may charge separately. [Public preview and limitations](docs/use-notice.md) · [Where your data goes](PRIVACY.md) · [Report a software or safety problem using fictional details](SECURITY.md)
 
-[![Watch Your first encounter, a walkthrough from local setup to a saved clinician brief](docs/media/walkthrough-cover.jpg)](docs/media/healthctl-walkthrough.mp4?raw=true)
+[![Watch how one answer changes the next interview question](docs/media/history-interview-cover.jpg)](docs/media/history-interview.mp4?raw=true)
+
+**[Watch the history-taking walkthrough (1 min 31 sec)](docs/media/history-interview.mp4?raw=true)** · [English captions](docs/media/history-interview.en.vtt)
+
+In this fictional case, one changed thumbnail prompts a question about a recent injury. Changes across several nails lead to a different conversation about timing and daily activity. See the patient correct the history, then bring the revised account to a clinician.
 
 **[Watch the first-run walkthrough (1 min 55 sec, narrated MP4 with captions)](docs/media/healthctl-walkthrough.mp4?raw=true)** · [English captions (WebVTT)](docs/media/healthctl-walkthrough.en.vtt) · [Try the demo](#try-the-demo)
 
@@ -40,6 +44,8 @@ To stop this installation, run `docker compose stop`. To resume it with your sav
 
 ## Try the demo
 
+On the current source installation, select **Synthetic demo**, open **New encounter**, and choose **Changing fingernails and daily activity**. Try **The centers dip inward**, **Several nails on both hands**, and **Gradually over three months**. Follow the questions about daily activities, correct a finding in history review, and export your clinician brief. Start a second fictional encounter and choose **One thumbnail** to see the question about local injury. The previously published Mac beta contains the earlier fictional cases.
+
 After setup on either installation, the built-in demo runs locally with a fictional patient. It requires no model account, API key or separate inference server.
 
 <details>
@@ -66,6 +72,10 @@ For a shorter symptom-only example, try the prefilled runny-nose case.
 Choose **It happened again** to record an episode while you remember it. You can type or dictate, review what was heard, and save the entry locally. A return visit lets you choose which diary entries, reviewed report passages, and earlier findings to bring forward. Mark findings as ongoing, changed, resolved, or uncertain. The shorter interview asks up to two follow-up questions and carries the remaining gaps into the handoff.
 
 In **Visit preparation**, you can compare records with what actually happened, record how you take a medicine alongside a photograph of its label, and invite a witness to contribute their own account. The clinician brief carries your main question, changes, warnings, and outstanding questions. [Voice input and transcription choices](docs/model-providers.md#dictation-and-account-billing)
+
+## Document a visible change
+
+In **Source reports**, or alongside a relevant interview question, open **Optional photo of a visible change**. Use your camera or select a JPEG or PNG of your own eye, hand, foot or another area. A resized copy stays on your installation for you to show a clinician. With a connected model, you can add your own description to the interview with or without a photo. The model reads your words. A photo cannot establish jaundice, a nail disorder or its cause. If the whites of your eyes or your skin look newly yellow, seek urgent medical advice today.
 
 ## Bring your records
 

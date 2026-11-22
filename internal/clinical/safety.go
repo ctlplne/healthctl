@@ -51,6 +51,9 @@ func (e *Encounter) addWarning(ev Evidence, rule, emergency string) {
 	if strings.TrimSpace(emergency) != "" {
 		message += " " + strings.TrimSpace(emergency)
 	}
+	if rule == "reported_yellow_eyes" {
+		message = "If the whites of your eyes or your skin look newly yellow, seek urgent medical advice today. Do not wait to finish the interview or take a photo. If you may be having an emergency, seek local emergency care immediately."
+	}
 	factID := ""
 	for _, f := range e.Facts {
 		if f.Active && f.Evidence == ev && (rule == "reported_warning" || rule == "structured_finding") && (emergencySigns.MatchString(f.Concept) || f.Corrected) {
@@ -70,6 +73,12 @@ func (e *Encounter) screen(a Answer, emergency string) {
 			e.addWarning(Evidence{a.ID, a.Text}, "explicit_screen", emergency)
 		}
 		return
+	}
+	for _, span := range yellowEyeWords.FindAllStringIndex(a.Text, -1) {
+		clause := clauseAt(a.Text, span[0])
+		if contextualRisk(clause) && !eyeDenial.MatchString(clause) {
+			e.addWarning(Evidence{a.ID, a.Text[span[0]:span[1]]}, "reported_yellow_eyes", emergency)
+		}
 	}
 	for _, span := range emergencySigns.FindAllStringIndex(a.Text, -1) {
 		if contextualRisk(clauseAt(a.Text, span[0])) {

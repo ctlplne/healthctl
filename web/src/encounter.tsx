@@ -1,3 +1,4 @@
+import { ObservationPhotos } from './observationPhotos'
 import { VisitPrep } from './visitPrep'
 import { ReadBack, VoiceInput } from './voice'
 import { useEffect, useRef, useState } from 'react'
@@ -244,7 +245,10 @@ export function EncounterPage({
         {activeWarnings.map((w) => (
           <Callout key={w.id} title="Urgent warning" alert>
             <p>{w.message}</p>
-            <p>Share these findings with the healthcare professional who evaluates you.</p>
+            <p>
+              Share these findings with the healthcare professional who
+              evaluates you.
+            </p>
             <small>Reported wording: “{w.quote}”</small>
           </Callout>
         ))}
@@ -371,6 +375,16 @@ export function EncounterPage({
                 highlight={source}
                 act={async (c) => !!(await onAction(c))}
                 onInterview={() => void act({ action: 'continue' })}
+              />
+            )}
+            {tab === 'sources' && (
+              <ObservationPhotos
+                key={e.id}
+                e={e}
+                busy={busy}
+                run={run}
+                refresh={onUpdate}
+                act={act}
               />
             )}
             {tab === 'prep' && (
@@ -647,6 +661,19 @@ export function EncounterPage({
                         )}
                       </div>
                     </form>
+                    {!background &&
+                      e.pathways?.some((p) =>
+                        ['nail_change', 'eye_appearance'].includes(p.id),
+                      ) && (
+                        <ObservationPhotos
+                          key={e.id}
+                          e={e}
+                          busy={busy}
+                          run={run}
+                          refresh={onUpdate}
+                          act={act}
+                        />
+                      )}
                   </>
                 )}
               </section>
