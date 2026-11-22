@@ -18,6 +18,18 @@ In this fictional case, one changed thumbnail prompts a question about a recent 
 
 Follow a fictional patient from creating the local owner account to reopening a saved visit. See how one approved lab result shapes the interview, what happens to an estimate when the patient corrects their history, and what goes into the exported brief.
 
+**[Watch how to connect your ChatGPT plan (1 min 6 sec)](https://healthctl.com/#chatgpt-setup)** · [MP4 in this repository](docs/media/chatgpt-setup.mp4?raw=true) · [English captions](docs/media/chatgpt-setup.en.vtt)
+
+The setup film starts in the local journal and shows the plan permission, model selection, connection test, and destination for a new encounter. It uses an example account and illustrates the private sign-in step.
+
+## Why we built healthctl
+
+A patient might start with “I get tired on the stairs.” A useful next question is “What could you do before this started?” The difference between always pausing and needing to stop for the first time last week is worth bringing to a visit. Patients should be able to tell that story without having to know in advance which details matter.
+
+In a randomized study of 50 physicians working from six written cases, the median diagnostic-reasoning score was 76% for physicians with access to GPT-4 and 74% with conventional resources. That difference was statistically inconclusive. GPT-4 alone scored 92% in a separate exploratory analysis. The cases already supplied a history, examination findings, and test results. How the quality of a patient interview affected those scores was outside the study design. [Goh et al., JAMA Network Open](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2825395)
+
+A second study examined what happens when people describe a medical scenario to a chatbot. In some conversations, important details never reached the model. That’s the problem healthctl is designed to address. It asks follow-ups, shows where a finding came from, and lets patients correct the account before sharing it. Whether healthctl improves diagnostic accuracy or patient outcomes still requires clinical evaluation. [Reliability of LLMs as medical assistants, Nature Medicine](https://www.nature.com/articles/s41591-025-04074-y)
+
 ## Install healthctl
 
 There are two self-hosted installation paths. Both use Docker and keep the journal on your computer.
