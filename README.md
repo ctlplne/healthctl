@@ -36,9 +36,9 @@ Choose the Windows launcher, the Apple silicon launcher, or Docker Compose. Each
 
 | Path | What you need | How to start |
 | --- | --- | --- |
-| Docker Compose from source | Git, Python 3 and a running Docker engine with Compose v2 | Run the commands below. |
-| Windows desktop launcher | An Intel or AMD x64 Windows PC with Docker Desktop using WSL 2 and Linux containers. SmartScreen may block this unsigned beta. | [Download the Windows EXE](https://github.com/ctlplne/healthctl/releases/download/windows-0.2.0-beta.4/healthctl-windows-x64.exe), double-click it, and select **Open journal or try the demo**. [Windows installation](docs/windows.md) |
-| macOS desktop launcher | An Apple silicon Mac and Docker Desktop. The beta download is unnotarized and macOS may block it. | [Download the beta DMG](https://github.com/ctlplne/healthctl/releases/download/macos-0.2.0-beta.4/healthctl-0.2.0-beta.4-macos-arm64.dmg), drag healthctl to Applications, then choose **Open journal or try the demo**. The first launch uses the internet to build the services. [Desktop installation](docs/desktop.md) |
+| Docker Compose | Git, Python 3 and a running Docker engine with Compose v2 | Build from source or load the verified image for your architecture. [Docker instructions](#docker-compose) |
+| Windows desktop launcher | An Intel or AMD x64 Windows PC with Docker Desktop using WSL 2 and Linux containers. SmartScreen may block this unsigned beta. | [Download the Windows EXE](https://github.com/ctlplne/healthctl/releases/download/v0.2.0-beta.5/healthctl-windows-x64.exe), double-click it, and select **Open journal or try the demo**. [Windows installation](docs/windows.md) |
+| macOS desktop launcher | An Apple silicon Mac and Docker Desktop. The beta download is unnotarized and macOS may block it. | [Download the beta DMG](https://github.com/ctlplne/healthctl/releases/download/v0.2.0-beta.5/healthctl-0.2.0-beta.5-macos-arm64.dmg), drag healthctl to Applications, then choose **Open journal or try the demo**. The first launch uses the internet to build the services. [Desktop installation](docs/desktop.md) |
 
 ### Docker Compose
 
@@ -51,7 +51,13 @@ python3 scripts/init.py
 docker compose up -d --build --wait
 ```
 
-For an exact match to the beta 4 desktop downloads, check out `macos-0.2.0-beta.4` or `windows-0.2.0-beta.4` before building. Both tags identify the same source revision.
+To build the exact beta 5 desktop revision, check out `v0.2.0-beta.5` before building. You can also use the prebuilt Docker image. Download the archive for your Docker engine’s architecture ([AMD64](https://github.com/ctlplne/healthctl/releases/download/v0.2.0-beta.5/healthctl-linux-amd64.tar.gz) or [ARM64](https://github.com/ctlplne/healthctl/releases/download/v0.2.0-beta.5/healthctl-linux-arm64.tar.gz)) and [verify its checksum](https://github.com/ctlplne/healthctl/releases/download/v0.2.0-beta.5/SHA256SUMS). From the initialized checkout, run the following, replacing `arm64` with `amd64` on Intel or AMD machines.
+
+```bash
+docker load -i healthctl-linux-arm64.tar.gz
+docker tag healthctl-release:0e70f49c69f33b2a951d5787af3882c4f50498a9-arm64 clinical-history-app
+docker compose up -d --no-build --wait
+```
 
 Open [healthctl on your computer](http://127.0.0.1:8437) and create the local owner account. To use a different port, set `CLINICAL_PORT` in `.env` before starting Compose. The setup script generates a private `.env` containing the database password and encryption key. Keep a secure backup. [Backup and recovery](docs/operations.md)
 

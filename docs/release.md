@@ -28,6 +28,14 @@ The first public GitHub source history runs from `32b5104` through `e9153cd` on 
 
 ### Public preview and release review
 
+#### 0.2.0-beta.5 · November 22, 2026
+
+The Apple silicon DMG (bundle build 7), Windows x64 EXE (file version 0.2.0.5) and prebuilt Linux AMD64 and ARM64 images share revision `0e70f49c69f33b2a951d5787af3882c4f50498a9`. The user confirms the reviewed history and separately acknowledges the limitations before requesting or retrying an optional assessment. Immediate warnings and history-only export remain available. The DMG is ad-hoc signed and unnotarized. The EXE is unsigned. [Release files and SHA-256 checksums](https://github.com/ctlplne/healthctl/releases/tag/v0.2.0-beta.5)
+
+GitHub Actions exercised both Linux architectures, the Windows launcher, Mac packaging, synthetic cases, encrypted restore, upgrade and rollback, screen-reader navigation and all 50 browser tests. All 176 source files embedded in the two desktop packages matched the tag. The exact Mac download also completed first launch with Docker Desktop, offline transcription and encrypted backup and restore on Apple silicon. Clinical review, jurisdiction-specific legal and provider review, and a consumer Windows PC check with Docker Desktop, WSL 2 and SmartScreen remain open. [Tagged verification](https://github.com/ctlplne/healthctl/actions/runs/45014396186)
+
+#### 0.2.0-beta.4 · November 22, 2026
+
 The paired 0.2.0-beta.4 downloads and the equivalent Docker Compose checkout use commit `6af2f63498445c8e6f062ef513908a9d0f6b3fb3`. The Apple silicon DMG (bundle build 6) is ad-hoc signed and unnotarized. The Windows x64 EXE (file version 0.2.0.4) is unsigned. Both build the same journal from included source on first use. Each release includes an SPDX inventory and SHA-256 checksums. The Windows launcher starts and reopens a workspace. The Mac launcher also provides native backup and restore controls. See the dated clinical and legal review record below. [Mac release](https://github.com/ctlplne/healthctl/releases/tag/macos-0.2.0-beta.4) · [Windows release](https://github.com/ctlplne/healthctl/releases/tag/windows-0.2.0-beta.4)
 
 November 22, 2026. The release adds the same experimental-use statement to both launchers, the browser journal, offline invitations and printed reports. The offline use notice explains the research, the publisher’s warranty disclaimer, the limited scope of its liability wording and users’ non-waivable rights. The unshipped beta 3 candidate failed the multipage PDF text check. Beta 4 keeps the verification sentence together on the page. Software testing and publication do not constitute clinical or legal sign-off.
