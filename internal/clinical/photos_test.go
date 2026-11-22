@@ -38,8 +38,14 @@ func TestVisibleChangeHistory(t *testing.T) {
 		if e.hasWarning() != tc.warning {
 			t.Fatal(tc.s)
 		}
-		if tc.warning && (e.Pending != "" || e.AttachPhoto("p", "Eye") == nil) {
-			t.Fatal("Photo or interview took priority over warning")
+		if tc.warning {
+			rev := e.HistoryRevision
+			if err := e.AttachPhoto("p", "Eye"); err != nil {
+				t.Fatal(err)
+			}
+			if !e.hasWarning() || e.Pending != "" || e.State != "interrupted_for_safety" || e.HistoryRevision != rev {
+				t.Fatal("Saving a local photo changed the urgent interruption")
+			}
 		}
 	}
 }

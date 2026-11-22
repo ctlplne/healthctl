@@ -24,8 +24,8 @@ func ValidPhotoArea(area string) bool {
 }
 
 func (e *Encounter) AttachPhoto(id, area string) error {
-	if !ValidPhotoArea(area) || id == "" || len(e.Photos) >= 12 || e.Pending != "" || e.hasWarning() || e.ScopeReason != "" {
-		return errors.New("Save an optional photo in an in-scope encounter after any pending request and urgent warning have been addressed")
+	if !ValidPhotoArea(area) || id == "" || len(e.Photos) >= 12 || e.Pending != "" || e.ScopeReason != "" {
+		return errors.New("Save an optional photo in an in-scope encounter once the current request has finished")
 	}
 	e.Photos = append(e.Photos, ObservationPhoto{ID: id, Area: area, CreatedAt: time.Now().UTC()})
 	e.touch()

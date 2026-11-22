@@ -24,8 +24,8 @@ export function ObservationPhotos({ e, busy, run, refresh, act }: Props) {
   const [reset, setReset] = useState(0)
   const [remove, setRemove] = useState<{ id: string; requestId: string }>()
   const photos = e.photos || []
-  const blocked =
-    !!e.pending || !!e.scopeReason || e.warnings.some((w) => w.active)
+  const urgent = e.warnings.some((w) => w.active)
+  const blocked = !!e.pending || !!e.scopeReason
   function choose(next?: File) {
     setFile(next)
     setRequestId(crypto.randomUUID())
@@ -41,6 +41,13 @@ export function ObservationPhotos({ e, busy, run, refresh, act }: Props) {
         photo on this installation to show your clinician. The model receives
         your words only.
       </p>
+      {urgent && (
+        <p role="note">
+          Follow the urgent care advice above. If you already have a photo or
+          can save one without delaying care, you can keep it here for your
+          clinician. The urgent warning stays active.
+        </p>
+      )}
       {photos.map((photo) => (
         <p key={photo.id}>
           <a
@@ -171,7 +178,7 @@ export function ObservationPhotos({ e, busy, run, refresh, act }: Props) {
           </button>
         </form>
       )}
-      {!blocked && !e.demo && (
+      {!blocked && !urgent && !e.demo && (
         <form
           onSubmit={(ev) => {
             ev.preventDefault()

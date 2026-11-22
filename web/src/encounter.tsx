@@ -661,7 +661,8 @@ export function EncounterPage({
                         )}
                       </div>
                     </form>
-                    {!background &&
+                    {!activeWarnings.length &&
+                      !background &&
                       e.pathways?.some((p) =>
                         ['nail_change', 'eye_appearance'].includes(p.id),
                       ) && (
