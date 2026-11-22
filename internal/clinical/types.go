@@ -36,6 +36,7 @@ type ProviderRef struct {
 }
 
 type Intake struct {
+	DemoPractice     bool   `json:"demoPractice,omitempty"`
 	NarrativeFirst   bool   `json:"narrativeFirst,omitempty"`
 	Focused          bool   `json:"focused,omitempty"`
 	Agenda           string `json:"agenda,omitempty"`
@@ -258,6 +259,7 @@ type IntakeRevision struct {
 }
 
 type Encounter struct {
+	DemoPractice          bool                   `json:"demoPractice,omitempty"`
 	FocusedFrom           int                    `json:"focusedFrom,omitempty"`
 	NarrativeFirst        bool                   `json:"narrativeFirst,omitempty"`
 	ReturnSource          string                 `json:"returnSource,omitempty"`

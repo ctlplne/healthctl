@@ -135,7 +135,7 @@ export function EncounterPage({
     e.narrativeFirst && !background && revealedQuestion !== questionKey
   const ownWords = answerMode === 'text'
   const writeAnswer =
-    ownWords ||
+    (!e.demo && !background) || ownWords ||
     (!!storyFirst && answerMode !== 'choice') ||
     (!answerMode && !choices.length && !background)
   useEffect(() => {
@@ -500,6 +500,25 @@ export function EncounterPage({
                         void addAnswer(answer)
                       }}
                     >
+                      {writeAnswer && (
+                        <label>
+                          Your answer
+                          <textarea
+                            ref={textarea}
+                            maxLength={4000}
+                            rows={2}
+                            value={answer}
+                            onChange={(ev) => {
+                              setAnswerMode('text')
+                              setAnswer(ev.target.value)
+                            }}
+                            placeholder={
+                              e.questionSource?.answerHint ||
+                              'A short answer in your own words is fine.'
+                            }
+                          />
+                        </label>
+                      )}
                       <div
                         className="choices"
                         role="group"
@@ -531,9 +550,7 @@ export function EncounterPage({
                             </button>
                           ))}
                         {!storyFirst &&
-                          (background ||
-                            choices.length > 0 ||
-                            !writeAnswer) && (
+                          (background || (e.demo && choices.length > 0) || !writeAnswer) && (
                             <button
                               type="button"
                               aria-pressed={ownWords}
@@ -556,25 +573,6 @@ export function EncounterPage({
                             setAnswer(value)
                           }}
                         />
-                      )}
-                      {writeAnswer && (
-                        <label>
-                          Your answer
-                          <textarea
-                            ref={textarea}
-                            maxLength={4000}
-                            rows={2}
-                            value={answer}
-                            onChange={(ev) => {
-                              setAnswerMode('text')
-                              setAnswer(ev.target.value)
-                            }}
-                            placeholder={
-                              e.questionSource?.answerHint ||
-                              'A short answer in your own words is fine.'
-                            }
-                          />
-                        </label>
                       )}
                       {e.questionSource?.key === 'medication_start' && (
                         <label>
@@ -661,11 +659,7 @@ export function EncounterPage({
                         )}
                       </div>
                     </form>
-                    {!activeWarnings.length &&
-                      !background &&
-                      e.pathways?.some((p) =>
-                        ['nail_change', 'eye_appearance'].includes(p.id),
-                      ) && (
+                    {!activeWarnings.length && !e.scopeReason && !background && (
                         <ObservationPhotos
                           key={e.id}
                           e={e}

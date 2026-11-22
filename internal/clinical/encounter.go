@@ -26,7 +26,8 @@ func New(encounterID string, intake Intake, provider ProviderRef, emergency stri
 		return nil, errors.New("Enter an age from 1 to 125, a chief concern and acknowledge the current notice")
 	}
 	e := &Encounter{
-		Agenda: strings.TrimSpace(intake.Agenda), Focused: intake.Focused, NarrativeFirst: intake.NarrativeFirst, GuidedHistory: intake.GuidedHistory, ReportFirst: intake.ReportFirst, ID: encounterID, Concern: strings.TrimSpace(intake.Concern), Background: strings.TrimSpace(intake.Background),
+		DemoPractice: intake.DemoPractice && provider.Kind == "demo" && !intake.ReportFirst,
+		Agenda:       strings.TrimSpace(intake.Agenda), Focused: intake.Focused, NarrativeFirst: intake.NarrativeFirst, GuidedHistory: intake.GuidedHistory, ReportFirst: intake.ReportFirst, ID: encounterID, Concern: strings.TrimSpace(intake.Concern), Background: strings.TrimSpace(intake.Background),
 		Age: intake.Age, PregnancyRelated: intake.PregnancyRelated,
 		Provider: provider, Demo: provider.Kind == "demo", CreatedAt: time.Now().UTC(),
 		Notice: Notice, NoticeVersion: NoticeVersion, ReviewStatus: ReviewStatus, HistoryRevision: 1,
@@ -110,7 +111,6 @@ func (e *Encounter) routeInterview() {
 	case e.groundedQuestion():
 	case e.askEpisodeChange():
 	case e.askFocusedQuestion():
-	case e.askNailDistribution():
 	default:
 		e.State = "interviewing"
 		e.Pending = "interview"

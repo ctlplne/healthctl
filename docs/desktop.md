@@ -5,9 +5,13 @@ The public beta launcher runs on Apple silicon Macs with Docker Desktop. On firs
 ## Download the Apple silicon beta
 
 1. Install and start Docker Desktop. Use a macOS version supported by your Docker Desktop installation.
-2. Download the [unnotarized beta disk image](https://github.com/ctlplne/healthctl/releases/download/macos-0.2.0-beta.1/healthctl-0.2.0-beta.1-macos-arm64.dmg). The [release page](https://github.com/ctlplne/healthctl/releases/tag/macos-0.2.0-beta.1) includes the SHA-256 checksum. This preview is ad-hoc signed. Apple has not verified its publisher or notarized it, and Gatekeeper may block opening it. The [Docker Compose installation](../README.md#docker-compose) is also available.
+2. Download the [unnotarized beta disk image](https://github.com/ctlplne/healthctl/releases/download/macos-0.2.0-beta.2/healthctl-0.2.0-beta.2-macos-arm64.dmg). The [release page](https://github.com/ctlplne/healthctl/releases/tag/macos-0.2.0-beta.2) includes the SHA-256 checksum. This preview is ad-hoc signed. Apple has not verified its publisher or notarized it, and Gatekeeper may block opening it. The [Docker Compose installation](../README.md#docker-compose) is also available.
 3. Open the DMG, drag **healthctl** into **Applications**, and open healthctl. Choose **Open journal or try the demo**. Allow several minutes and keep Docker and your internet connection running during the first setup.
 4. When your browser opens the local journal, create your owner account. Choose the scripted demo to explore with fictional information, or configure your own model. A cloud model receives the relevant history directly from your installation.
+
+## Update an existing Mac installation
+
+Quit the launcher, open the new disk image and replace **healthctl** in **Applications**. Start Docker Desktop and reopen **healthctl** using the same macOS account. Select **Open journal or try the demo** to reopen your existing workspace. Allow time for Docker to build the updated services on the first launch. You can use **Back up workspace** before updating.
 
 ## Build the bundled installer from source
 

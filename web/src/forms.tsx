@@ -571,6 +571,8 @@ export function IntakeForm({
     [urgent, setUrgent] = useState(''),
     [pregnancy, setPregnancy] = useState(''),
     [ack, setAck] = useState(false)
+  const [demoCase, setDemoCase] = useState(sampleConcern)
+  const practice = demo && !reportFirst && !returnMode && demoCase === ''
   const [selection, setSelection] = useState(emptySelection),
     [narrativeFirst, setNarrativeFirst] = useState(!demo),
     [focused, setFocused] = useState(false),
@@ -583,7 +585,8 @@ export function IntakeForm({
         age: Number(age),
         guidedHistory: true,
         focused,
-        narrativeFirst,
+        narrativeFirst: practice || narrativeFirst,
+        demoPractice: practice,
         agenda,
         ...(returnMode && (selection.source || selection.diaryIds.length)
           ? { returnVisit: selection }
@@ -620,15 +623,13 @@ export function IntakeForm({
             <label>
               Fictional interview example
               <select
-                value={
-                  concern === sampleConcern ||
-                  concern === 'My fingernails have changed shape.'
-                    ? concern
-                    : ''
-                }
-                onChange={(ev) => setConcern(ev.target.value)}
+                value={demoCase}
+                onChange={(ev) => {
+                  setDemoCase(ev.target.value)
+                  setConcern(ev.target.value)
+                }}
               >
-                <option value="">Other wording</option>
+                <option value="">Practice with your own fictional concern</option>
                 <option value={sampleConcern}>Runny nose and sneezing</option>
                 <option value="My fingernails have changed shape.">
                   Changing fingernails and daily activity
@@ -645,7 +646,10 @@ export function IntakeForm({
               maxLength={4000}
               rows={3}
               value={concern}
-              onChange={(e) => setConcern(e.target.value)}
+              onChange={(e) => {
+                setConcern(e.target.value)
+                if (demo && e.target.value !== demoCase) setDemoCase('')
+              }}
               placeholder={
                 reportFirst
                   ? 'For example, help me understand my routine screening results.'
@@ -761,8 +765,9 @@ export function IntakeForm({
                 <FlaskConical size={16} /> Synthetic case
               </h4>
               <p>
-                The example concern and age are fictional. Try the suggested
-                answers to follow the scripted case.
+                Follow a scripted example or practice telling a fictional story
+                in your own words. Practice uses general questions about timing
+                and daily life. Connect a model for personalized follow-ups.
               </p>
             </>
           )}

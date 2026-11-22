@@ -82,7 +82,7 @@ export function ContextBox({ p }: { p: Provider }) {
         </strong>
         <p>
           {p.kind === 'demo' ? (
-            'Use the fictional case to try the workflow. This mode uses scripted examples and sends no model requests.'
+            'Try a scripted example or practice with your own fictional concern. Both run locally without a model.'
           ) : (
             <>
               Your installation sends relevant history and approved report extracts to{' '}

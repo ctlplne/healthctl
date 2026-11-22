@@ -1372,3 +1372,22 @@ test('An unavailable local speech engine leaves cloud submission under per-recor
   )
   expect(attempts).toBe(2)
 })
+
+test('Open-ended fictional practice preserves an unexpected answer and offers a local photo for any concern', async ({ page }) => {
+  await enter(page)
+  await configure(page, 'demo')
+  await start(page, { concern: 'Things sound different when I hum.', age: 38 })
+  const reply = 'It began last week while I was practicing a song.'
+  const answer = page.getByLabel('Your answer', { exact: true })
+  await expect(page.getByRole('heading', { name: 'When did you first notice what brought you here?' })).toBeVisible()
+  await answer.fill(reply)
+  await page.getByRole('button', { name: 'Save answer' }).click()
+  await expect(page.getByRole('heading', { name: 'What has changed since you first noticed it?' })).toBeVisible()
+  await page.getByText('Optional photo of a visible change').click()
+  await expect(page.getByLabel('Where do you see the change?')).toBeVisible()
+  await page.getByRole('button', { name: 'Review history now' }).click()
+  const report = await grabReport(page)
+  expect(report.answers).toContainEqual(expect.objectContaining({ text: reply, disposition: 'provided' }))
+  expect(report.assessments).toHaveLength(0)
+  await remove(page)
+})

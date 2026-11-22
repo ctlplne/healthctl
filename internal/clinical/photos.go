@@ -4,7 +4,9 @@ import (
 	"errors"
 	"regexp"
 	"slices"
+	"strings"
 	"time"
+	"unicode"
 )
 
 // Photos are patient-kept visual records. Neither image data nor attachment
@@ -16,11 +18,8 @@ type ObservationPhoto struct {
 }
 
 func ValidPhotoArea(area string) bool {
-	switch area {
-	case "Eye", "Fingernails or hands", "Toenails or feet", "Other visible change":
-		return true
-	}
-	return false
+	return validText(area, 160) && strings.TrimSpace(area) == area &&
+		strings.IndexFunc(area, func(r rune) bool { return unicode.IsControl(r) || !unicode.IsPrint(r) }) == -1
 }
 
 func (e *Encounter) AttachPhoto(id, area string) error {
@@ -34,38 +33,6 @@ func (e *Encounter) AttachPhoto(id, area string) error {
 
 var yellowEyeWords = regexp.MustCompile(`(?i)\b(?:(?:(?:whites? of (?:my |the )?eyes?)|(?:my )?eyes?|eye whites?) (?:have (?:turned|become)|(?:are|look|looks|appear|appears|seem|seems|turned|turning|became|becoming|went|get|getting))(?: (?:a (?:little|bit)|slightly|very|more|bright))? yellow(?:ish)?|yellow(?:ish)? (?:eyes?\b|eye whites?|whites? of (?:my |the )?eyes?)|jaundiced)\b`)
 var eyeDenial = regexp.MustCompile(`(?i)\b(?:not|aren['’]t|weren['’]t|wasn['’]t|isn['’]t|never) (?:at all )?(?:look(?:ing)? )?yellow\b`)
-
-// For a short, isolated nail complaint, the distribution is often the first
-// useful distinction. Let the provider handle mixed concerns and free text.
-var isolatedNailChange = regexp.MustCompile(`(?i)^(?:my |the )?(?:finger|toe)?nails? (?:have changed shape|look different|are changing shape|are spoon[- ]shaped|curve inward|are dented)[.!]?$`)
-
-func (e *Encounter) askNailDistribution() bool {
-	if e.Demo || !e.GuidedHistory || e.Focused || e.ReportFirst || e.Background != "" || !isolatedNailChange.MatchString(e.Concern) {
-		return false
-	}
-	key, question, reason := "nail_distribution", "Which nails have changed?", "A change in one nail can have a different history from changes across several."
-	choices := []string{"One nail", "Several nails"}
-	for _, a := range e.Answers {
-		if !a.Active || a.Kind == "screen" || a.Kind == "concern" {
-			continue
-		}
-		if a.Kind != "reply" || a.QuestionSource == nil || a.QuestionSource.Key != "nail_distribution" {
-			return false
-		}
-		switch a.Text {
-		case "One nail":
-			key, question, reason = "nail_local_event", "What happened to that finger or toe around the time the change began?", "An injury or repeated pressure may help explain why just one nail changed."
-		case "Several nails":
-			key, question, reason = "nail_sequence", "Did the nails start changing together, or did one change first?", "The sequence helps place the changes on a timeline."
-		default:
-			return false
-		}
-		choices = nil
-	}
-	e.State, e.Pending, e.Question, e.Choices = "interviewing", "", question, choices
-	e.QuestionSource = &QuestionSource{Key: key, Pathway: "nail_change", Reason: reason}
-	return true
-}
 
 func (e *Encounter) RemovePhoto(id string) error {
 	for i, photo := range e.Photos {

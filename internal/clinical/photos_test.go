@@ -7,27 +7,27 @@ import (
 )
 
 func TestVisibleChangeHistory(t *testing.T) {
-	for _, tc := range []struct{ reply, next string }{{"One nail", "nail_local_event"}, {"Several nails", "nail_sequence"}, {"I prefer not to answer.", ""}} {
-		e, err := New("n", Intake{Concern: DemoNailConcern, Age: 40, GuidedHistory: true, NoticeVersion: NoticeVersion}, ProviderRef{Kind: "compatible", Model: "test"}, "")
-		if err != nil || e.QuestionSource == nil || e.QuestionSource.Key != "nail_distribution" {
-			t.Fatalf("missing question: %v", err)
+	for _, concern := range []string{DemoNailConcern, "My shoulder clicks.", "My shoes feel different on one side."} {
+		e := guided(t, concern)
+		if e.Pending != "interview" || e.Question != "" {
+			t.Fatal("Connected provider did not receive the open concern", concern)
 		}
 		rev := e.HistoryRevision
-		if err = e.AttachPhoto("private-photo-id", "Fingernails or hands"); err != nil || rev != e.HistoryRevision {
+		if err := e.AttachPhoto("private-photo-id", "Outside of my left ankle"); err == nil {
+			t.Fatal("A pending request must finish before saving a photo")
+		}
+		turn(t, e, Proposal{Action: "ask", Question: "What did you notice first?", Reason: "Clarify the change."})
+		if err := e.AttachPhoto("private-photo-id", "Outside of my left ankle"); err != nil || rev != e.HistoryRevision {
 			t.Fatal(err)
-		}
-		if err = e.Apply(Command{Action: "answer", Text: tc.reply}, ""); err != nil {
-			t.Fatal(err)
-		}
-		if tc.next != "" && (e.QuestionSource == nil || e.QuestionSource.Key != tc.next) {
-			t.Fatal(tc, e.Question)
-		}
-		if tc.next == "" && e.Pending != "interview" {
-			t.Fatal("Repeated a skipped question")
 		}
 		data, _ := json.Marshal(e.inputHistory("interview"))
-		if strings.Contains(string(data), "private-photo-id") || strings.Contains(string(data), "Fingernails or hands") {
+		if strings.Contains(string(data), "private-photo-id") || strings.Contains(string(data), "Outside of my left ankle") {
 			t.Fatal("Photo in provider payload")
+		}
+	}
+	for _, area := range []string{"", " ", "Two\nlines", strings.Repeat("x", 161)} {
+		if ValidPhotoArea(area) {
+			t.Fatal("Accepted invalid body area")
 		}
 	}
 	for _, tc := range []struct {

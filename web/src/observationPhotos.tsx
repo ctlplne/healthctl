@@ -11,13 +11,8 @@ type Props = {
   act: (cmd: Fields) => Promise<boolean>
 }
 export function ObservationPhotos({ e, busy, run, refresh, act }: Props) {
-  const [area, setArea] = useState(
-    e.pathways?.some((p) => p.id === 'eye_appearance')
-      ? 'Eye'
-      : e.pathways?.some((p) => p.id === 'nail_change')
-        ? 'Fingernails or hands'
-        : 'Other visible change',
-  )
+  const [location, setLocation] = useState('')
+  const area = location.trim() || 'Other visible change'
   const [words, setWords] = useState('')
   const [file, setFile] = useState<File>()
   const [requestId, setRequestId] = useState(() => crypto.randomUUID())
@@ -102,23 +97,16 @@ export function ObservationPhotos({ e, busy, run, refresh, act }: Props) {
       ))}
       {!blocked && (
         <label>
-          What does your photo show?
-          <select
-            value={area}
+          Where do you see the change? (optional)
+          <input
+            value={location}
+            maxLength={40}
+            placeholder="Body area in your own words"
             onChange={(ev) => {
-              setArea(ev.target.value)
+              setLocation(ev.target.value)
               setRequestId(crypto.randomUUID())
             }}
-          >
-            {[
-              'Eye',
-              'Fingernails or hands',
-              'Toenails or feet',
-              'Other visible change',
-            ].map((a) => (
-              <option key={a}>{a}</option>
-            ))}
-          </select>
+          />
         </label>
       )}
       {!blocked && photos.length < 12 && (
@@ -203,7 +191,7 @@ export function ObservationPhotos({ e, busy, run, refresh, act }: Props) {
             />
           </label>
           <small>
-            These words join your encounter history for the selected model. You
+            Your description and the body area you enter join the history for your selected model. You
             can add them without a photo.
           </small>
           <button type="submit" disabled={!words.trim() || busy}>

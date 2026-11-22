@@ -142,7 +142,7 @@ func (e *Encounter) askPlanOpening() {
 }
 
 func (e *Encounter) askOpeningDetail(in Input) bool {
-	if !e.GuidedHistory || e.ReportFirst || len(in.Pathways) == 0 || len(in.ReportEntries) > 0 || len(strings.Fields(in.Concern)) > 12 {
+	if !e.GuidedHistory || e.ReportFirst || e.DemoPractice || (e.Demo && len(in.Pathways) == 0) || len(in.ReportEntries) > 0 || len(strings.Fields(in.Concern)) > 12 {
 		return false
 	}
 	for _, a := range in.Answers {
