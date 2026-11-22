@@ -1,4 +1,4 @@
-Run healthctl on an Intel or AMD x64 Windows PC. This free public preview is an unsigned portable launcher. Microsoft Defender SmartScreen or an organization policy may block opening it.
+Run healthctl on an Intel or AMD x64 Windows PC. This unsigned portable launcher opens the same experimental beta journal as the Mac and Compose builds. Verify findings with a qualified healthcare professional. Microsoft Defender SmartScreen or an organization policy may block opening it.
 
 1. Install and start Docker Desktop with its WSL 2 Linux engine.
 2. Download **healthctl-windows-x64.exe**, then double-click it and select **Open journal or try the demo**. The first launch needs internet and may take several minutes to build the included source and obtain PostgreSQL.

@@ -313,7 +313,7 @@ test('Owner setup and synthetic encounter through correction, print, export, res
   ).toBe(401)
   expect(unexpected).toEqual([])
 })
-test('Urgent screen interrupts the interview and persists in print and JSON after patient requests an estimate', async ({
+test('Urgent screen interrupts the interview and persists in print and JSON after the user requests an estimate', async ({
   page,
 }, info) => {
   await enter(page)
@@ -707,7 +707,7 @@ test('Local evidence lookup supplies reference metadata and abstains without a m
   ).toBeVisible()
 })
 
-test('Returning patient reviews a dated medication and groups two encounters into one episode', async ({
+test('Returning user reviews a dated medication and groups two encounters into one episode', async ({
   page,
 }, info) => {
   await enter(page)
@@ -1046,6 +1046,13 @@ test('Model guidance is present before JavaScript and remains visible during loa
     },
     { times: 1 },
   )
+  const notice = await page.request.get('/use-notice.html')
+  expect(notice.ok()).toBe(true)
+  const terms = await notice.text()
+  expect(terms).toContain('Warranty and limits of liability')
+  expect(terms).toContain('did not vary history completeness')
+  expect(terms).toContain('href="/license.txt"')
+  expect(await (await page.request.get('/license.txt')).text()).toContain('Business Source License 1.1')
   await page.goto('/')
   await expect(
     page.getByText('Opening your workspace…', { exact: true }),
@@ -1075,7 +1082,7 @@ test('Model guidance is present before JavaScript and remains visible during loa
   }
 })
 
-test('Patient adds medicine in their own words, resumes at allergies and flags an emergency without answering it', async ({
+test('A user adds medicine in their own words, resumes at allergies and flags an emergency without answering it', async ({
   page,
 }, info) => {
   const concern =
@@ -1142,9 +1149,14 @@ test('A slow model leaves intake immediately and completes the same saved encoun
   await enter(page)
   await configure(page, 'compatible', 'fixture-slow-interview')
   const id = await start(page, { concern, age: 42 })
-  await expect(
-    page.getByText('Preparing your next interview question', { exact: true }),
-  ).toBeVisible()
+  const status = page.getByRole('status').filter({ hasText: 'Preparing your next interview question' })
+  const timer = page.getByRole('timer', { name: 'Elapsed wait' })
+  await expect(status).toContainText('fixture-slow-interview')
+  await expect(timer).toHaveText(/Waiting 0:0[1-9]/)
+  await expect(timer).toHaveAttribute('aria-live', 'off')
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await expect(page.locator('.model-wait .spin')).toHaveCSS('animation-name', 'none')
+  await layoutFits(page)
   await expect(page.getByRole('button', { name: 'Save answer' })).toHaveCount(0)
   await page.getByRole('button', { name: 'Review saved history now' }).click()
   await expect(
@@ -1157,19 +1169,34 @@ test('A slow model leaves intake immediately and completes the same saved encoun
   await page
     .getByRole('button', { name: 'Pause and return to journal', exact: true })
     .click()
-  await page.getByRole('button', { name: new RegExp(concern) }).click()
+  const row = page.getByRole('button', { name: new RegExp(concern) })
+  await expect(row).toContainText('Waiting for model')
+  await row.click()
+  await expect(timer).toHaveText(/Waiting 0:0[1-9]/)
   await expect(
     page.getByRole('heading', {
       name: 'When did you first notice the change?',
     }),
   ).toBeVisible({ timeout: 10000 })
+  await expect(page.getByRole('status').filter({ hasText: 'Your next question is ready.' })).toBeVisible()
+  await expect(timer).toHaveCount(0)
   expect(
     (await (await page.request.get('/api/encounters/' + id)).json()).turns,
   ).toHaveLength(1)
+  await page.getByRole('button', { name: 'History review', exact: true }).click()
+  await page.getByRole('button', { name: 'Confirm my history' }).click()
+  await page.route('**/api/encounters/' + id, route => route.abort('failed'), { times: 1 })
+  await page.getByRole('button', { name: 'Generate provisional estimate' }).click()
+  await expect(page.getByRole('status').filter({ hasText: 'Preparing your provisional estimate' })).toBeVisible()
+  await expect(page.getByRole('status').filter({ hasText: 'Reconnecting to your installation' })).toBeVisible()
+  await expect(timer).toHaveCount(0)
+  await expect(timer).toBeVisible({ timeout: 8000 })
+  await expect(page.getByRole('status').filter({ hasText: 'The model needs more information.' })).toBeVisible({ timeout: 12000 })
+  await expect(timer).toHaveCount(0)
   await remove(page)
 })
 
-test('A patient records an episode, reviews dictated words and selectively includes it in a return visit with a witness', async ({
+test('A user records an episode, reviews dictated words and selectively includes it in a return visit with a witness', async ({
   page,
   context,
 }, info) => {

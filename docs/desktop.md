@@ -1,5 +1,7 @@
 # healthctl for macOS
 
+The launcher opens the same experimental visit-preparation journal as Docker Compose. Read **Why healthctl exists and what the beta can do** in the journal before starting. The use notice and license are available offline. Verify findings with a qualified healthcare professional. [Beta purpose and limitations](use-notice.md)
+
 The public beta launcher runs on Apple silicon Macs with Docker Desktop. On first use, Docker fetches dependencies and builds healthctl from the source included in the download. PostgreSQL and the English speech model run locally. Subsequent launches reuse the local images.
 
 ## Download the Apple silicon beta

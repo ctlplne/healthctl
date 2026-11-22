@@ -5,7 +5,8 @@ COPY web/package*.json ./
 RUN npm ci --no-fund --no-audit
 COPY web/ ./
 COPY internal/clinical/model-guidance.txt internal/clinical/preview.txt /internal/clinical/
-COPY PRIVACY.md /PRIVACY.md
+COPY PRIVACY.md LICENSE /
+COPY docs/use-notice.md /docs/use-notice.md
 RUN npm run build
 
 FROM golang:1.26.10-bookworm@sha256:23ce71337b726608afb1bc00986e630a05034a87a87ea1fc2cd1ae5cf33387eb AS server

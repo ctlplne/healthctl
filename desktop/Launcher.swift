@@ -17,7 +17,15 @@ final class Launcher: NSObject, NSApplicationDelegate {
         stack.alignment = .leading
         stack.spacing = 12
         stack.addArrangedSubview(heading)
-        stack.addArrangedSubview(NSTextField(wrappingLabelWithString: "a ctlplne studio product · Free public preview (beta) for visit preparation. Verify findings with a qualified healthcare professional."))
+        guard let url = Bundle.main.url(forResource: "preview", withExtension: "txt"),
+              let preview = try? String(contentsOf: url, encoding: .utf8) else {
+            let alert = NSAlert()
+            alert.messageText = "The beta notice is missing. Download healthctl again."
+            alert.runModal()
+            NSApp.terminate(nil)
+            return
+        }
+        stack.addArrangedSubview(NSTextField(wrappingLabelWithString: preview.trimmingCharacters(in: .whitespacesAndNewlines)))
         for (label, action) in [("Open journal or try the demo", #selector(openJournal)), ("Connect a model", #selector(settings)),
                                 ("Set or clear an OpenAI API key…", #selector(platformKey)), ("Back up workspace…", #selector(backup)), ("Restore a backup into a new workspace…", #selector(restore)),
                                 ("Get Docker Desktop", #selector(dockerLink))] {

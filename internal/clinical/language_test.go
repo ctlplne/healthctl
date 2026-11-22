@@ -14,3 +14,17 @@ func TestDisplayPreservesOriginalWordsAndCorrections(t *testing.T) {
 		t.Fatal("display changed evidence, a manual edit, or the stored history")
 	}
 }
+
+func TestRoleLabelsInOlderModelText(t *testing.T) {
+	const q = "Patient: when did this start?"
+	const reason = "Would this change the patient’s plans?"
+	const evidence = "The patient at work told me to stay patient."
+	old := Encounter{Question: q, QuestionSource: &QuestionSource{Reason: reason}, Choices: []string{"The patient is unsure"}, Answers: []Answer{{Question: q, Text: evidence}}, Outstanding: []string{"Patient-reported timing"}, Assessments: []Assessment{{Items: []Item{{Explanation: "Consider the patient. See “The patient at work”.", Limitations: []string{reason}}}}}}
+	shown := old.ForDisplay()
+	if shown.Question != "User: when did this start?" || shown.Answers[0].Text != evidence || shown.QuestionSource.Reason != "Would this change the user’s plans?" || shown.Choices[0] != "The user is unsure" || shown.Outstanding[0] != "Self-reported timing" || shown.Assessments[0].Items[0].Explanation != "Consider the user. See “The patient at work”." || shown.Assessments[0].Items[0].Limitations[0] != shown.QuestionSource.Reason {
+		t.Fatal("role label or evidence changed unexpectedly", shown)
+	}
+	if old.QuestionSource.Reason != reason || old.Choices[0] != "The patient is unsure" || old.Assessments[0].Items[0].Limitations[0] != reason || userReference("Please stay patient during outpatient care.") != "Please stay patient during outpatient care." {
+		t.Fatal("presentation changed source data or unrelated words")
+	}
+}

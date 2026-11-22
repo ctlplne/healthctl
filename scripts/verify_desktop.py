@@ -44,6 +44,9 @@ def verify(package, wav_source, resources_only=False):
             if inventory["spdxVersion"] != "SPDX-2.3" or required - components:
                 raise ValueError(f"Incomplete {name} SBOM: {required - components}")
         if not resources_only:
+            for source, bundled in [('internal/clinical/preview.txt', 'preview.txt'), ('docs/use-notice.md', 'use-notice.md'), ('LICENSE', 'LICENSE')]:
+                if (res / bundled).read_bytes() != (ROOT / source).read_bytes():
+                    raise ValueError(f"Packaged notice differs from the source: {bundled}")
             native = json.loads((notices / "desktop.spdx.json").read_bytes())
             if source_archive.exists():
                 packaged = next(p for p in native["packages"] if p["SPDXID"] == "SPDXRef-source")

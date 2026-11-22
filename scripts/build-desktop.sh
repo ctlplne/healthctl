@@ -16,7 +16,7 @@ if [[ -n "${HEALTHCTL_TESTED_DESKTOP_APP:-}" ]]; then
 else
   mkdir -p "$bin" "$res"
   cp desktop/Info.plist "$app/Contents/Info.plist"
-  cp compose.yaml desktop/desktop.yaml desktop/manage.sh LICENSE THIRD_PARTY_NOTICES.md "$res/"
+  cp compose.yaml desktop/desktop.yaml desktop/manage.sh LICENSE THIRD_PARTY_NOTICES.md docs/use-notice.md internal/clinical/preview.txt "$res/"
   swiftc -O -target "$(uname -m)-apple-macos13.0" -module-cache-path "$dest/swift-cache" desktop/Launcher.swift -o "$bin/healthctl"
   go build -trimpath -ldflags="-s -w" -o "$res/archive" ./cmd/healthctl-archive
   if [[ "$mode" == --build-on-first-use ]]; then
@@ -24,7 +24,7 @@ else
     # Only tracked build inputs from the release revision go into the download.
     git archive --format=tar.gz -o "$res/healthctl-source.tar.gz" "$revision" -- \
       Dockerfile .dockerignore LICENSE PRIVACY.md THIRD_PARTY_NOTICES.md go.mod go.sum \
-      cmd internal evaluation web docs/release.md docs/licenses/whisper-model.txt \
+      cmd internal evaluation web docs/use-notice.md docs/release.md docs/licenses/whisper-model.txt \
       scripts/go-notices.sh scripts/sbom-assets.mjs
     dbimage=$(awk '/image: postgres:/{print $2;exit}' "$res/compose.yaml")
     [[ "$dbimage" =~ @sha256:[[:xdigit:]]{64}$ ]]

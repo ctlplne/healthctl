@@ -16,7 +16,7 @@ out.mkdir(parents=True, exist_ok=True)
 revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip()
 sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
 inputs = ['Dockerfile', '.dockerignore', 'LICENSE', 'PRIVACY.md', 'THIRD_PARTY_NOTICES.md',
-          'go.mod', 'go.sum', 'cmd', 'internal', 'evaluation', 'web', 'docs/release.md',
+          'go.mod', 'go.sum', 'cmd', 'internal', 'evaluation', 'web', 'docs/use-notice.md', 'docs/release.md',
           'docs/licenses/whisper-model.txt', 'scripts/go-notices.sh', 'scripts/sbom-assets.mjs']
 name = 'healthctl-windows-x64'
 with tempfile.TemporaryDirectory() as temp:
@@ -25,7 +25,7 @@ with tempfile.TemporaryDirectory() as temp:
         return subprocess.check_output(['git', 'show', revision + ':' + path], cwd=root)
     source = work / 'source.tar.gz'
     subprocess.run(['git', '-c', 'core.autocrlf=false', 'archive', '--format=tar.gz', '-o', str(source), revision, '--', *inputs], cwd=root, check=True)
-    for path in ('compose.yaml', 'desktop/desktop.yaml', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'desktop/windows/Launcher.cs'):
+    for path in ('compose.yaml', 'desktop/desktop.yaml', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'docs/use-notice.md', 'internal/clinical/preview.txt', 'desktop/windows/Launcher.cs'):
         (work / Path(path).name).write_bytes(tracked(path))
     db = re.search(r'^\s+image: (postgres:[^\s]+@sha256:[a-f0-9]{64})$', (work/'compose.yaml').read_text(), re.M)[1]
     (work/'release.txt').write_text(f'{revision}\n{db}\n{sha(source)}\n', encoding='ascii')
@@ -45,7 +45,7 @@ with tempfile.TemporaryDirectory() as temp:
                     dict(spdxElementId='SPDXRef-DOCUMENT', relationshipType='DESCRIBES', relatedSpdxElement='SPDXRef-Launcher'),
                     dict(spdxElementId='SPDXRef-Launcher', relationshipType='CONTAINS', relatedSpdxElement='SPDXRef-Source')])
     (work/inventory).write_text(json.dumps(sbom,indent=2)+'\n',encoding='utf8')
-    resources = ['source.tar.gz', 'compose.yaml', 'desktop.yaml', 'release.txt', 'LICENSE', 'THIRD_PARTY_NOTICES.md', inventory]
+    resources = ['source.tar.gz', 'compose.yaml', 'desktop.yaml', 'release.txt', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'use-notice.md', 'preview.txt', inventory]
     compiler = Path(os.environ['WINDIR'])/'Microsoft.NET/Framework64/v4.0.30319/csc.exe'
     executable = out / (name+'.exe')
     subprocess.run([str(compiler), '/nologo', '/target:winexe', '/platform:x64', '/optimize+',

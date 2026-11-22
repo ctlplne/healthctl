@@ -10,11 +10,13 @@ import {
   Download,
   FileText,
   ListChecks,
+  LoaderCircle,
   MessageSquareText,
   Network,
   Printer,
   Save,
   Trash2,
+  WifiOff,
 } from 'lucide-react'
 import type { Encounter, Fact, Fields, Provider, Report } from './types'
 import { date, kinds, stateName } from './types'
@@ -56,6 +58,22 @@ const defaultTab = (e: Encounter): Tab =>
         e.state === 'needs_clarification'
       ? 'estimate'
       : 'interview'
+
+function ElapsedWait({ since }: { since: string }) {
+  const [now, setNow] = useState(Date.now)
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 1000)
+    return () => window.clearInterval(timer)
+  }, [])
+  const seconds = Math.max(0, Math.floor((now - Date.parse(since)) / 1000))
+  if (!Number.isFinite(seconds)) return null
+  return (
+    <span className="model-elapsed" role="timer" aria-label="Elapsed wait" aria-live="off">
+      Waiting {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')}
+    </span>
+  )
+}
+
 type Props = {
   e: Encounter
   name: string
@@ -152,14 +170,28 @@ export function EncounterPage({
     setFormat('user')
   }, [e.revision])
   const wasPending = useRef(e.pending)
+  const turnCount = e.turns?.length ?? 0
+  const previousTurns = useRef(turnCount)
+  const [readyRevision, setReadyRevision] = useState<number>()
+  const statusPanel = useRef<HTMLDivElement>(null)
   useEffect(() => {
     if (wasPending.current && !e.pending) {
+      if (turnCount > previousTurns.current) setReadyRevision(e.revision)
       setTab((t) =>
         ['interview', 'history', 'estimate'].includes(t) ? defaultTab(e) : t,
       )
     }
+    if (e.pending && !wasPending.current && !activeWarnings.length) {
+      statusPanel.current?.scrollIntoView({ block: 'nearest' })
+    }
     wasPending.current = e.pending
-  }, [e.pending, e.state])
+    previousTurns.current = turnCount
+  }, [e.pending, e.state, e.revision, turnCount, activeWarnings.length])
+  const readyMessage = readyRevision !== e.revision ? '' :
+    e.state === 'interviewing' && e.question ? 'Your next question is ready.' :
+    e.state === 'history_review' ? 'Your history is ready to review.' :
+    e.state === 'needs_clarification' ? 'The model needs more information.' :
+    e.state === 'assessment_ready' ? 'Your estimate is ready to review.' : ''
   const act = async (cmd: Fields): Promise<boolean> => {
     const next = await onAction(cmd)
     if (!next) return false
@@ -257,22 +289,27 @@ export function EncounterPage({
             Local care information · {careDestination}
           </p>
         )}
-        {e.pending && (
-          <div role="status">
-            <Callout
-              title={
-                e.pending === 'assessment'
-                  ? 'Preparing your provisional estimate'
-                  : e.state === 'history_review'
-                    ? 'Preparing your history for review'
-                    : 'Preparing your next interview question'
-              }
-            >
-              {pollError ||
-                `Your history is saved. Waiting for ${kinds[e.provider.kind]} to respond. This can take a few minutes. You can pause and reopen this encounter while it runs.`}
-            </Callout>
+        <div ref={statusPanel} className={e.pending ? 'callout model-wait' : undefined}>
+          {e.pending && (pollError
+            ? <WifiOff size={20} aria-hidden="true" />
+            : <LoaderCircle size={20} className="spin" aria-hidden="true" />)}
+          <div role="status" aria-live="polite" aria-atomic="true">
+            {e.pending ? (
+              <>
+                <strong>{pollError ? 'Reconnecting to your installation' :
+                  e.pending === 'assessment' ? 'Preparing your provisional estimate' :
+                  e.state === 'history_review' ? 'Preparing your history for review' :
+                  'Preparing your next interview question'}</strong>
+                <p>{pollError
+                  ? pollError
+                  : <>Waiting for <b>{e.provider.model || kinds[e.provider.kind]}</b> to respond.
+                    {' '}The model can take a few minutes to reason through your history.
+                    Your history is saved, so you can return to the journal while you wait.</>}</p>
+              </>
+            ) : readyMessage && <p className="model-ready">{readyMessage}</p>}
           </div>
-        )}
+          {e.pending && !pollError && <ElapsedWait key={e.updatedAt} since={e.updatedAt} />}
+        </div>
         {failure && (
           <Callout title="The provider could not finish this request" alert>
             {e.provider.kind === 'chatgpt' &&

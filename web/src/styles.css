@@ -1015,6 +1015,36 @@ legend {
 .callout {
   margin: 0.8rem 0;
 }
+.model-wait {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+.model-wait > svg {
+  margin-top: 0.12rem;
+}
+.model-wait b {
+  overflow-wrap: anywhere;
+}
+.model-elapsed {
+  color: var(--pine);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.model-ready {
+  color: var(--pine);
+  font-size: 0.94rem;
+  margin: 0.8rem 0;
+}
+@media (max-width: 600px) {
+  .model-wait {
+    grid-template-columns: auto minmax(0, 1fr);
+    row-gap: 0.3rem;
+  }
+  .model-elapsed {
+    grid-column: 2;
+  }
+}
 .callout.alert,
 .error-banner {
   background: #fff0e7;
@@ -1681,7 +1711,7 @@ summary {
     vertical-align: middle;
   }
   @bottom-left {
-    content: 'healthctl · a ctlplne studio product · Beta · Verify findings with a qualified healthcare professional';
+    content: '__PREVIEW_NOTICE_PRINT__';
     font:
       8pt Arial,
       sans-serif;
@@ -1731,6 +1761,7 @@ summary {
     font-size: 10.5pt;
     color: black;
   }
+  .use-notice-link,
   .sidebar,
   .topbar,
   .workspace-footer,

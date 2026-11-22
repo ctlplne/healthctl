@@ -229,7 +229,7 @@ function App() {
           return
         }
         setPollError(
-          'The status check failed. Reconnecting to your installation…',
+          'Your history is saved. Checking the request status again automatically.',
         )
         delay = 3500
       }

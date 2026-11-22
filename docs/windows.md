@@ -1,5 +1,7 @@
 # healthctl for Windows
 
+The launcher opens the same experimental visit-preparation journal as Docker Compose. Read **Why healthctl exists and what the beta can do** in the journal before starting. The use notice and license are available offline. Verify findings with a qualified healthcare professional. [Beta purpose and limitations](use-notice.md)
+
 Use a supported 64-bit Windows PC with an Intel or AMD processor, hardware virtualization enabled and Docker Desktop running Linux containers. The portable launcher uses the .NET Framework included with supported Windows desktop releases. Windows on ARM is outside this release’s test coverage. [Docker Desktop requirements and WSL 2 installation](https://docs.docker.com/desktop/setup/install/windows-install/)
 
 1. Start Docker Desktop. Wait until its Linux engine is running.

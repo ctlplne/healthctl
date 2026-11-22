@@ -32,6 +32,8 @@ with tempfile.TemporaryDirectory(prefix='healthctl win test ') as temp:
         assert digest(out/name) == value
     assets = temp/'unpacked'
     run('--extract', assets)
+    for source, bundled in [('internal/clinical/preview.txt', 'preview.txt'), ('docs/use-notice.md', 'use-notice.md'), ('LICENSE', 'LICENSE')]:
+        assert (assets/bundled).read_bytes() == subprocess.check_output(['git','show','HEAD:'+source],cwd=root), bundled
     rev, db, source_sha = (assets/'release.txt').read_text().splitlines()
     assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()==rev
     assert digest(assets/'source.tar.gz')==source_sha

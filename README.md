@@ -26,7 +26,7 @@ The setup film starts in the local journal and shows the plan permission, model 
 
 A user might start with “I get tired on the stairs.” A useful next question is “What could you do before this started?” The difference between always pausing and needing to stop for the first time last week is worth bringing to a visit. Users should be able to tell that story without having to know in advance which details matter.
 
-In a randomized study of 50 physicians working from six written cases, the median diagnostic-reasoning score was 76% for physicians with access to GPT-4 and 74% with conventional resources. That difference was statistically inconclusive. GPT-4 alone scored 92% in a separate exploratory analysis. The cases already supplied a history, examination findings, and test results. How the quality of a user interview affected those scores was outside the study design. [Goh et al., JAMA Network Open](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2825395)
+In a randomized study of 50 physicians working from six written cases, the median diagnostic-reasoning score was 76% for physicians with access to GPT-4 and 74% with conventional resources. That difference was statistically inconclusive. GPT-4 alone scored 92% in a separate exploratory analysis. The cases already supplied a history, examination findings, and test results. The researchers did not compare complete and incomplete histories or evaluate live interviews. [Goh et al., JAMA Network Open](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2825395)
 
 A second study examined what happens when people describe a medical scenario to a chatbot. In some conversations, important details never reached the model. That’s the problem healthctl is designed to address. It asks follow-ups, shows where a finding came from, and lets users correct the account before sharing it. Whether healthctl improves diagnostic accuracy or user outcomes still requires clinical evaluation. [Reliability of LLMs as medical assistants, Nature Medicine](https://www.nature.com/articles/s41591-025-04074-y)
 
@@ -61,7 +61,7 @@ To try the interview shown in the featured video, connect your model, open **New
 
 On a fresh installation, choose **Try the offline demo**. If you already have a model configured, select **Synthetic demo** in Model settings and open **New encounter**. Choose **Practice with your own fictional concern**. The named demo cases use scripted questions and answer choices. You can review, correct, and export a history in either mode.
 
-After setup on either installation, the built-in demo runs locally with a fictional user. It requires no model account, API key or separate inference server.
+After setup on any of the three installation paths, the built-in demo runs locally with a fictional user. It requires no model account, API key or separate inference server.
 
 <details>
 <summary>Follow the report-first case from the video</summary>
@@ -81,6 +81,8 @@ For a shorter symptom-only example, try the prefilled runny-nose case.
 2. Choose **New encounter** and use the prefilled runny-nose example. Answer the intake questions for the fictional adult, then choose **Yesterday** and **After being outdoors** when asked. For follow-ups, you can use your own words, say you’re unsure, or skip.
 3. In **History review**, choose the pencil beside **Runny nose**. Add when it stopped in **Corrected wording**, save the correction, then choose **Confirm my history**.
 4. Open **Report** and choose **Clinician brief**. Look under **Reported positives** for the wording you just saved. You can print the brief or save it as a PDF. The report also offers a JSON download. For an optional experimental estimate, choose **Generate provisional estimate** after confirming the history.
+
+When a connected model takes time to respond, the journal shows the task, model and elapsed wait. You can return to the journal and reopen the same encounter while it runs. If the connection drops, healthctl checks again automatically.
 
 ## Keep track between visits
 

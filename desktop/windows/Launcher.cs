@@ -17,10 +17,11 @@ using System.Windows.Forms;
 [assembly: AssemblyCompany("ctlplne studio")]
 [assembly: AssemblyProduct("healthctl")]
 [assembly: AssemblyVersion("0.2.0.0")]
+[assembly: AssemblyFileVersion("0.2.0.3")]
 
 internal static class Package
 {
-    internal static readonly string[] Files = { "source.tar.gz", "compose.yaml", "desktop.yaml", "release.txt", "LICENSE", "THIRD_PARTY_NOTICES.md", "healthctl-windows-x64.spdx.json" };
+    internal static readonly string[] Files = { "source.tar.gz", "compose.yaml", "desktop.yaml", "release.txt", "LICENSE", "THIRD_PARTY_NOTICES.md", "use-notice.md", "preview.txt", "healthctl-windows-x64.spdx.json" };
 
     internal static Stream Open(string name)
     {
@@ -222,7 +223,9 @@ internal static class Launcher
             {
                 var panel = new FlowLayoutPanel { FlowDirection = FlowDirection.TopDown, WrapContents = false, AutoSize = true, Padding = new Padding(20) };
                 var title = new Label { Text = "healthctl", AutoSize = true, Font = new Font(SystemFonts.MessageBoxFont.FontFamily, 22) };
-                var note = new Label { AutoSize = true, MaximumSize = new Size(440, 0), Text = "A ctlplne studio product. Free public preview (beta) for visit preparation. Verify findings with a qualified healthcare professional." };
+                string preview;
+                using (var reader = new StreamReader(Package.Open("preview.txt"))) preview = reader.ReadToEnd().Trim();
+                var note = new Label { AutoSize = true, MaximumSize = new Size(440, 0), Text = preview };
                 var open = new Button { Text = "Open journal or try the demo", AutoSize = true, Padding = new Padding(6) };
                 var docs = new LinkLabel { Text = "Set up Docker Desktop for Windows", AutoSize = true };
                 var status = new Label { MaximumSize = new Size(440, 0), AutoSize = true, Text = "Start Docker Desktop using Linux containers, then open the journal." };

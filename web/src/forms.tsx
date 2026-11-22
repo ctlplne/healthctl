@@ -8,6 +8,7 @@ import {
   FileText,
   FlaskConical,
   KeyRound,
+  LoaderCircle,
   LockKeyhole,
   Network,
   Plus,
@@ -270,7 +271,10 @@ export function Journal({
                 </span>
                 <span className="row-tags">
                   {(row.demo || row.provider?.kind === 'demo') && <DemoTag />}
-                  <span className="tag">{row.pending ? 'Waiting for model' : stateName(row.state)}</span>
+                  <span className="tag">
+                    {row.pending && <LoaderCircle size={13} className="spin" aria-hidden="true" />}
+                    {row.pending ? 'Waiting for model' : stateName(row.state)}
+                  </span>
                 </span>
               </button>
             ))

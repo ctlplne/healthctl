@@ -35,7 +35,8 @@ type Brief struct {
 	ScopeReason       string                       `json:"scopeReason"`
 }
 
-func FromEncounter(e *clinical.Encounter) Brief {
+func FromEncounter(source *clinical.Encounter) Brief {
+	e := source.ForDisplay()
 	b := Brief{
 		Agenda: e.Agenda, Feedback: e.Feedback, Format: "clinical-history/brief-1", ID: e.ID, HistoryRevision: e.HistoryRevision,
 		Confirmed: e.ConfirmedRevision == e.HistoryRevision, Concern: e.Concern, Age: e.Age, UpdatedAt: e.UpdatedAt,
@@ -52,7 +53,7 @@ func FromEncounter(e *clinical.Encounter) Brief {
 			b.Changes = append(b.Changes, a)
 		}
 	}
-	for _, f := range e.ForDisplay().Facts {
+	for _, f := range e.Facts {
 		if f.Active {
 			b.Facts = append(b.Facts, f)
 		}

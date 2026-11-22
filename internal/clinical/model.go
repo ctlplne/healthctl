@@ -42,8 +42,10 @@ func (e *Encounter) Accept(task string, p Proposal, meta ModelMeta, emergency st
 	}
 	p.Question = userReference(p.Question)
 	p.Reason = userReference(p.Reason)
-	for i := range p.Outstanding {
-		p.Outstanding[i] = userReference(p.Outstanding[i])
+	p.Choices = userLabels(p.Choices)
+	p.Outstanding = userLabels(p.Outstanding)
+	for i := range p.Items {
+		p.Items[i].Limitations = userLabels(p.Items[i].Limitations)
 	}
 	qsource, err := questionSource(in, p)
 	if err != nil {

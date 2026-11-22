@@ -60,6 +60,7 @@ export function Notice({ text }: { text: string }) {
             .replace(/^Experimental AI assessment\s*[—–-]\s*/i, '')
             .replace(/^not reviewed/, 'Not reviewed')}
         </p>
+        <a className="use-notice-link" href="/use-notice.html" target="_blank" rel="noreferrer">Why healthctl exists and what the beta can do</a>
       </div>
     </aside>
   )
