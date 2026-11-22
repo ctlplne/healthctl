@@ -1,77 +1,106 @@
 WEBVTT
 
 1
-00:00:00.150 --> 00:00:05.843
-A fictional patient says their fingernails have
-changed shape. What would you want to know before
-their visit?
+00:00:00.150 --> 00:00:03.049
+This fictional visit was recorded in
+healthctl.
 
 2
-00:00:07.150 --> 00:00:12.900
-After installation, create the owner account and
-choose Synthetic demo. This case runs on your
-computer.
+00:00:03.049 --> 00:00:04.706
+Model waits are shortened.
 
 3
-00:00:13.150 --> 00:00:19.900
-Choose the changing fingernails example and answer
-the intake questions. So far, we know only the
-concern.
+00:00:05.150 --> 00:00:08.259
+In New encounter, the patient describes
+something unusual.
 
 4
-00:00:20.150 --> 00:00:25.702
-The patient says the centers dip inward. That
-records what they saw. The cause is still unknown.
+00:00:08.259 --> 00:00:12.533
+At choir practice, their own voice echoes
+in their left ear.
 
 5
-00:00:27.150 --> 00:00:33.900
-Several nails on both hands. That answer leads to
-questions about the timeline and changes in
-everyday activity.
+00:00:14.150 --> 00:00:18.736
+My own words first leaves room to describe
+something the app hasn’t suggested.
 
 6
-00:00:34.150 --> 00:00:40.900
-Watch the other branch. One thumbnail changed last
-week. This time the interview asks what happened to
-that thumb.
+00:00:19.150 --> 00:00:22.367
+The app opens by asking how the symptom
+has changed.
 
 7
-00:00:41.150 --> 00:00:46.145
-Back in the first encounter, the patient says the
-shape changed gradually over three months.
+00:00:22.367 --> 00:00:27.515
+The patient adds that humming a low note
+brings on the echo, even alone in a
 
 8
-00:00:47.150 --> 00:00:53.378
-They now rest halfway up the stairs. That detail
-came from the patient when asked about everyday
-activity.
+00:00:27.515 --> 00:00:28.158
+quiet room.
 
 9
-00:00:54.150 --> 00:00:59.926
-They used to climb two flights without stopping.
-Now the clinician has a specific change to ask
-about.
+00:00:31.150 --> 00:00:35.478
+The connected model asks, “Apart from the
+echo, has it become harder to hear
 
 10
-00:01:01.150 --> 00:01:08.725
-The patient can keep a nail or eye photo to show a
-clinician. The model receives their words. Taking a
-photo is optional.
+00:00:35.478 --> 00:00:38.879
+in your left ear?” This is the question
+the patient saw.
 
 11
-00:01:09.150 --> 00:01:16.900
-At review, the patient adds that they could climb
-two flights until last month. Their original
-wording stays alongside the correction.
+00:00:40.150 --> 00:00:42.724
+The patient can still hear people talking.
 
 12
-00:01:17.150 --> 00:01:24.900
-The clinician brief carries the corrected account.
-The cause remains open. Verify the findings with a
-qualified healthcare professional.
+00:00:42.724 --> 00:00:46.769
+It’s their own voice that sounds hollow,
+especially after running to
 
 13
-00:01:25.150 --> 00:01:30.900
-Reopen the saved encounter from the journal. Use a
-connected model for an interview about your own
-concern.
+00:00:46.769 --> 00:00:50.078
+rehearsal. They type that distinction in
+their own words.
+
+14
+00:00:52.150 --> 00:00:55.104
+The model asks about the beginning of the
+episode.
+
+15
+00:00:55.104 --> 00:00:59.698
+Did other sounds suddenly get harder to
+hear around the time the echo started?
+
+16
+00:01:01.150 --> 00:01:04.139
+In history review, the patient checks
+their calendar.
+
+17
+00:01:04.139 --> 00:01:08.996
+They change the timing to two rehearsals
+ago, save the correction, and confirm
+
+18
+00:01:08.996 --> 00:01:09.743
+the history.
+
+19
+00:01:10.150 --> 00:01:12.846
+The clinician brief now includes the
+corrected timing.
+
+20
+00:01:12.846 --> 00:01:16.889
+The patient can take this history to a
+qualified healthcare professional to
+
+21
+00:01:16.889 --> 00:01:17.900
+verify the findings.
+
+22
+00:01:18.150 --> 00:01:21.617
+The patient downloads the visit record
+from the Report tab.
