@@ -6,6 +6,10 @@ healthctl helps you tell your story in your own words, check a summary against w
 
 Take the history and any suggested explanations to a qualified healthcare professional for verification. Medical decisions, including whether to start, stop or change treatment, belong with you and your treating professional. If you think you may be having an emergency, seek local emergency care immediately. Neither using the software nor reporting a software problem creates a clinician–user relationship with the publisher or maintainer.
 
+## Choosing an optional assessment
+
+After you confirm your history, you can open and export your report immediately. To request an experimental assessment, read the limits shown beside the button and check the box. You make this choice again for each new estimate or assessment retry. Your installation records the notice version, time, history revision and selected provider with the encounter. Existing urgent warnings remain visible even if you skip the assessment. If you think you may be having an emergency, seek local emergency care immediately.
+
 ## Why start with your history?
 
 The detail that changes a visit can be one you did not know to mention. healthctl asks follow-up questions, shows where a finding came from and lets you correct it before sharing your account. This is the purpose of the experimental beta.

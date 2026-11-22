@@ -54,7 +54,7 @@ func (s *Server) emitSession(w http.ResponseWriter, setup bool, owner int, raw s
 	if owner != 0 {
 		t = csrf(raw)
 	}
-	emit(w, 200, object{"setupRequired": setup, "authenticated": owner != 0, "csrf": t, "displayName": s.Name, "notice": clinical.Notice, "noticeVersion": clinical.NoticeVersion, "modelGuidance": clinical.ModelGuidance(), "emergency": s.Emergency})
+	emit(w, 200, object{"setupRequired": setup, "authenticated": owner != 0, "csrf": t, "displayName": s.Name, "notice": clinical.Notice, "noticeVersion": clinical.NoticeVersion, "assessmentNotice": clinical.AssessmentNotice, "modelGuidance": clinical.ModelGuidance(), "emergency": s.Emergency})
 }
 func (s *Server) setCookie(w http.ResponseWriter, raw string, maxAge int) {
 	http.SetCookie(w, &http.Cookie{Name: sessionCookie, Value: raw, Path: "/", MaxAge: maxAge, HttpOnly: true, SameSite: http.SameSiteStrictMode, Secure: s.Secure})

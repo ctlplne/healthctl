@@ -113,6 +113,7 @@ def verify(package, wav_source, resources_only=False):
                     "POST",
                     {
                         "action": action,
+                        **({"assessmentAcknowledged": True, "assessmentNoticeVersion": setup["assessmentNotice"]["version"]} if action == "assess" else {}),
                         "text": words,
                         "revision": encounter["revision"],
                         "requestId": secrets.token_hex(12),

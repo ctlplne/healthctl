@@ -1239,6 +1239,17 @@ summary {
   padding: 0.15rem 0.9rem 0.9rem;
   border-radius: 6px;
 }
+.assessment-request {
+  display: grid;
+  gap: 0.9rem;
+  padding: 1rem;
+  border: 1px solid #dedbc9;
+  border-radius: 8px;
+  background: #f3f1e8;
+}
+.assessment-request :is(h2, p, .actions) {
+  margin: 0;
+}
 .confirm-panel > button {
   margin-top: 0.9rem;
 }

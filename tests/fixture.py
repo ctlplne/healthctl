@@ -23,7 +23,7 @@ class Fixture(BaseHTTPRequestHandler):
             history = json.loads(message)
             if body["model"] == "fixture-slow-interview":
                 time.sleep(7)
-            if body["model"] == "fixture-fail-once":
+            if body["model"] == "fixture-fail-once" or (body["model"] == "fixture-assessment-fail-once" and history["task"] == "assessment"):
                 with lock:
                     first = history["concern"] not in attempted
                     attempted.add(history["concern"])

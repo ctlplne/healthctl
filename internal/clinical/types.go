@@ -50,6 +50,27 @@ type Intake struct {
 	NoticeVersion    string `json:"noticeVersion"`
 }
 
+// AssessmentNotice is separate from the notice accepted at intake. Change its
+// version whenever the disclosure or acknowledgment changes.
+var AssessmentNotice = struct {
+	Version   string `json:"version"`
+	Risks     string `json:"risks"`
+	Liability string `json:"liability"`
+	Choice    string `json:"choice"`
+}{
+	Version:   "assessment-2026-11-22-v1",
+	Risks:     "These experimental AI suggestions can be wrong or miss an emergency. No healthcare professional has reviewed them. A missing warning does not mean it is safe to wait. Ask a qualified healthcare professional to verify the findings before making care decisions.",
+	Liability: "The publisher and maintainers provide this beta as is and limit their liability as described in the beta use notice, to the extent the law allows. You keep any rights the law protects.",
+	Choice:    "I understand these limits and choose to request this experimental assessment at my own discretion.",
+}
+
+type AssessmentAcknowledgment struct {
+	NoticeVersion   string      `json:"noticeVersion"`
+	At              time.Time   `json:"at"`
+	HistoryRevision int         `json:"historyRevision"`
+	Provider        ProviderRef `json:"provider"`
+}
+
 type Command struct {
 	Onset                string      `json:"onset,omitempty"`
 	End                  string      `json:"end,omitempty"`
@@ -259,6 +280,8 @@ type IntakeRevision struct {
 }
 
 type Encounter struct {
+	AssessmentAcknowledgments []AssessmentAcknowledgment `json:"assessmentAcknowledgments,omitempty"`
+
 	DemoPractice          bool                   `json:"demoPractice,omitempty"`
 	FocusedFrom           int                    `json:"focusedFrom,omitempty"`
 	NarrativeFirst        bool                   `json:"narrativeFirst,omitempty"`

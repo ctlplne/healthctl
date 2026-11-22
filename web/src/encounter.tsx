@@ -18,10 +18,10 @@ import {
   Trash2,
   WifiOff,
 } from 'lucide-react'
-import type { Encounter, Fact, Fields, Provider, Report } from './types'
+import type { AssessmentNotice, Encounter, Fact, Fields, Provider, Report } from './types'
 import { date, kinds, stateName } from './types'
 import { Callout, ContextBox, DemoTag, Notice, PageTitle } from './shared'
-import { History } from './history'
+import { AssessmentRequest, History } from './history'
 import { Estimate, ReportBody, UrgencyReminder } from './report'
 import type { Run } from './forms'
 import { api } from './api'
@@ -78,6 +78,7 @@ type Props = {
   e: Encounter
   name: string
   emergency: string
+  assessmentNotice: AssessmentNotice
   provider: Provider | null
   busy: boolean
   run: Run
@@ -93,6 +94,7 @@ export function EncounterPage({
   e,
   name,
   emergency,
+  assessmentNotice,
   provider,
   busy,
   run,
@@ -251,6 +253,20 @@ export function EncounterPage({
   const showInterview = () => {
     setTab('interview')
   }
+  const assessmentRequest = assessmentNotice ? (
+    <AssessmentRequest
+      key={e.id + '/' + e.revision + '/' + assessmentNotice.version}
+      notice={assessmentNotice}
+      retry={e.failedTask === 'assessment'}
+      busy={busy || !!e.pending}
+      onAction={act}
+      onOpenReport={openReport}
+    />
+  ) : (
+    <Callout title="Assessment notice unavailable">
+      Your history is saved. Reload to get the current notice, or open your report.
+    </Callout>
+  )
   const canMove =
     provider &&
     !e.demo &&
@@ -320,14 +336,19 @@ export function EncounterPage({
               {e.failure ||
                 'Your input is saved and the assessment is incomplete.'}
             </p>
-            <button
-              className="secondary"
-              disabled={busy}
-              onClick={() => void act({ action: 'retry' })}
-            >
-              Retry provider request
-            </button>
+            {e.failedTask !== 'assessment' && (
+              <button
+                className="secondary"
+                disabled={busy}
+                onClick={() => void act({ action: 'retry' })}
+              >
+                Retry provider request
+              </button>
+            )}
           </Callout>
+        )}
+        {failure && e.failedTask === 'assessment' && ['interview', 'estimate', 'history'].includes(tab) && (
+          <section className="panel">{assessmentRequest}</section>
         )}
         {e.scopeReason && (
           <Callout title="History-only encounter">{e.scopeReason}</Callout>
@@ -730,6 +751,7 @@ export function EncounterPage({
                   />
                 )}
                 <History
+                  assessmentRequest={assessmentRequest}
                   e={e}
                   busy={busy || !!e.pending}
                   onAction={act}

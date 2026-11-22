@@ -187,7 +187,34 @@ func TestAuthenticatedPatientJourneyPostgres(t *testing.T) {
 	command(t, c, &e, object{"action": "answer", "text": "After being outdoors"})
 	command(t, c, &e, object{"action": "review"})
 	command(t, c, &e, object{"action": "confirm"})
-	command(t, c, &e, object{"action": "assess"})
+	var session struct{ AssessmentNotice struct{ Version string } }
+	check(t, c.call("GET", "/api/session", nil), 200, &session)
+	version := session.AssessmentNotice.Version
+	if version == "" {
+		t.Fatal("missing assessment notice")
+	}
+	path := "/api/encounters/" + e.ID + "/actions"
+	for _, fields := range []object{{}, {"assessmentAcknowledged": true}, {"assessmentNoticeVersion": version}, {"assessmentAcknowledged": true, "assessmentNoticeVersion": "old-version"}} {
+		fields["action"], fields["revision"], fields["requestId"] = "assess", e.Revision, token(12)
+		check(t, c.call("POST", path, fields), 400, nil)
+	}
+	var historyOnly clinical.Report
+	check(t, c.call("GET", "/api/encounters/"+e.ID+"/export", nil), 200, &historyOnly)
+	if historyOnly.Revision != e.Revision || len(historyOnly.Assessments) != 0 || len(historyOnly.AssessmentAcknowledgments) != 0 {
+		t.Fatal("declining the assessment must preserve the history-only report")
+	}
+	ack := object{"action": "assess", "assessmentAcknowledged": true, "assessmentNoticeVersion": version,
+		"revision": e.Revision, "requestId": token(12)}
+	for range 2 {
+		check(t, c.call("POST", path, ack), 200, &e)
+		if len(e.AssessmentAcknowledgments) != 1 || len(e.Assessments) != 1 {
+			t.Fatal("expected exactly one acknowledgment and one assessment even after replay")
+		}
+	}
+	receipt := e.AssessmentAcknowledgments[0]
+	if receipt.NoticeVersion != version || receipt.At.IsZero() || receipt.HistoryRevision != e.HistoryRevision || receipt.Provider != e.Provider {
+		t.Fatal("acknowledgment does not identify the assessment request")
+	}
 	if len(e.Assessments) != 1 || len(e.Assessments[0].Items) == 0 {
 		t.Fatal("missing differential")
 	}

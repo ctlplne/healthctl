@@ -54,7 +54,8 @@ def verify():
     path = "/encounters/" + encounter["id"]
     for action, text in [("answer", "Yesterday"), ("answer", "After being outdoors"),
                          ("review", ""), ("confirm", ""), ("assess", "")]:
-        encounter = client.call(path + "/actions", "POST", {"action": action, "text": text,
+        acknowledgment = {"assessmentAcknowledged": True, "assessmentNoticeVersion": state["assessmentNotice"]["version"]} if action == "assess" else {}
+        encounter = client.call(path + "/actions", "POST", {**acknowledgment, "action": action, "text": text,
                                 "revision": encounter["revision"], "requestId": secrets.token_hex(12)})
     before = client.call(path + "/export")
     assert before["assessments"][-1]["items"]

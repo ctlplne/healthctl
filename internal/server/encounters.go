@@ -18,8 +18,10 @@ var requestID = regexp.MustCompile(`^[a-zA-Z0-9_-]{8,96}$`)
 
 type mutation struct {
 	clinical.Command
-	Revision  int    `json:"revision"`
-	RequestID string `json:"requestId"`
+	AssessmentAcknowledged  bool   `json:"assessmentAcknowledged,omitempty"`
+	AssessmentNoticeVersion string `json:"assessmentNoticeVersion,omitempty"`
+	Revision                int    `json:"revision"`
+	RequestID               string `json:"requestId"`
 }
 
 func (s *Server) list(w http.ResponseWriter, r *http.Request, owner int) error {
@@ -105,6 +107,10 @@ func (s *Server) action(w http.ResponseWriter, r *http.Request, owner int) error
 		return bad("Select an earlier encounter.")
 	}
 	e, fresh, err := s.Store.ApplyRelated(r.Context(), owner, r.PathValue("id"), related, in.Revision, in.RequestID, digest, func(e, prior *clinical.Encounter) error {
+		requestsAssessment := in.Action == "assess" || (in.Action == "retry" && e.FailedTask == "assessment")
+		if requestsAssessment && (!in.AssessmentAcknowledged || in.AssessmentNoticeVersion != clinical.AssessmentNotice.Version) {
+			return bad("Read and acknowledge the current beta assessment notice before requesting an estimate. Reload if your notice is out of date.")
+		}
 		var actionErr error
 		switch {
 		case in.Action == "set_episode" && prior != nil:
@@ -116,6 +122,11 @@ func (s *Server) action(w http.ResponseWriter, r *http.Request, owner int) error
 		}
 		if actionErr != nil {
 			return bad(actionErr.Error())
+		}
+		if requestsAssessment {
+			e.AssessmentAcknowledgments = append(e.AssessmentAcknowledgments, clinical.AssessmentAcknowledgment{
+				NoticeVersion: clinical.AssessmentNotice.Version, At: time.Now().UTC(), HistoryRevision: e.HistoryRevision, Provider: e.Provider,
+			})
 		}
 		return nil
 	})

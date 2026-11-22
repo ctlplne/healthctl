@@ -124,16 +124,17 @@ try {
         .first(),
       'Synthetic encounter',
     ],
+    [page.getByRole('button', { name: 'Confirm my history', exact: true }), 'Confirm my history'],
+    [page.getByRole('checkbox', { name: /I understand these limits/ }), 'Assessment acknowledgment', 'Space'],
     ...[
-      'Confirm my history',
       'Generate provisional estimate',
       'Open visit report',
       'Clinician brief',
     ].map((name) => [page.getByRole('button', { name, exact: true }), name]),
   ]
-  for (const [locator, name] of targets) {
+  for (const [locator, name, key = 'Enter'] of targets) {
     await tabTo(locator, name)
-    await page.keyboard.press('Enter')
+    await page.keyboard.press(key)
     await pause(240)
   }
   const downloadLink = page.getByRole('link', {
@@ -158,6 +159,7 @@ try {
     'Password',
     'Sign in',
     'Confirm my history',
+    'I understand these limits',
     'Generate provisional estimate',
     'Open visit report',
     'Clinician brief',

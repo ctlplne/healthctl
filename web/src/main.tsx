@@ -583,6 +583,7 @@ function App() {
                   startAtSources={sourceEncounter === e.id}
                   name={session.displayName}
                   emergency={session.emergency}
+                  assessmentNotice={session.assessmentNotice}
                   provider={settings.provider}
                   busy={busy}
                   run={run}

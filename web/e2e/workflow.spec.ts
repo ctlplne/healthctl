@@ -164,9 +164,15 @@ async function finishBackground(page: Page) {
 }
 async function reviewAndAssess(page: Page) {
   await page.getByRole('button', { name: 'Confirm my history' }).click()
-  await page
-    .getByRole('button', { name: 'Generate provisional estimate' })
-    .click()
+  await acknowledgeAndAssess(page)
+}
+async function acknowledgeAndAssess(page: Page) {
+  const choice = page.getByRole('checkbox', { name: /I understand these limits/ })
+  const submit = page.getByRole('button', { name: 'Generate provisional estimate' })
+  await expect(choice).not.toBeChecked()
+  await expect(submit).toBeDisabled()
+  await choice.check()
+  await submit.click()
 }
 async function grabReport(page: Page) {
   await page
@@ -294,6 +300,9 @@ test('Owner setup and synthetic encounter through correction, print, export, res
   await expect(differences).toContainText(correctedWording)
   const next = await grabReport(page)
   expect(next.id).toBe(id)
+  expect(first.assessmentAcknowledgments).toHaveLength(1)
+  expect(next.assessmentAcknowledgments.map((a: { historyRevision: number }) => a.historyRevision))
+    .toEqual([first.historyRevision, next.historyRevision])
   expect(next.historyRevision).toBeGreaterThan(first.historyRevision)
   expect(next.assessments[0]).toEqual(first.assessments[0])
   expect(next.assessments.at(-1).historyRevision).toBe(next.historyRevision)
@@ -327,7 +336,17 @@ test('Urgent screen interrupts the interview and persists in print and JSON afte
     path: info.outputPath('guidance-and-urgent-warning.png'),
   })
   await page.getByRole('button', { name: 'Review my history' }).click()
-  await reviewAndAssess(page)
+  await page.getByRole('button', { name: 'Confirm my history' }).click()
+  await expect(warning).toBeVisible()
+  await expect(page.getByRole('checkbox', { name: /I understand these limits/ })).not.toBeChecked()
+  await page.locator('.assessment-request').screenshot({ path: info.outputPath('assessment-choice.png') })
+  await page.getByRole('button', { name: 'Open my report instead' }).click()
+  const historyOnly = await grabReport(page)
+  expect(historyOnly.assessments).toHaveLength(0)
+  expect(historyOnly.assessmentAcknowledgments ?? []).toHaveLength(0)
+  expect(historyOnly.warnings.some((w: { active: boolean }) => w.active)).toBe(true)
+  await page.getByRole('button', { name: 'History review', exact: true }).click()
+  await acknowledgeAndAssess(page)
   await expect(
     page.getByRole('alert').filter({ hasText: 'Urgent warning' }),
   ).toBeVisible()
@@ -350,6 +369,34 @@ test('Urgent screen interrupts the interview and persists in print and JSON afte
     path: info.outputPath('synthetic-urgent-report.pdf'),
   })
   await page.emulateMedia({ media: 'screen' })
+  await remove(page)
+})
+test('A failed assessment needs a fresh acknowledgment to retry', async ({ page }) => {
+  await enter(page)
+  await configure(page, 'compatible', 'fixture-assessment-fail-once')
+  const id = await start(page, { concern: 'Synthetic assessment retry ' + randomUUID(), age: 35, urgent: true })
+  await page.getByRole('button', { name: 'Review my history' }).click()
+  await reviewAndAssess(page)
+  const retry = page.getByRole('button', { name: 'Retry assessment' })
+  const choice = page.getByRole('checkbox', { name: /I understand these limits/ })
+  await expect(retry).toBeVisible()
+  await expect(retry).toBeDisabled()
+  await expect(choice).not.toBeChecked()
+  const path = '/api/encounters/' + id
+  const failed = await (await page.request.get(path)).json()
+  const session = await (await page.request.get('/api/session')).json()
+  const rejected = await page.request.post(path + '/actions', {
+    headers: { 'X-CSRF-Token': session.csrf },
+    data: { action: 'retry', revision: failed.revision, requestId: randomUUID() },
+  })
+  expect(rejected.status()).toBe(400)
+  expect((await (await page.request.get(path)).json()).revision).toBe(failed.revision)
+  await choice.check()
+  await retry.click()
+  await expect(page.getByRole('heading', { name: 'More information is needed for a useful estimate' })).toBeVisible()
+  const report = await grabReport(page)
+  expect(report.assessmentAcknowledgments).toHaveLength(2)
+  expect(report.assessments).toHaveLength(1)
   await remove(page)
 })
 test('Compatible endpoint rejection, recovery and explicit destination changes', async ({
@@ -1186,7 +1233,7 @@ test('A slow model leaves intake immediately and completes the same saved encoun
   await page.getByRole('button', { name: 'History review', exact: true }).click()
   await page.getByRole('button', { name: 'Confirm my history' }).click()
   await page.route('**/api/encounters/' + id, route => route.abort('failed'), { times: 1 })
-  await page.getByRole('button', { name: 'Generate provisional estimate' }).click()
+  await acknowledgeAndAssess(page)
   await expect(page.getByRole('status').filter({ hasText: 'Preparing your provisional estimate' })).toBeVisible()
   await expect(page.getByRole('status').filter({ hasText: 'Reconnecting to your installation' })).toBeVisible()
   await expect(timer).toHaveCount(0)

@@ -195,6 +195,11 @@ def main():
                 )
 
         def act(c, e, action, **fields):
+            if action == "assess":
+                # The baseline release predates the separate assessment acknowledgment.
+                notice = c.call("/session").get("assessmentNotice")
+                if notice:
+                    fields.update(assessmentAcknowledged=True, assessmentNoticeVersion=notice["version"])
             return c.call(
                 "/encounters/" + e["id"] + "/actions",
                 "POST",

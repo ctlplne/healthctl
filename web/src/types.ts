@@ -19,7 +19,14 @@ export type Settings = {
   allowlist: string[]
   credentialStatus: Record<string, boolean | string>
 }
+export type AssessmentNotice = {
+  version: string
+  risks: string
+  liability: string
+  choice: string
+}
 export type Session = {
+  assessmentNotice: AssessmentNotice
   setupRequired: boolean
   authenticated: boolean
   csrf: string
@@ -159,6 +166,7 @@ export type Encounter = EncounterRow & {
   question: string
   choices: string[]
   assessments: Assessment[]
+  failedTask?: string
   failure: string
   scopeReason: string
   pending: string

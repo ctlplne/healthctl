@@ -1,10 +1,10 @@
 import { detailLine } from './visitPrep'
 import { useState, useEffect } from 'react'
 import { Check, Pencil, Quote } from 'lucide-react'
-import type { Answer, Encounter, Fact, Fields } from './types'
+import type { ReactNode } from 'react'
+import type { AssessmentNotice, Answer, Encounter, Fact, Fields } from './types'
 import { date, human } from './types'
 import { BulletList, Evidence, factDetail } from './report'
-import { Callout } from './shared'
 import { PlanUsage } from './chatgpt'
 import { Radios } from './forms'
 type EditorProps = {
@@ -207,7 +207,42 @@ function IntakeEditor({
     </form>
   )
 }
+export function AssessmentRequest({ notice, retry, busy, onAction, onOpenReport }: {
+  notice: AssessmentNotice
+  retry: boolean
+  busy: boolean
+  onAction: (cmd: Fields) => Promise<boolean>
+  onOpenReport: () => void
+}) {
+  const [acknowledged, setAcknowledged] = useState(false)
+  return (
+    <div className="assessment-request">
+      <h2>Before you request an AI assessment</h2>
+      <p>{notice.risks}</p>
+      <p>{notice.liability}{' '}
+        <a href="/use-notice.html" target="_blank" rel="noreferrer">Read the beta use notice (opens in a new tab)</a>.
+      </p>
+      <label className="check">
+        <input type="checkbox" checked={acknowledged} disabled={busy}
+          onChange={(ev) => setAcknowledged(ev.target.checked)} />
+        {notice.choice}
+      </label>
+      <div className="actions">
+        <button className="primary" disabled={busy || !acknowledged} onClick={() => void onAction({
+          action: retry ? 'retry' : 'assess',
+          assessmentAcknowledged: acknowledged,
+          assessmentNoticeVersion: notice.version,
+        })}>
+          {retry ? 'Retry assessment' : 'Generate provisional estimate'}
+        </button>
+        <button className="secondary" disabled={busy} onClick={onOpenReport}>Open my report instead</button>
+      </div>
+    </div>
+  )
+}
+
 export function History({
+  assessmentRequest,
   e,
   busy,
   onAction,
@@ -215,6 +250,7 @@ export function History({
   focusFact,
 }: {
   e: Encounter
+  assessmentRequest: ReactNode
   onSource?: (f: Fact) => void
   focusFact?: string
   busy: boolean
@@ -424,20 +460,8 @@ export function History({
                 Confirm my history
               </button>
             </>
-          ) : (
-            <>
-              <Callout title="You confirmed this history revision.">
-                You can request a provisional estimate or make another
-                correction.
-              </Callout>
-              <button
-                className="primary"
-                disabled={busy}
-                onClick={() => void onAction({ action: 'assess' })}
-              >
-                Generate provisional estimate
-              </button>
-            </>
+          ) : ['history_review', 'needs_clarification', 'assessment_ready'].includes(e.state) && (
+            assessmentRequest
           )}
           {e.state === 'history_review' &&
             !e.warnings.some((w) => w.active) && (
