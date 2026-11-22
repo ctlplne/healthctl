@@ -4,7 +4,7 @@ November 21, 2026 · healthctl, a ctlplne studio product
 
 healthctl helps you tell your story in your own words, check a summary against what you said, and prepare questions for a healthcare visit. You control what to record, correct, export and share. When requested, the tool can show individualized AI-generated possibilities before a clinician has reviewed them. It cannot confirm a diagnosis, rule out disease, or establish that waiting for care is safe. A plausible suggestion or a missing warning can both be wrong.
 
-Take the history and any suggested explanations to a qualified healthcare professional for verification. Medical decisions, including whether to start, stop or change treatment, belong with you and your treating professional. If you think you may be having an emergency, seek local emergency care immediately. Neither using the software nor reporting a software problem creates a clinician–patient relationship with the publisher or maintainer.
+Take the history and any suggested explanations to a qualified healthcare professional for verification. Medical decisions, including whether to start, stop or change treatment, belong with you and your treating professional. If you think you may be having an emergency, seek local emergency care immediately. Neither using the software nor reporting a software problem creates a clinician–user relationship with the publisher or maintainer.
 
 ## Warranty and limits of liability
 

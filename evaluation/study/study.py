@@ -33,7 +33,7 @@ CLINICIAN = {
     "repeat": "Which history questions would you repeat?",
     "risk": "Describe any unsupported fact, source or materially misleading statement.",
 }
-PATIENT = {
+USER = {
     "estimate": "In your own words, what does the estimate mean and who reviewed it?",
     "warning": "What should you do about the warning, and when?",
     "action": "How would you use this report before changing treatment or deciding to delay care?",
@@ -92,7 +92,7 @@ def prepare(a):
     rng.shuffle(cases)
     # Readers see only one format of a case. Adjacent readers within each role
     # receive the other format, preventing immediate recall of the same story.
-    for role, count in [("clinician", a.clinicians), ("patient", a.patients)]:
+    for role, count in [("clinician", a.clinicians), ("user", a.users)]:
         if not 1 <= count <= 100:
             raise ValueError("Use 1–100 pseudonymous readers per role")
         for i in range(count):
@@ -156,7 +156,7 @@ def collect(a):
     try:
         input("Press Return when finished reading. ")
         elapsed = time.monotonic() - started
-        prompts = CLINICIAN if p["role"] == "clinician" else PATIENT
+        prompts = CLINICIAN if p["role"] == "clinician" else USER
         answers = {key: input(prompt + " ") for key, prompt in prompts.items()}
         result = {
             "abandoned": False,
@@ -249,10 +249,11 @@ def score(a):
     times = collections.defaultdict(list)
     unanswered = abandoned = 0
     for t, p in plan["packets"].items():
+        role = "user" if p["role"] == "patient" else p["role"]
         record = {
             "ticket": t,
             "case": p["case"],
-            "role": p["role"],
+            "role": role,
             "arm": p["arm"],
             "group": p["group"],
             "complaint": p["complaint"],
@@ -265,7 +266,7 @@ def score(a):
             rr = read(f)
             abandoned += int(rr["abandoned"])
             if rr["readSeconds"] is not None:
-                times[(p["arm"], p["role"])].append(rr["readSeconds"])
+                times[(p["arm"], role)].append(rr["readSeconds"])
         gs = list(grades[t].values())
         fields = sorted({k for g in gs for k in g if k != "reason"})
         record["disagreements"] = [k for k in fields if len({g.get(k) for g in gs}) > 1]
@@ -298,7 +299,7 @@ def score(a):
     for arm in ("baseline", "candidate"):
         rows = [r for r in records if r["arm"] == arm and "agreed" in r]
         clinicians = [r for r in rows if r["role"] == "clinician"]
-        patients = [r for r in rows if r["role"] == "patient"]
+        users = [r for r in rows if r["role"] == "user"]
         urgent = [r for r in clinicians if r["expectedUrgent"]]
         nonurgent = [r for r in clinicians if not r["expectedUrgent"]]
         need = [r for r in clinicians if r["expectedAbstain"]]
@@ -317,11 +318,11 @@ def score(a):
 
         out = {
             "readingTimeByRole": {
-                role: latency(role) for role in ("clinician", "patient")
+                role: latency(role) for role in ("clinician", "user")
             },
             "uniqueAgreedClinicianCases": len({r["case"] for r in clinicians}),
             "appropriateAbstentionDenominator": len(need),
-            "patientComprehensionDenominator": len(patients),
+            "userComprehensionDenominator": len(users),
             "independentlyAgreedClinicianPackets": len(clinicians),
             "missedUrgent": missed,
             "urgentDenominator": len(urgent),
@@ -340,13 +341,13 @@ def score(a):
                 4 * len(clinicians),
             ),
             "clinicianAcceptable": sum(r["agreed"]["acceptable"] for r in clinicians),
-            "patientWarningAndStatusComprehension": ratio(
+            "userWarningAndStatusComprehension": ratio(
                 sum(
                     r["agreed"]["understandsWarning"]
                     and r["agreed"]["understandsStatus"]
-                    for r in patients
+                    for r in users
                 ),
-                len(patients),
+                len(users),
             ),
         }
         case_ids = {
@@ -433,8 +434,8 @@ def score(a):
             requirements["minimumAppropriateAbstentionRate"],
         ),
         (
-            "patientComprehension",
-            candidate["patientWarningAndStatusComprehension"],
+            "userComprehension",
+            candidate["userWarningAndStatusComprehension"],
             ">=",
             requirements["minimumWarningAndStatusComprehensionRate"],
         ),
@@ -478,7 +479,8 @@ def main():
     p.add_argument("manifest")
     p.add_argument("directory")
     p.add_argument("--clinicians", type=int, default=2)
-    p.add_argument("--patients", type=int, default=2)
+    p.add_argument("--users", type=int, default=2)
+    p.add_argument("--patients", dest="users", type=int, default=argparse.SUPPRESS, help=argparse.SUPPRESS)
     for kind in ("collect", "adjudicate", "score"):
         p = sub.add_parser(kind)
         p.add_argument("directory")

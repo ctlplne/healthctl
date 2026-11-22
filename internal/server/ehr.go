@@ -109,7 +109,7 @@ func (s *Server) ehrRoutes(m *http.ServeMux) {
 
 func (s *Server) ehrStart(w http.ResponseWriter, r *http.Request, owner int) error {
 	if s.EHR == nil {
-		return bad("The installation has no configured patient portal.")
+		return bad("The installation has no configured health portal.")
 	}
 	var empty struct{}
 	if err := decode(w, r, &empty); err != nil {
@@ -139,7 +139,7 @@ func (s *Server) ehrStart(w http.ResponseWriter, r *http.Request, owner int) err
 
 func (s *Server) ehrPreview(w http.ResponseWriter, r *http.Request, owner int) error {
 	if s.EHR == nil {
-		return bad("The installation has no configured patient portal.")
+		return bad("The installation has no configured health portal.")
 	}
 	var in struct {
 		Code, State, Issuer string
@@ -185,7 +185,7 @@ func (s *Server) ehrPreview(w http.ResponseWriter, r *http.Request, owner int) e
 
 func (s *Server) ehrImport(w http.ResponseWriter, r *http.Request, owner int) error {
 	if s.EHR == nil {
-		return bad("The installation has no configured patient portal.")
+		return bad("The installation has no configured health portal.")
 	}
 	var in struct {
 		Ticket           string
@@ -239,13 +239,13 @@ func (s *Server) ehrImport(w http.ResponseWriter, r *http.Request, owner int) er
 		s.EHR.visits[in.Ticket] = v
 	}
 	s.EHR.mu.Unlock()
-	emit(w, 200, e)
+	emit(w, 200, e.ForDisplay())
 	return nil
 }
 
 func (s *Server) ehrCancel(w http.ResponseWriter, r *http.Request, _ int) error {
 	if s.EHR == nil {
-		return bad("The installation has no configured patient portal.")
+		return bad("The installation has no configured health portal.")
 	}
 	var in struct{ Ticket string }
 	if err := decode(w, r, &in); err != nil {

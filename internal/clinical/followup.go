@@ -54,7 +54,7 @@ func (e *Encounter) ReconcileFact(source *Encounter, c Command, emergency string
 	}
 	old := source.fact(factID)
 	if old == nil || old.SourceOutdated || !old.Confirmed {
-		return errors.New("Choose an active patient-confirmed source finding")
+		return errors.New("Choose an active user-confirmed source finding")
 	}
 	if a := source.answer(old.AnswerID); a != nil && (len(a.ReviewIDs) > 0 || a.Kind == "witness") {
 		return errors.New("Review the report-dependent passage in this encounter before using it")
@@ -133,7 +133,7 @@ func (e *Encounter) addOutcome(c Command, emergency string) error {
 			}
 		}
 		if !found {
-			return errors.New("Use an exact passage from the source, or label this a patient-reported outcome")
+			return errors.New("Use an exact passage from the source, or label this a user-reported outcome")
 		}
 	case "patient_reported", "symptom_change":
 		if c.DocumentID != "" {

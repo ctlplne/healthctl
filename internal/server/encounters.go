@@ -36,7 +36,7 @@ func (s *Server) get(w http.ResponseWriter, r *http.Request, owner int) error {
 		return err
 	}
 	s.refreshEvidence(r.Context(), owner, e)
-	emit(w, 200, e)
+	emit(w, 200, e.ForDisplay())
 	return nil
 }
 func (s *Server) create(w http.ResponseWriter, r *http.Request, owner int) error {
@@ -131,7 +131,7 @@ func (s *Server) deliver(w http.ResponseWriter, r *http.Request, owner int, e *c
 		// before the worker takes ownership of it. Replayed receipts only read it.
 		w.Header().Set("Preference-Applied", "respond-async")
 		w.Header().Set("Location", "/api/encounters/"+e.ID)
-		emit(w, http.StatusAccepted, e)
+		emit(w, http.StatusAccepted, e.ForDisplay())
 		if fresh {
 			localPlan := s.localPlanOrigin(r) != ""
 			ctx := s.Lifetime
@@ -152,7 +152,7 @@ func (s *Server) deliver(w http.ResponseWriter, r *http.Request, owner int, e *c
 		}
 	}
 	s.refreshEvidence(r.Context(), owner, e)
-	emit(w, http.StatusOK, e)
+	emit(w, http.StatusOK, e.ForDisplay())
 	return nil
 }
 

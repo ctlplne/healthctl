@@ -6,26 +6,26 @@ Let's go from a fresh installation to a printable
 visit brief.
 
 2
-00:00:05.150 --> 00:00:08.549
+00:00:05.150 --> 00:00:08.547
 Open the local address shown here and create your
 owner account.
 
 3
-00:00:12.150 --> 00:00:17.238
+00:00:12.150 --> 00:00:17.239
 Choose Configure a provider. For this walkthrough,
 test and save the synthetic demo.
 
 4
-00:00:19.150 --> 00:00:21.526
+00:00:19.150 --> 00:00:21.523
 In the journal, choose Start with a report.
 
 5
-00:00:23.150 --> 00:00:27.460
-Our fictional patient reports burning with
-urination. They're thirty-four.
+00:00:23.150 --> 00:00:27.258
+Our fictional user reports burning with urination.
+They're thirty-four.
 
 6
-00:00:29.150 --> 00:00:33.611
+00:00:29.150 --> 00:00:33.612
 Answer the screening questions, read the notice,
 and confirm the destination.
 
@@ -40,33 +40,33 @@ Check the printed result and collection date. Here,
 the result is trace.
 
 9
-00:00:47.150 --> 00:00:50.886
+00:00:47.150 --> 00:00:50.888
 Preview the one selected entry and approve it for
 the interview.
 
 10
-00:00:52.150 --> 00:00:57.068
+00:00:52.150 --> 00:00:57.064
 Now there's a specific question. Did symptoms begin
 before or after the sample?
 
 11
-00:00:58.150 --> 00:01:03.842
-The patient reports no medicines, isn't sure about
+00:00:58.150 --> 00:01:03.863
+The user reports no medicines, isn't sure about
 allergies, and skips the question about surgery.
 
 12
-00:01:06.150 --> 00:01:10.625
+00:01:06.150 --> 00:01:10.626
 Confirm this history. Then, if you choose, request
 a provisional estimate.
 
 13
-00:01:12.150 --> 00:01:16.519
+00:01:12.150 --> 00:01:16.520
 These are possible explanations from the scripted
 demo. They're unreviewed.
 
 14
-00:01:17.150 --> 00:01:22.365
-The patient remembers a detail. The burning started
+00:01:17.150 --> 00:01:22.238
+The user remembers a detail. The burning started
 the evening before they gave the sample.
 
 15
@@ -76,17 +76,17 @@ After reconfirmation, the demo asks for more
 information.
 
 16
-00:01:32.150 --> 00:01:37.374
+00:01:32.150 --> 00:01:37.373
 Open the clinician brief. Save a PDF or download
 the encounter as JSON.
 
 17
-00:01:38.150 --> 00:01:44.366
-Here's the exported PDF. It includes the patient's
+00:01:38.150 --> 00:01:44.318
+Here's the exported PDF. It includes the user's
 corrected wording and the reviewed lab result.
 
 18
-00:01:45.150 --> 00:01:49.984
+00:01:45.150 --> 00:01:49.980
 Back in the journal, reopen the saved visit. The
 corrected history is still there.
 

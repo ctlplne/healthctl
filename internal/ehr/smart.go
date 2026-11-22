@@ -150,7 +150,7 @@ func (c *Client) Begin(ctx context.Context, state, verifier string) (string, err
 	}
 	for _, capability := range []string{"launch-standalone", "client-public", "context-standalone-patient", "permission-patient", "permission-v2"} {
 		if !slices.Contains(d.Capabilities, capability) {
-			return "", errors.New("the portal did not advertise the required standalone patient read capabilities")
+			return "", errors.New("the portal did not advertise the required capabilities for read-only access to your records")
 		}
 	}
 	challenge := sha256.Sum256([]byte(verifier))
@@ -191,7 +191,7 @@ func (c *Client) Results(ctx context.Context, code, verifier string) ([]byte, st
 	}
 	var grant tokenGrant
 	if json.Unmarshal(raw, &grant) != nil || !strings.EqualFold(grant.Type, "Bearer") || len(grant.Access) > 8192 || !bearerPattern.MatchString(grant.Access) || !fhirPatientID.MatchString(grant.Patient) || grant.Patient == "." || grant.Patient == ".." || grant.Refresh != "" || (grant.Expires != nil && *grant.Expires <= 0) || !patientReadScope(grant.Scope) {
-		return nil, "", errors.New("the portal did not grant a valid patient-scoped read-only Observation search")
+		return nil, "", errors.New("the portal did not grant read-only access to observations from your record")
 	}
 	endpoint, _ := url.Parse(c.cfg.FHIRBase + "/Observation")
 	endpoint.RawQuery = url.Values{"patient": {grant.Patient}, "category": {category}, "_count": {strconv.Itoa(SMARTObservationLimit)}}.Encode()

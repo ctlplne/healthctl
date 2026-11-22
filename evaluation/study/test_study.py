@@ -17,7 +17,7 @@ class StudyTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             directory = Path(tmp) / "packets"
             args = Args(
-                manifest=manifest, directory=directory, clinicians=2, patients=2
+                manifest=manifest, directory=directory, clinicians=2, users=2
             )
             with contextlib.redirect_stdout(io.StringIO()):
                 study.prepare(args)

@@ -68,7 +68,7 @@ func (t backgroundTopic) addressedBy(a Answer) bool {
 	if a.Kind == "reply" && t.matches(a.Question) {
 		return true
 	}
-	// Recognize a complete statement volunteered in the patient's opening.
+	// Recognize a complete statement volunteered in the user's opening.
 	// A partial medication list or a family member's history still needs clarification.
 	if a.Kind != "concern" && a.Kind != "background" || thirdParty.MatchString(a.Text) {
 		return false
@@ -116,7 +116,7 @@ func (e *Encounter) askBackground(t backgroundTopic) {
 }
 
 // If the provider offers routine review on a terse symptom alone, elicit one
-// concrete detail first. Report-first visits and patient-requested review have
+// concrete detail first. Report-first visits and user-requested review have
 // their own flows. Any prior symptom question, including a skip, counts.
 var openingTiming = regexp.MustCompile(`(?i)\b(today|yesterday|tonight|since|ago|morning|afternoon|evening|last|minutes?|hours?|days?|weeks?|months?|years?|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b`)
 
@@ -209,7 +209,7 @@ func evidenceDisposition(a Answer) string {
 }
 
 // Only the fixed, non-substantive background choices fit the authored demo.
-// Any new patient detail needs a real provider to interpret it.
+// Any new user detail needs a real provider to interpret it.
 func fixtureBackground(a Answer) bool {
 	t := backgroundFor(a.Question)
 	if a.Kind != "reply" || t == nil {

@@ -9,7 +9,7 @@ import (
 	"unicode"
 )
 
-// Photos are patient-kept visual records. Neither image data nor attachment
+// Photos are user-kept visual records. Neither image data nor attachment
 // metadata is part of Input, the provider-facing history.
 type ObservationPhoto struct {
 	ID        string    `json:"id"`

@@ -1,80 +1,123 @@
 %PDF-1.4
-%“Œ‹ž ReportLab Generated PDF document (opensource)
+%âãÏÓ
 1 0 obj
 <<
-/F1 2 0 R /F2 3 0 R /F3 4 0 R
+/Producer (pypdf)
 >>
 endobj
 2 0 obj
 <<
-/BaseFont /Helvetica /Encoding /WinAnsiEncoding /Name /F1 /Subtype /Type1 /Type /Font
+/Type /Pages
+/Count 1
+/Kids [ 4 0 R ]
 >>
 endobj
 3 0 obj
 <<
-/BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding /Name /F2 /Subtype /Type1 /Type /Font
+/Type /Catalog
+/Pages 2 0 R
 >>
 endobj
 4 0 obj
 <<
-/BaseFont /Times-Roman /Encoding /WinAnsiEncoding /Name /F3 /Subtype /Type1 /Type /Font
+/Contents 10 0 R
+/MediaBox [ 0 0 595.2756 841.8898 ]
+/Resources <<
+/Font 6 0 R
+/ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>>
+/Rotate 0
+/Trans <<
+>>
+/Type /Page
+/Parent 2 0 R
 >>
 endobj
 5 0 obj
 <<
-/Contents 9 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 8 0 R /Resources <<
-/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
->> /Rotate 0 /Trans <<
-
->> 
-  /Type /Page
+/Filter [ /ASCII85Decode /FlateDecode ]
+/Length 397
 >>
+stream
+Garo<c#1BP&;9LtME/,1#dKp[KGu%3+[lQcqZ'Z!9%s1ca&S&ILTb\X5[.d@],LL7h(_:X%eFnt!)nS[cG2Eh%P/*"Vuh#TKM81(8J(G)(Q!*23(:Wq"<QNO&Z;tAHbtoB:2b*<04nt(I$t`t-<%#/X6!O@6bPfLS=s@D^pB5mLr7V)Adg-g0mbfYX6X8&obSC;jD!s%Kk\I\l)IG:/E0br#46+<R:U&n`0'M'Ck>lbY7jIKrQph<'t"gZDJ5!A.W*_H/MR4Sc(V$#0UFngT&1NdX;YhNG'-NN*eQsf%N$.hd7lgH,0q(trmm?)9;(.)d66Frb35";s.bJdq+1G`5f3EC$u&@=loG6\-gXFVG$irAICHO)g(:^BFDYrU4tR^[N'ZqB;tQ,U~>
+endstream
 endobj
 6 0 obj
 <<
-/PageMode /UseNone /Pages 8 0 R /Type /Catalog
+/F1 7 0 R
+/F2 8 0 R
+/F3 9 0 R
 >>
 endobj
 7 0 obj
 <<
-/Author (healthctl synthetic demo) /CreationDate (D:20261121160141+05'00') /Creator (anonymous) /Keywords () /ModDate (D:20261121160141+05'00') /Producer (ReportLab PDF Library - \(opensource\)) 
-  /Subject (unspecified) /Title (Fictional urinalysis) /Trapped /False
+/BaseFont /Helvetica
+/Encoding /WinAnsiEncoding
+/Name /F1
+/Subtype /Type1
+/Type /Font
 >>
 endobj
 8 0 obj
 <<
-/Count 1 /Kids [ 5 0 R ] /Type /Pages
+/BaseFont /Helvetica-Bold
+/Encoding /WinAnsiEncoding
+/Name /F2
+/Subtype /Type1
+/Type /Font
 >>
 endobj
 9 0 obj
 <<
-/Filter [ /ASCII85Decode /FlateDecode ] /Length 397
+/BaseFont /Times-Roman
+/Encoding /WinAnsiEncoding
+/Name /F3
+/Subtype /Type1
+/Type /Font
+>>
+endobj
+10 0 obj
+<<
+/Length 575
 >>
 stream
-Garo<c#1BP&;9LtME/,1#dKp[KGu%3+[lQcqZ'Z!9%s1ca&S&ILTb\X5[.d@],LL7h(_:X%eFnt!)nS[cG2Eh%P/*"Vuh#TKM81(8J(G)(Q!*23(:Wq"<QNO&Z;tAHbtoB:2b*<04nt(I$t`t-<%#/X6!O@6bPfLS=s@D^pB5mLr7V)Adg-g0mbfYX6X8&obSC;jD!s%Kk\I\l)IG:/E0br#46+<R:U&n`0'M'Ck>lbY7jIKrQph<'t"gZDJ5!A.W*_H/MR4Sc(V$#0UFngT&1NdX;YhNG'-NN*eQsf%N$.hd7lgH,0q(trmm?)9;(.)d66Frb35";s.bJdq+1G`5f3EC$u&@=loG6\-gXFVG$irAICHO)g(:^BFDYrU4tR^[N'ZqB;tQ,U~>endstream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+.137255 .282353 .231373 rg
+BT /F2 12 Tf 14.4 TL ET
+BT 1 0 0 1 52 774 Tm (FICTIONAL LAB REPORT) Tj T* ET
+BT /F3 29 Tf 34.8 TL ET
+BT 1 0 0 1 51 724 Tm (Urinalysis) Tj T* ET
+.627451 .701961 .654902 RG
+n 52 699 m 540 699 l S
+BT /F1 12 Tf 14.4 TL ET
+BT 1 0 0 1 52 662 Tm (Report for: Fictional Example) Tj T* ET
+BT 1 0 0 1 52 626 Tm (Specimen collection: 2026-11-18) Tj T* ET
+BT 1 0 0 1 52 590 Tm (Leukocyte esterase | Trace) Tj T* ET
+BT /F1 10 Tf 12 TL ET
+BT 1 0 0 1 52 63 Tm (Created for the healthctl software demonstration.) Tj T* ET
+ 
+
+endstream
 endobj
 xref
-0 10
+0 11
 0000000000 65535 f 
-0000000061 00000 n 
-0000000112 00000 n 
-0000000219 00000 n 
-0000000331 00000 n 
-0000000440 00000 n 
-0000000643 00000 n 
-0000000711 00000 n 
-0000000999 00000 n 
-0000001058 00000 n 
+0000000015 00000 n 
+0000000054 00000 n 
+0000000113 00000 n 
+0000000162 00000 n 
+0000000362 00000 n 
+0000000850 00000 n 
+0000000901 00000 n 
+0000001008 00000 n 
+0000001120 00000 n 
+0000001229 00000 n 
 trailer
 <<
-/ID 
-[<042aba617581bad86ffe8f9d6944b7f5><042aba617581bad86ffe8f9d6944b7f5>]
-% ReportLab generated PDF document -- digest (opensource)
-
-/Info 7 0 R
-/Root 6 0 R
-/Size 10
+/Size 11
+/Root 3 0 R
+/Info 1 0 R
 >>
 startxref
-1545
+1856
 %%EOF

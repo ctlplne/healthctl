@@ -8,15 +8,15 @@ Use healthctl to organize your own account, spot misunderstandings and prepare q
 
 healthctl stores your journal on your installation. The model you choose reads relevant parts of your history, suggests follow-up questions and generates possible explanations if you ask. With a cloud model, your installation sends that information directly to the provider for processing. ctlplne studio does not receive it. Cloud model and transcription providers may charge separately. [Public preview and limitations](docs/use-notice.md) · [Where your data goes](PRIVACY.md) · [Report a software or safety problem using fictional details](SECURITY.md)
 
-[![Watch a patient describe a concern in their own words](docs/media/history-interview-cover.jpg?v=choir)](https://healthctl.com/#walkthrough)
+[![Watch a user describe a concern in their own words](docs/media/history-interview-cover.jpg?v=choir)](https://healthctl.com/#walkthrough)
 
 **[Watch the recorded interview (1 min 23 sec)](https://healthctl.com/#walkthrough)** · [Download the MP4](docs/media/history-interview.mp4?raw=true&v=choir) · [English captions](docs/media/history-interview.en.vtt)
 
-A fictional patient describes an echo in their left ear at choir practice. The patient types what brings it on, and the connected ChatGPT model asks whether everyday hearing has changed. Watch the patient correct the timing, confirm the history, and export the record. The questions came from the running app. Typing and model waits are shortened.
+A fictional user describes an echo in their left ear at choir practice. The user types what brings it on, and the connected ChatGPT model asks whether everyday hearing has changed. Watch the user correct the timing, confirm the history, and export the record. The questions came from the running app. Typing and model waits are shortened.
 
 **[Watch the first-run walkthrough (1 min 55 sec, narrated MP4 with captions)](docs/media/healthctl-walkthrough.mp4?raw=true)** · [English captions (WebVTT)](docs/media/healthctl-walkthrough.en.vtt) · [Try the demo](#try-the-demo)
 
-Follow a fictional patient from creating the local owner account to reopening a saved visit. See how one approved lab result shapes the interview, what happens to an estimate when the patient corrects their history, and what goes into the exported brief.
+Follow a fictional user from creating the local owner account to reopening a saved visit. See how one approved lab result shapes the interview, what happens to an estimate when the user corrects their history, and what goes into the exported brief.
 
 **[Watch how to connect your ChatGPT plan (1 min 6 sec)](https://healthctl.com/#chatgpt-setup)** · [MP4 in this repository](docs/media/chatgpt-setup.mp4?raw=true) · [English captions](docs/media/chatgpt-setup.en.vtt)
 
@@ -24,11 +24,11 @@ The setup film starts in the local journal and shows the plan permission, model 
 
 ## Why we built healthctl
 
-A patient might start with “I get tired on the stairs.” A useful next question is “What could you do before this started?” The difference between always pausing and needing to stop for the first time last week is worth bringing to a visit. Patients should be able to tell that story without having to know in advance which details matter.
+A user might start with “I get tired on the stairs.” A useful next question is “What could you do before this started?” The difference between always pausing and needing to stop for the first time last week is worth bringing to a visit. Users should be able to tell that story without having to know in advance which details matter.
 
-In a randomized study of 50 physicians working from six written cases, the median diagnostic-reasoning score was 76% for physicians with access to GPT-4 and 74% with conventional resources. That difference was statistically inconclusive. GPT-4 alone scored 92% in a separate exploratory analysis. The cases already supplied a history, examination findings, and test results. How the quality of a patient interview affected those scores was outside the study design. [Goh et al., JAMA Network Open](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2825395)
+In a randomized study of 50 physicians working from six written cases, the median diagnostic-reasoning score was 76% for physicians with access to GPT-4 and 74% with conventional resources. That difference was statistically inconclusive. GPT-4 alone scored 92% in a separate exploratory analysis. The cases already supplied a history, examination findings, and test results. How the quality of a user interview affected those scores was outside the study design. [Goh et al., JAMA Network Open](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2825395)
 
-A second study examined what happens when people describe a medical scenario to a chatbot. In some conversations, important details never reached the model. That’s the problem healthctl is designed to address. It asks follow-ups, shows where a finding came from, and lets patients correct the account before sharing it. Whether healthctl improves diagnostic accuracy or patient outcomes still requires clinical evaluation. [Reliability of LLMs as medical assistants, Nature Medicine](https://www.nature.com/articles/s41591-025-04074-y)
+A second study examined what happens when people describe a medical scenario to a chatbot. In some conversations, important details never reached the model. That’s the problem healthctl is designed to address. It asks follow-ups, shows where a finding came from, and lets users correct the account before sharing it. Whether healthctl improves diagnostic accuracy or user outcomes still requires clinical evaluation. [Reliability of LLMs as medical assistants, Nature Medicine](https://www.nature.com/articles/s41591-025-04074-y)
 
 ## Install healthctl
 
@@ -59,9 +59,9 @@ To stop this installation, run `docker compose stop`. To resume it with your sav
 
 To try the interview shown in the featured video, connect your model, open **New encounter**, and leave **Answer style** set to **My own words first**. Type a fictional concern and answer in your own words. The follow-ups depend on the history you give.
 
-For offline practice, select **Synthetic demo**, open **New encounter**, and choose **Practice with your own fictional concern**. The named demo cases use scripted questions and answer choices. You can review, correct, and export a history in either mode.
+On a fresh installation, choose **Try the offline demo**. If you already have a model configured, select **Synthetic demo** in Model settings and open **New encounter**. Choose **Practice with your own fictional concern**. The named demo cases use scripted questions and answer choices. You can review, correct, and export a history in either mode.
 
-After setup on either installation, the built-in demo runs locally with a fictional patient. It requires no model account, API key or separate inference server.
+After setup on either installation, the built-in demo runs locally with a fictional user. It requires no model account, API key or separate inference server.
 
 <details>
 <summary>Follow the report-first case from the video</summary>
@@ -69,18 +69,18 @@ After setup on either installation, the built-in demo runs locally with a fictio
 1. **Set up the journal (0:00).** Create the owner account. Choose **Configure a provider**, select **Synthetic demo**, then test and save the connection.
 2. **Start the encounter (0:19).** Choose **Start with a report**. For this scripted example, enter “It burns when I urinate.” Set the age to 34, answer **No** to both screening questions, and acknowledge the notice.
 3. **Review the lab result (0:35).** Upload the [fictional lab PDF used in the video](docs/media/fictional-urinalysis.pdf). Select **Mine** and **Read report locally**. Review the leukocyte esterase entry, confirm the printed value **Trace** and collection date **2026-11-18**, then preview and approve the selected extract.
-4. **Answer the interview (0:52).** Choose **Before the sample**. The video also shows how to record no medicines, uncertainty about allergies, a condition question that doesn’t apply, and a skipped surgery question.
-5. **Review and correct the history (1:06).** Confirm the history and request the optional provisional estimate. In **History review**, edit the onset finding to “The burning started the evening before I gave the sample.” Save, confirm again, and request a fresh estimate. In this scripted case, the revised assessment asks for more information.
-6. **Export and reopen (1:32).** Under **Report**, select **Clinician brief** to print or save a PDF. **Download JSON** saves the encounter data. Return to the journal and reopen the visit to find the correction again.
+4. **Answer the interview (0:52).** Choose **Before the sample**. The video also shows how to record no medicines, uncertainty about allergies, a condition question that doesn’t apply, and a skipped surgery question. [See the report-linked question](docs/media/interview-question.png)
+5. **Review and correct the history (1:06).** Confirm the history and request the optional provisional estimate. In **History review**, edit the onset finding to “The burning started the evening before I gave the sample.” Save, confirm again, and request a fresh estimate. In this scripted case, the revised assessment asks for more information. [See the corrected timing](docs/media/correct-a-finding.png)
+6. **Export and reopen (1:32).** Under **Report**, select **Clinician brief** to print or save a PDF. **Download JSON** saves the encounter data. Return to the journal and reopen the visit to find the correction again. [See the fictional clinician brief](docs/media/clinician-brief.png)
 
 </details>
 
 For a shorter symptom-only example, try the prefilled runny-nose case.
 
 1. In **Model settings**, select **Synthetic demo** and **Save provider**.
-2. Choose **New encounter** and use the prefilled runny-nose example. Answer the intake questions for the fictional adult, then choose **Yesterday** and **After being outdoors** when asked. For follow-ups, you can use your own words, say you’re unsure, or skip. [See the first interview question](docs/media/interview-question.png)
-3. In **History review**, choose the pencil beside **Runny nose**. Add when it stopped in **Corrected wording**, save the correction, then choose **Confirm my history**. [See a correction alongside the original wording](docs/media/correct-a-finding.png)
-4. Open **Report** and choose **Clinician brief**. Look under **Reported positives** for the wording you just saved. You can print the brief or save it as a PDF. The report also offers a JSON download. For an optional experimental estimate, choose **Generate provisional estimate** after confirming the history. [See the fictional clinician brief](docs/media/clinician-brief.png)
+2. Choose **New encounter** and use the prefilled runny-nose example. Answer the intake questions for the fictional adult, then choose **Yesterday** and **After being outdoors** when asked. For follow-ups, you can use your own words, say you’re unsure, or skip.
+3. In **History review**, choose the pencil beside **Runny nose**. Add when it stopped in **Corrected wording**, save the correction, then choose **Confirm my history**.
+4. Open **Report** and choose **Clinician brief**. Look under **Reported positives** for the wording you just saved. You can print the brief or save it as a PDF. The report also offers a JSON download. For an optional experimental estimate, choose **Generate provisional estimate** after confirming the history.
 
 ## Keep track between visits
 
@@ -96,7 +96,7 @@ In **Source reports**, or alongside a relevant interview question, open **Option
 
 Choose **Start with a report** to add a PDF, Word document (.docx), image (JPEG or PNG), or plain text. healthctl extracts text locally, including English OCR for scans. Check dates, values, and units against the original, then choose which entries the model can use. For example, when a urine report includes a collection date, the interview can ask whether symptoms began before or after the sample.
 
-You can revisit encounters on a timeline, record what happened after a visit, and export a clinician brief or a FHIR R4 document. A configured SMART on FHIR portal can also import lab results you select. [Visit briefs and exports](docs/handoff.md) · [Patient portal setup](docs/ehr.md)
+You can revisit encounters on a timeline, record what happened after a visit, and export a clinician brief or a FHIR R4 document. A configured SMART on FHIR portal can also import lab results you select. [Visit briefs and exports](docs/handoff.md) · [Health portal setup](docs/ehr.md)
 
 ## Models and privacy
 

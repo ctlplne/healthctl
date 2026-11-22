@@ -45,9 +45,9 @@ func FHIR(b Brief) resource {
 		return resource{"profile": []string{"http://hl7.org/fhir/StructureDefinition/" + name}}
 	}
 	subject, device := ref(patID), ref(deviceID)
-	sections := []resource{section("Patient concern and review status", []string{b.Concern, b.PreviewNotice, b.Notice, b.ModelGuidance, fmt.Sprintf("Age %d at intake. History revision %d, patient confirmed: %t. %s", b.Age, b.HistoryRevision, b.Confirmed, b.ScopeReason)})}
+	sections := []resource{section("User concern and review status", []string{b.Concern, b.PreviewNotice, b.Notice, b.ModelGuidance, fmt.Sprintf("Age %d at intake. History revision %d, user confirmed: %t. %s", b.Age, b.HistoryRevision, b.Confirmed, b.ScopeReason)})}
 	if b.Agenda != "" {
-		sections = append(sections, section("Patient question", []string{b.Agenda}))
+		sections = append(sections, section("User question", []string{b.Agenda}))
 	}
 	var changes []string
 	for _, a := range b.Changes {
@@ -89,7 +89,7 @@ func FHIR(b Brief) resource {
 		for _, f := range b.Feedback {
 			feedback = append(feedback, fmt.Sprintf("%s · %s · %s · history revision %d", f.Speaker, f.Category, f.Text, f.Revision))
 		}
-		sections = append(sections, section("Patient-approved clinician feedback", feedback))
+		sections = append(sections, section("User-approved clinician feedback", feedback))
 	}
 	if b.Demo {
 		sections = append(sections, section("Synthetic demonstration", []string{"Fictional case from the synthetic demo."}))
@@ -155,10 +155,10 @@ func FHIR(b Brief) resource {
 		references = append(references, ref(oid))
 	}
 	if len(observations) > 0 {
-		sections = append(sections, resource{"title": "Documented findings reviewed by the patient", "entry": references})
+		sections = append(sections, resource{"title": "Documented findings reviewed by the user", "entry": references})
 	}
 	if len(b.Priorities) > 0 {
-		sections = append(sections, section("Patient priorities", b.Priorities))
+		sections = append(sections, section("User priorities", b.Priorities))
 	}
 	lines = append([]string{}, b.Outstanding...)
 	for _, c := range b.Contradictions {
@@ -183,7 +183,7 @@ func FHIR(b Brief) resource {
 		sections = append(sections, section("Visit follow-up", lines))
 	}
 	lossID := uuid(key + "/loss")
-	losses := []string{"Source files, full transcripts, corrections and older assessments are available in the owner workspace. This document carries the current handoff.", "Patient statements and experimental possibilities are narrative. No diagnostic codes or confirmed conditions are assigned. Reported values, dates and units retain their original spelling; cross-laboratory conversion is not provided.", "This subset targets base FHIR R4 document resources. IPS and US Core profiles are outside its mapped subset."}
+	losses := []string{"Source files, full transcripts, corrections and older assessments are available in the owner workspace. This document carries the current handoff.", "User statements and experimental possibilities are narrative. No diagnostic codes or confirmed conditions are assigned. Reported values, dates and units retain their original spelling; cross-laboratory conversion is not provided.", "This subset targets base FHIR R4 document resources. IPS and US Core profiles are outside its mapped subset."}
 	issues := []resource{}
 	for _, s := range losses {
 		issues = append(issues, resource{"severity": "information", "code": "informational", "details": resource{"text": s}})
@@ -198,18 +198,18 @@ func FHIR(b Brief) resource {
 	summary = append(summary, b.ModelGuidance)
 	composition := resource{
 		"resourceType": "Composition", "id": compID, "meta": profiles("Composition"),
-		"status": "preliminary", "type": resource{"text": "Patient-prepared visit brief"},
+		"status": "preliminary", "type": resource{"text": "User-prepared visit brief"},
 		"subject": subject, "author": []resource{device}, "date": when,
-		"title": "Patient-prepared clinical history", "section": sections,
+		"title": "User-prepared clinical history", "section": sections,
 		"text": narrative(summary),
 	}
 	patient := resource{
 		"resourceType": "Patient", "id": patID, "meta": profiles("Patient"),
-		"text": narrative([]string{fmt.Sprintf("Patient in the self-hosted encounter, age %d at intake.", b.Age)}),
+		"text": narrative([]string{fmt.Sprintf("User in the self-hosted encounter, age %d at intake.", b.Age)}),
 	}
 	software := resource{
 		"resourceType": "Device", "id": deviceID, "meta": profiles("Device"),
-		"text":       narrative([]string{"healthctl assembled the patient-prepared visit brief."}),
+		"text":       narrative([]string{"healthctl assembled the user-prepared visit brief."}),
 		"deviceName": []resource{{"name": "healthctl", "type": "user-friendly-name"}},
 	}
 	mapping := resource{

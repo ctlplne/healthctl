@@ -10,12 +10,12 @@ healthctl.
 Model waits are shortened.
 
 3
-00:00:05.150 --> 00:00:08.259
-In New encounter, the patient describes
+00:00:05.150 --> 00:00:08.227
+In New encounter, the user describes
 something unusual.
 
 4
-00:00:08.259 --> 00:00:12.533
+00:00:08.227 --> 00:00:12.457
 At choir practice, their own voice echoes
 in their left ear.
 
@@ -25,40 +25,40 @@ My own words first leaves room to describe
 something the app hasn’t suggested.
 
 6
-00:00:19.150 --> 00:00:22.367
+00:00:19.150 --> 00:00:22.320
 The app opens by asking how the symptom
 has changed.
 
 7
-00:00:22.367 --> 00:00:27.515
-The patient adds that humming a low note
+00:00:22.320 --> 00:00:27.391
+The user adds that humming a low note
 brings on the echo, even alone in a
 
 8
-00:00:27.515 --> 00:00:28.158
+00:00:27.391 --> 00:00:28.025
 quiet room.
 
 9
-00:00:31.150 --> 00:00:35.478
+00:00:31.150 --> 00:00:35.408
 The connected model asks, “Apart from the
 echo, has it become harder to hear
 
 10
-00:00:35.478 --> 00:00:38.879
+00:00:35.408 --> 00:00:38.754
 in your left ear?” This is the question
-the patient saw.
+the user saw.
 
 11
-00:00:40.150 --> 00:00:42.724
-The patient can still hear people talking.
+00:00:40.150 --> 00:00:42.691
+The user can still hear people talking.
 
 12
-00:00:42.724 --> 00:00:46.769
+00:00:42.691 --> 00:00:46.683
 It’s their own voice that sounds hollow,
 especially after running to
 
 13
-00:00:46.769 --> 00:00:50.078
+00:00:46.683 --> 00:00:49.950
 rehearsal. They type that distinction in
 their own words.
 
@@ -73,34 +73,34 @@ Did other sounds suddenly get harder to
 hear around the time the echo started?
 
 16
-00:01:01.150 --> 00:01:04.139
-In history review, the patient checks
-their calendar.
+00:01:01.150 --> 00:01:04.076
+In history review, the user checks their
+calendar.
 
 17
-00:01:04.139 --> 00:01:08.996
+00:01:04.076 --> 00:01:08.831
 They change the timing to two rehearsals
 ago, save the correction, and confirm
 
 18
-00:01:08.996 --> 00:01:09.743
+00:01:08.831 --> 00:01:09.563
 the history.
 
 19
-00:01:10.150 --> 00:01:12.846
+00:01:10.150 --> 00:01:12.837
 The clinician brief now includes the
 corrected timing.
 
 20
-00:01:12.846 --> 00:01:16.889
-The patient can take this history to a
+00:01:12.837 --> 00:01:16.867
+The user can take this history to a
 qualified healthcare professional to
 
 21
-00:01:16.889 --> 00:01:17.900
+00:01:16.867 --> 00:01:17.875
 verify the findings.
 
 22
-00:01:18.150 --> 00:01:21.617
-The patient downloads the visit record
-from the Report tab.
+00:01:18.150 --> 00:01:21.537
+The user downloads the visit record from
+the Report tab.

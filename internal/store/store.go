@@ -157,6 +157,7 @@ func (s *Store) Get(ctx context.Context, owner int, id string) (*clinical.Encoun
 }
 
 type Entry struct {
+	Pending         string               `json:"pending,omitempty"`
 	ID              string               `json:"id"`
 	Concern         string               `json:"concern"`
 	State           string               `json:"state"`
@@ -185,7 +186,7 @@ func (s *Store) List(ctx context.Context, owner int) ([]Entry, error) {
 		if err != nil {
 			return nil, err
 		}
-		out = append(out, Entry{e.ID, e.Concern, e.State, e.Revision, e.HistoryRevision, e.CreatedAt, e.UpdatedAt, e.Provider, e.Demo})
+		out = append(out, Entry{e.Pending, e.ID, e.Concern, e.State, e.Revision, e.HistoryRevision, e.CreatedAt, e.UpdatedAt, e.Provider, e.Demo})
 	}
 	return out, rows.Err()
 }

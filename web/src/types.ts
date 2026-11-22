@@ -111,6 +111,7 @@ export type Assessment = {
   outstanding: string[]
 }
 export type EncounterRow = {
+  pending?: string
   id: string
   concern: string
   state: string
@@ -211,8 +212,13 @@ const states: Record<string, string> = {
   unsupported_scope: 'History only',
   report_review: 'Review report entries',
 }
-export const stateName = (v: string) => states[v] || v.replaceAll('_', ' ')
-export const human = (v: string) => v.replaceAll('_', ' ')
+export const stateName = (v: string) => states[v] || human(v)
+const sourceNames: Record<string, string> = {
+  patient_reported: 'self-reported',
+  patient_answer: 'your answer',
+  patient_correction: 'your correction',
+}
+export const human = (v: string) => sourceNames[v] || v.replaceAll('_', ' ')
 export const sampleConcern = 'My nose is runny and I keep sneezing.'
 export const providerDefaults = (): Provider => ({
   kind: 'compatible',

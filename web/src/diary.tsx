@@ -37,7 +37,7 @@ function localNow() {
     .toISOString()
     .slice(0, 16)
 }
-export function Diary({ onClose }: { onClose: () => void }) {
+export function Diary({ onClose, onVisit }: { onClose: () => void; onVisit?: (id: string) => void }) {
   const [items, setItems] = useState<DiaryEntry[]>([]),
     [text, setText] = useState(''),
     [start, setStart] = useState(localNow),
@@ -141,6 +141,7 @@ export function Diary({ onClose }: { onClose: () => void }) {
             {x.approximate ? ' (approximate)' : ''} · Recorded{' '}
             {new Date(x.recordedAt).toLocaleString()}
           </small>
+          {onVisit && <button className="secondary" onClick={() => onVisit(x.id)}>Start a visit with this episode</button>}
           <button
             className="text-button"
             onClick={async () => {
@@ -444,7 +445,7 @@ export function ReturnPicker({
             checked={value.consent}
             onChange={(ev) => change({ ...value, consent: ev.target.checked })}
           />{' '}
-          Include my selections for the model destination shown above.
+          Include my selections for the model destination shown above. This permission is required to bring these entries into the visit.
         </label>
       )}
       {error && <p role="alert">{error}</p>}

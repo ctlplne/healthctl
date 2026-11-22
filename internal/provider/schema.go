@@ -13,7 +13,7 @@ import (
 //go:embed contracts/proposal-v1.schema.json
 var proposalSchema json.RawMessage
 
-//go:embed contracts/clinical-v6.txt
+//go:embed contracts/clinical-v7.txt
 var instructions string
 
 //go:embed contracts/repair-v1.txt

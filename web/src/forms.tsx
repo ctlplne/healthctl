@@ -173,19 +173,21 @@ export function Journal({
   onNew,
   onReport,
   onReturn,
+  onDemo,
   onSettings,
   settings,
 }: {
   rows: EncounterRow[]
   onOpen: (id: string) => void
   onNew: () => void
-  onReturn: () => void
+  onReturn: (entryId?: string) => void
+  onDemo: () => void
   onReport: () => void
   onSettings: () => void
   settings: Settings
 }) {
   const [diary, setDiary] = useState(false)
-  if (diary) return <Diary onClose={() => setDiary(false)} />
+  if (diary) return <Diary onClose={() => setDiary(false)} onVisit={settings.provider?.kind && settings.provider.kind !== 'demo' ? onReturn : undefined} />
   const p = settings.provider
   return (
     <>
@@ -208,6 +210,11 @@ export function Journal({
             {p?.kind ? <Plus size={17} /> : <Settings2 size={17} />}{' '}
             {p?.kind ? 'New encounter' : 'Configure a provider'}
           </button>
+          {!p?.kind && (
+            <button className="secondary report-first-action" onClick={onDemo}>
+              <FlaskConical size={17} /> Try the offline demo
+            </button>
+          )}
           {p?.kind && (
             <button
               className="secondary report-first-action"
@@ -223,10 +230,10 @@ export function Journal({
           >
             It happened again
           </button>
-          {p && p.kind !== 'demo' && (
+          {p?.kind && p.kind !== 'demo' && (
             <button
               className="secondary report-first-action"
-              onClick={onReturn}
+              onClick={() => onReturn()}
             >
               Start a return visit
             </button>
@@ -263,7 +270,7 @@ export function Journal({
                 </span>
                 <span className="row-tags">
                   {(row.demo || row.provider?.kind === 'demo') && <DemoTag />}
-                  <span className="tag">{stateName(row.state)}</span>
+                  <span className="tag">{row.pending ? 'Waiting for model' : stateName(row.state)}</span>
                 </span>
               </button>
             ))
@@ -545,6 +552,7 @@ export function ProviderEditor({
 }
 
 export function IntakeForm({
+  diaryEntry,
   reportFirst,
   returnMode,
   rows,
@@ -557,6 +565,7 @@ export function IntakeForm({
 }: Work & {
   provider: Provider
   session: Session
+  diaryEntry?: string
   returnMode: boolean
   rows: EncounterRow[]
   reportFirst: boolean
@@ -573,7 +582,7 @@ export function IntakeForm({
     [ack, setAck] = useState(false)
   const [demoCase, setDemoCase] = useState(sampleConcern)
   const practice = demo && !reportFirst && !returnMode && demoCase === ''
-  const [selection, setSelection] = useState(emptySelection),
+  const [selection, setSelection] = useState(() => ({ ...emptySelection(), diaryIds: diaryEntry ? [diaryEntry] : [] })),
     [narrativeFirst, setNarrativeFirst] = useState(!demo),
     [focused, setFocused] = useState(false),
     [agenda, setAgenda] = useState('')
@@ -677,7 +686,7 @@ export function IntakeForm({
                 >
                   <option value="full">Full interview</option>
                   <option value="short">
-                    I have two minutes · up to two follow-up answers
+                    Short interview · up to two follow-up answers
                   </option>
                 </select>
               </label>

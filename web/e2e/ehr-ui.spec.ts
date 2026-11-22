@@ -241,6 +241,6 @@ test('Portal denial, offline preview retry, empty results and cancellation leave
   expect(cancelled).toBe(true)
   await expect(page.getByLabel('Report file')).toBeVisible()
   await expect(
-    page.getByRole('button', { name: 'Connect to patient portal' }),
+    page.getByRole('button', { name: 'Connect to health portal' }),
   ).toHaveCount(0)
 })

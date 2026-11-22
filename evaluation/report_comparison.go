@@ -112,9 +112,9 @@ func runReportCase(ctx context.Context, r *ReportCase, m Model) error {
 		err := command(review)
 		if variant == "wrong_patient" {
 			if err == nil {
-				return errors.New("wrong-patient entry accepted")
+				return errors.New("entry belonging to someone else accepted")
 			}
-			r.Observations = append(r.Observations, "Wrong-patient entry rejected; no report findings shared.")
+			r.Observations = append(r.Observations, "Entry belonging to someone else rejected; no report findings shared.")
 			return nil
 		}
 		if err != nil {

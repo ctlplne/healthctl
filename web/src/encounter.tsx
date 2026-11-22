@@ -108,7 +108,7 @@ export function EncounterPage({
       reviewId?: string
     }>(),
     [focusFact, setFocusFact] = useState(''),
-    [format, setFormat] = useState<'patient' | 'brief' | 'appendix'>('patient'),
+    [format, setFormat] = useState<'user' | 'brief' | 'appendix'>('user'),
     [brief, setBrief] = useState<Brief | null>(null),
     [timeline, setTimeline] = useState(false)
   const viewFact = (f: Fact) => {
@@ -149,7 +149,7 @@ export function EncounterPage({
   useEffect(() => {
     setReport(null)
     setBrief(null)
-    setFormat('patient')
+    setFormat('user')
   }, [e.revision])
   const wasPending = useRef(e.pending)
   useEffect(() => {
@@ -213,7 +213,7 @@ export function EncounterPage({
       const doc = await api<Report>('/encounters/' + e.id + '/export')
       if (doc.revision > e.revision) onUpdate(doc)
       setReport(doc)
-      setFormat('patient')
+      setFormat('user')
       setTab('report')
     })
   const showInterview = () => {
@@ -269,7 +269,7 @@ export function EncounterPage({
               }
             >
               {pollError ||
-                `Your history is saved. Waiting for ${kinds[e.provider.kind]} to respond. You can pause and reopen this encounter while it runs.`}
+                `Your history is saved. Waiting for ${kinds[e.provider.kind]} to respond. This can take a few minutes. You can pause and reopen this encounter while it runs.`}
             </Callout>
           </div>
         )}
@@ -644,7 +644,7 @@ export function EncounterPage({
                               void act({ action: 'focus_interview' })
                             }
                           >
-                            I have two minutes
+                            Switch to a short interview
                           </button>
                         )}
                         {!e.scopeReason && (
@@ -704,7 +704,7 @@ export function EncounterPage({
             {tab === 'estimate' && (
               <section className="panel">
                 <div className="topic-mark">
-                  <BookOpenCheck size={19} /> Patient-facing estimate
+                  <BookOpenCheck size={19} /> Possible explanations
                 </div>
                 <h2>Provisional explanations</h2>
                 <Notice text={e.notice} />
@@ -787,10 +787,10 @@ export function EncounterPage({
               <>
                 <div className="format-selection" aria-label="Report format">
                   <button
-                    aria-pressed={format === 'patient'}
-                    onClick={() => setFormat('patient')}
+                    aria-pressed={format === 'user'}
+                    onClick={() => setFormat('user')}
                   >
-                    Patient report
+                    Your report
                   </button>
                   <button
                     aria-pressed={format === 'brief'}
@@ -843,7 +843,7 @@ export function EncounterPage({
               <ClipboardList size={23} />
               <h3>Encounter details</h3>
               <dl>
-                <dt>Patient age</dt>
+                <dt>Age at intake</dt>
                 <dd>{e.age} years</dd>
                 <dt>Provider</dt>
                 <dd>
@@ -860,7 +860,7 @@ export function EncounterPage({
                 <dt>History confirmation</dt>
                 <dd>
                   {e.confirmedRevision === e.historyRevision
-                    ? 'Confirmed by patient'
+                    ? 'Confirmed by you'
                     : 'Awaiting confirmation'}
                 </dd>
               </dl>

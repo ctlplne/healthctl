@@ -12,7 +12,7 @@ import (
 //go:embed model-guidance.txt
 var modelGuidanceText string
 
-// ModelGuidance is current operator advice. Historical patient consent is versioned separately.
+// ModelGuidance is current operator advice. Historical user consent is versioned separately.
 func ModelGuidance() string { return strings.TrimSpace(modelGuidanceText) }
 
 //go:embed preview.txt
@@ -107,7 +107,7 @@ type Evidence struct {
 	Quote    string `json:"quote"`
 }
 
-// FindingProposal is a normalized claim about an exact substring of a patient answer.
+// FindingProposal is a normalized claim about an exact substring of a user answer.
 type FindingProposal struct {
 	Evidence
 	Concept     string `json:"concept"`
@@ -327,7 +327,7 @@ type Report struct {
 }
 
 func (e *Encounter) Report() Report {
-	r := Report{Encounter: *e, PreviewNotice: PreviewNotice(), ModelGuidance: ModelGuidance(), ExportVersion: "clinical-history/1", ExportedAt: time.Now().UTC(), OutdatedAssessmentVersions: []int{}}
+	r := Report{Encounter: e.ForDisplay(), PreviewNotice: PreviewNotice(), ModelGuidance: ModelGuidance(), ExportVersion: "clinical-history/1", ExportedAt: time.Now().UTC(), OutdatedAssessmentVersions: []int{}}
 	for _, a := range e.Assessments {
 		if a.HistoryRevision != e.HistoryRevision {
 			r.OutdatedAssessmentVersions = append(r.OutdatedAssessmentVersions, a.Version)

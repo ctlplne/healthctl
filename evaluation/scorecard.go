@@ -147,5 +147,5 @@ func Score(results []Result) Scores {
 		Results []Result `json:"results"`
 	}
 	json.Unmarshal(originalBaseline, &baseline)
-	return Scores{Arms: summarize(results), Previous: summarize(baseline.Results), Policy: clinical.PolicyVersion, HumanStudies: "No patient abandonment, independent clinician adjudication, comprehension or timed handoff study has been performed. Automated run latency measures software only.", CostLimit: "Operator-supplied flat token rates; local infrastructure, cached-token discounts, content maintenance, and cost per clinician-acceptable brief are unmeasured."}
+	return Scores{Arms: summarize(results), Previous: summarize(baseline.Results), Policy: clinical.PolicyVersion, HumanStudies: "No user abandonment, independent clinician adjudication, comprehension or timed handoff study has been performed. Automated run latency measures software only.", CostLimit: "Operator-supplied flat token rates; local infrastructure, cached-token discounts, content maintenance, and cost per clinician-acceptable brief are unmeasured."}
 }

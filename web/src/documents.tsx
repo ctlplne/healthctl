@@ -772,6 +772,7 @@ function DocumentReview({
                   <button
                     className="secondary"
                     disabled={busy || doc.belongsTo !== 'self'}
+                    aria-label={`${current ? 'Correct entry' : 'Review entry'} · ${row.locator}`}
                     onClick={() => setEdit(row.id)}
                   >
                     {current ? 'Correct entry' : 'Review entry'}

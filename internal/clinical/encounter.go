@@ -339,7 +339,7 @@ func (e *Encounter) Apply(c Command, emergency string) error {
 	case "continue":
 		if e.focusedLimitReached() {
 			e.Focused = false
-		} // The patient explicitly asked for more questions after the short interview.
+		} // The user explicitly asked for more questions after the short interview.
 		if e.ScopeReason != "" {
 			return errors.New("This encounter is outside the interview scope")
 		}

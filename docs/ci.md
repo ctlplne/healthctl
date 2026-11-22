@@ -1,6 +1,6 @@
 # Continuous integration and releases
 
-A push to `main` or a pull request targeting it runs the backend, browser, evaluation and documentation jobs on GitHub-hosted Linux runners. Each job gets a fresh checkout and read-only repository access. CI uses synthetic patient records, generated installation credentials and provider fixtures. The patient journal and linked subscriptions stay on the owner's installation. [CI workflow](../.github/workflows/ci.yml)
+A push to `main` or a pull request targeting it runs the backend, browser, evaluation and documentation jobs on GitHub-hosted Linux runners. Each job gets a fresh checkout and read-only repository access. CI uses synthetic user records, generated installation credentials and provider fixtures. The personal health journal and linked subscriptions stay on the owner's installation. [CI workflow](../.github/workflows/ci.yml)
 
 The backend runs race-enabled Go and PostgreSQL integration tests. The browser job builds the production frontend and exercises desktop and mobile Chromium, provider failures and printed exports. The offline evaluator compares each case and interview arm with the versioned baseline. Its Actions summary lists fabricated findings, stale assessments, lost warnings, and newly missed history targets by case. The scorecard and synthetic failure screenshots expire after seven days. [Case baseline](../evaluation/release-fixture-results.json)
 

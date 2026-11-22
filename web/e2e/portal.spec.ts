@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { randomUUID } from 'node:crypto'
 
-test('Patient portal consent imports only selected labs into local report review', async ({ page, browser, baseURL }) => {
+test('Health portal consent imports only selected labs into local report review', async ({ page, browser, baseURL }) => {
   const browserDestinations = new Set<string>()
   const portalPaths = new Set<string>()
   page.on('request', req => {
@@ -31,7 +31,7 @@ test('Patient portal consent imports only selected labs into local report review
   const sourceLink = '/#encounter/' + visit.id + '/sources'
   try {
     await page.goto(sourceLink)
-    await page.getByRole('button', { name: 'Connect to patient portal' }).click()
+    await page.getByRole('button', { name: 'Connect to health portal' }).click()
     await expect(page.getByRole('heading', { name: 'Fictional hospital portal' })).toBeVisible()
     const launch = new URL(page.url())
     expect(launch.hostname).toBe('localhost')
@@ -82,7 +82,7 @@ test('Patient portal consent imports only selected labs into local report review
     } })
     expect(retry.ok()).toBeTruthy()
     expect((await retry.json()).documents).toHaveLength(1)
-    await page.getByRole('button', { name: 'Connect to patient portal' }).click()
+    await page.getByRole('button', { name: 'Connect to health portal' }).click()
     await page.getByRole('button', { name: 'Allow laboratory access' }).click()
     await page.getByRole('checkbox', { name: 'Fictional marker B' }).check()
     await page.getByRole('checkbox', { name: 'These results belong to me.' }).check()
@@ -91,7 +91,7 @@ test('Patient portal consent imports only selected labs into local report review
     const urgent = await (await local.get(apiPath + '/export')).json()
     expect(urgent.warnings.some((w: {active: boolean}) => w.active)).toBe(true)
     expect(urgent.state).toBe('interrupted_for_safety')
-    await page.getByRole('button', { name: 'Connect to patient portal' }).click()
+    await page.getByRole('button', { name: 'Connect to health portal' }).click()
     await page.getByRole('button', { name: 'Decline access' }).click()
     await expect(page.getByText('Connection declined', { exact: true })).toBeVisible()
     expect((await (await local.get(apiPath)).json()).documents).toHaveLength(2)

@@ -520,7 +520,7 @@ test('Report-first visit keeps an inspected source through questions, handoff, s
   await page.getByRole('button', { name: 'Continue to interview' }).click()
   await expect(
     page.getByRole('heading', {
-      name: /Did your symptoms start before or after the sample/,
+      name: /Did you have any symptoms around the time this sample was collected/,
     }),
   ).toBeVisible()
   await page.getByText('Why this question?', { exact: true }).click()

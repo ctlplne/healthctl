@@ -1,7 +1,7 @@
 Fictional practice record
-Reason for visit: “It burns when I urinate.” The patient wants to understand a urine result.
+Reason for visit: “It burns when I urinate.” The user wants to understand a urine result.
 Time course: Symptoms began before specimen collection on 18 November.
 Report evidence: Leukocyte esterase, trace. No clinical cause has been established.
-Urgency: The patient selected a current emergency concern. Seek local emergency care immediately. Do not wait to finish the interview.
+Urgency: The user selected a current emergency concern. Seek local emergency care immediately. Do not wait to finish the interview.
 Still to clarify: Medicines and symptom progression.
 Provisional possibilities: Bladder infection; urinary irritation. Experimental AI-generated assessment, not reviewed by a healthcare professional. These possibilities are unconfirmed.

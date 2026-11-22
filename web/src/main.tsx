@@ -66,6 +66,7 @@ function App() {
     [pollError, setPollError] = useState(''),
     [notice, setNotice] = useState(false),
     [message, setMessage] = useState('')
+  const [diaryEntry, setDiaryEntry] = useState<string>()
   const [returnMode, setReturnMode] = useState(false)
   const [reportFirst, setReportFirst] = useState(false),
     [region, setRegion] = useState<Region | null>(null)
@@ -240,6 +241,27 @@ function App() {
       clearTimeout(timer)
     }
   }, [page, session?.authenticated, e?.id, e?.revision, e?.pending])
+  const waitingInJournal = page === 'journal' && session?.authenticated && records.some(row => row.pending)
+  useEffect(() => {
+    if (!waitingInJournal) return
+    const controller = new AbortController()
+    let timer: number
+    const refresh = async () => {
+      try {
+        const list = await api<{ encounters: EncounterRow[] }>('/encounters', 'GET', undefined, { signal: controller.signal })
+        if (!controller.signal.aborted) setRecords(list.encounters)
+      } catch {
+        // A temporary connection failure leaves the saved journal in view.
+      } finally {
+        if (!controller.signal.aborted) timer = window.setTimeout(refresh, 4000)
+      }
+    }
+    timer = window.setTimeout(refresh, 2500)
+    return () => {
+      controller.abort()
+      clearTimeout(timer)
+    }
+  }, [waitingInJournal])
   const leaveSources = () => {
     if (sourceEncounter || portalReturn)
       window.history.replaceState(null, '', '/')
@@ -540,6 +562,7 @@ function App() {
             ) : page === 'intake' && settings.provider?.kind ? (
               <IntakeForm
                 rows={records}
+                diaryEntry={returnMode ? diaryEntry : undefined}
                 returnMode={returnMode}
                 reportFirst={reportFirst}
                 provider={settings.provider}
@@ -582,7 +605,14 @@ function App() {
                 rows={records}
                 settings={settings}
                 onOpen={open}
-                onReturn={() => {
+                onDemo={() => run(async () => {
+                  await storeProvider({ kind: 'demo', model: 'synthetic', endpoint: '', structured: 'auto' })
+                  setReturnMode(false)
+                  setReportFirst(false)
+                  setPage('intake')
+                })}
+                onReturn={(entryId) => {
+                  setDiaryEntry(entryId)
                   setReturnMode(true)
                   setReportFirst(false)
                   move('intake')

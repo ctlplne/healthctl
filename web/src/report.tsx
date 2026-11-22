@@ -186,7 +186,7 @@ export function ReportBody({
           <ClipboardList size={20} />
           {name}
         </span>
-        <span>Patient visit report</span>
+        <span>Visit report</span>
       </div>
       <h1>Clinical history report</h1>
       <p className="metadata">
@@ -226,8 +226,8 @@ export function ReportBody({
         <p>
           Age {e.age} ·{' '}
           {e.confirmedRevision === e.historyRevision
-            ? 'Patient confirmed this history revision'
-            : 'Patient has not confirmed this history revision'}
+            ? 'You confirmed this history revision'
+            : 'You have not confirmed this history revision'}
         </p>
         {e.background && (
           <>
@@ -238,7 +238,7 @@ export function ReportBody({
         {e.scopeReason && <p>{e.scopeReason}</p>}
       </section>
       <section>
-        <h2>Patient-reported history</h2>
+        <h2>History in your words</h2>
         <div className="print-timeline">
           {answers.map((a) => (
             <div key={a.id}>

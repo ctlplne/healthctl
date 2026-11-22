@@ -116,7 +116,7 @@ func main() {
 		AuthorizationIssuer: os.Getenv("CLINICAL_EHR_AUTH_ISSUER"),
 	})
 	if err != nil {
-		logger.Fatal("invalid patient portal configuration: ", err)
+		logger.Fatal("invalid health portal configuration: ", err)
 	}
 	models := provider.New()
 	var plan *server.ChatGPTIntegration

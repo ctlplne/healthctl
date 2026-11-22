@@ -43,7 +43,7 @@ func auditAssessment(e *clinical.Encounter, a clinical.Assessment, failures *[]s
 					return f.ID == id && f.Active && f.Confirmed && f.Subject == "self" && f.Status == "reported_present" && f.SourceType == "patient_answer" && !f.SourceOutdated
 				})
 				if !valid || !slices.Contains(item.Supporting, id) {
-					*failures = append(*failures, "passage linked to unsupported patient evidence")
+					*failures = append(*failures, "passage linked to unsupported user evidence")
 				}
 				row.LinkedFacts = append(row.LinkedFacts, id)
 			}

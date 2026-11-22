@@ -36,6 +36,15 @@ func (e *Encounter) Accept(task string, p Proposal, meta ModelMeta, emergency st
 	if err = Validate(in, p); err != nil {
 		return err
 	}
+	// Keep source quotations, literal values and user-authored corrections intact.
+	for i := range p.Findings {
+		p.Findings[i].Concept = userReference(p.Findings[i].Concept)
+	}
+	p.Question = userReference(p.Question)
+	p.Reason = userReference(p.Reason)
+	for i := range p.Outstanding {
+		p.Outstanding[i] = userReference(p.Outstanding[i])
+	}
 	qsource, err := questionSource(in, p)
 	if err != nil {
 		return err
@@ -141,7 +150,7 @@ func (e *Encounter) Accept(task string, p Proposal, meta ModelMeta, emergency st
 	return nil
 }
 
-// A new inference can change the interpreted history without a new patient message.
+// A new inference can change the interpreted history without a new user message.
 // Preserve the confirmation when the model only restates identical records.
 func (e *Encounter) revisesHistory(p Proposal) bool {
 	if !slices.Equal(e.Outstanding, p.Outstanding) {
@@ -229,7 +238,7 @@ func verifySource(in Input, ev Evidence) (Answer, error) {
 	}
 	for _, c := range in.CorrectedEvidence {
 		if c.AnswerID == ev.AnswerID && (strings.Contains(c.Quote, ev.Quote) || strings.Contains(ev.Quote, c.Quote)) {
-			return Answer{}, errors.New("The patient superseded that interpretation")
+			return Answer{}, errors.New("The user superseded that interpretation")
 		}
 	}
 	for _, a := range in.Answers {
@@ -257,7 +266,7 @@ func validateFinding(in Input, f FindingProposal) error {
 	}
 	if disposition == "none" {
 		if topic := backgroundFor(a.Question); topic != nil && (f.Status != "explicitly_denied" || !topic.acceptsDenial(f.Concept)) {
-			return errors.New("A background denial applies only to the question the patient answered")
+			return errors.New("A background denial applies only to the question the user answered")
 		}
 	}
 	if a.Kind == "screen" {
@@ -285,7 +294,7 @@ func validateFinding(in Input, f FindingProposal) error {
 		return errors.New("An unasked concept belongs in outstanding questions")
 	case "explicitly_denied":
 		if !denialSupports(f.Concept, f.Quote, a) {
-			return errors.New("Negative findings require explicit, unambiguous patient evidence")
+			return errors.New("Negative findings require explicit, unambiguous user evidence")
 		}
 	case "reported_present":
 		if denies(clause) && !uncertain.MatchString(clause) || uncertaintyOnly.MatchString(f.Quote) || vagueOnly.MatchString(strings.TrimSpace(f.Quote)) {
@@ -293,7 +302,7 @@ func validateFinding(in Input, f FindingProposal) error {
 		}
 	case "declined":
 		if !declined.MatchString(f.Quote) {
-			return errors.New("The patient did not explicitly decline")
+			return errors.New("The user did not explicitly decline")
 		}
 	}
 	return nil
@@ -323,7 +332,7 @@ func Validate(in Input, p Proposal) error {
 			topic := backgroundFor(p.Question)
 			for _, a := range in.Answers {
 				if (a.Kind == "reply" && sameQuestion(a.Question, p.Question)) || (topic != nil && topic.addressedBy(a)) {
-					return errors.New("The patient already answered that question")
+					return errors.New("The user already answered that question")
 				}
 			}
 		} else if p.Question != "" || len(p.Choices) > 0 {
@@ -343,7 +352,7 @@ func Validate(in Input, p Proposal) error {
 				return err
 			}
 			if evidenceDisposition(a) != "provided" || a.Kind == "screen" || pastEvent(a) || !contextualRisk(clauseAt(a.Text, strings.Index(a.Text, ev.Quote))) {
-				return errors.New("The urgent flag needs evidence of a current, relevant patient report")
+				return errors.New("The urgent flag needs evidence of a current, relevant user report")
 			}
 		}
 	case "assessment":

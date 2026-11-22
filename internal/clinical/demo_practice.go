@@ -2,7 +2,7 @@ package clinical
 
 import "strings"
 
-// PracticeHistory collects a fictional narrative offline. Only the patient
+// PracticeHistory collects a fictional narrative offline. Only the user
 // supplies observations. The practice exercise does no clinical extraction.
 func PracticeHistory(in Input) Proposal {
 	if in.Task != "interview" || in.Age < 18 || len(in.ActiveWarnings) > 0 {

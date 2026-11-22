@@ -179,7 +179,7 @@ func (e *Encounter) copyReturnReviews(prior *Encounter, ids []string, emergency 
 		}
 	}
 	if len(selected) != 0 {
-		return errors.New("Select current patient-reviewed passages")
+		return errors.New("Select current user-reviewed passages")
 	}
 	return nil
 }

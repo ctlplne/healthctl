@@ -16,9 +16,9 @@ type pathwayDefinition struct {
 }
 
 var pathways = []pathwayDefinition{
-	{"nail_change", regexp.MustCompile(`(?i)\b(fingernails?|toenails?|nails?|koilonychia)\b`), []string{"Invite the patient's description of the change before naming a shape. Ask which nails, when the change began, and how it has progressed. Use the distribution to choose the next question: local injury or exposure for one nail, shared timing or other changes for several. Never infer anemia or a nail sign from a photo."}},
-	{"eye_appearance", regexp.MustCompile(`(?i)\b(eye whites?|whites? of (?:my |the )?eyes?|yellow eyes?|jaundice)\b`), []string{"Clarify which part of the eye looks different, when it changed and associated symptoms if these affect urgency. A patient description or a photo does not confirm or exclude jaundice. Never delay urgent care to collect an image."}},
-	{"bowel_change", regexp.MustCompile(`(?i)\b(loose stools?|stools?|diarrh(?:ea|oea)|bowel movements?)\b`), []string{"Start with the patient's usual bowel pattern, then establish what changed in consistency, frequency, timing, and daily function. If travel preceded the change, establish the order and ask about relevant food, water, sick contacts, or medicines one at a time. Clarify reported blood, pain or difficulty keeping fluids down when they could change urgency."}},
+	{"nail_change", regexp.MustCompile(`(?i)\b(fingernails?|toenails?|nails?|koilonychia)\b`), []string{"Invite the user's description of the change before naming a shape. Ask which nails, when the change began, and how it has progressed. Use the distribution to choose the next question: local injury or exposure for one nail, shared timing or other changes for several. Never infer anemia or a nail sign from a photo."}},
+	{"eye_appearance", regexp.MustCompile(`(?i)\b(eye whites?|whites? of (?:my |the )?eyes?|yellow eyes?|jaundice)\b`), []string{"Clarify which part of the eye looks different, when it changed and associated symptoms if these affect urgency. A user description or a photo does not confirm or exclude jaundice. Never delay urgent care to collect an image."}},
+	{"bowel_change", regexp.MustCompile(`(?i)\b(loose stools?|stools?|diarrh(?:ea|oea)|bowel movements?)\b`), []string{"Start with the user's usual bowel pattern, then establish what changed in consistency, frequency, timing, and daily function. If travel preceded the change, establish the order and ask about relevant food, water, sick contacts, or medicines one at a time. Clarify reported blood, pain or difficulty keeping fluids down when they could change urgency."}},
 	{"respiratory", regexp.MustCompile(`(?i)\b(cough|coughing|breathless|breathing|wheez(?:e|ing)|sore throat|runny nose|nose is runny|sneez(?:e|ing))\b`), []string{"Clarify onset, progression, breathlessness and relevant exposure when these could change the estimate.", "Consider respiratory limitations and urgent breathing concerns separately from likely explanations."}},
 	{"headache", regexp.MustCompile(`(?i)\b(headach(?:e|es)|head pain|migraine)\b`), []string{"Establish whether onset was sudden, how this differs from prior episodes and any associated changes.", "Ask about recent medication changes or injury if relevant. Sudden severe onset may need an immediate interruption."}},
 	{"abdominal", regexp.MustCompile(`(?i)\b(abdomen|abdominal|belly|stomach|flank|pelvic)\b`), []string{"Clarify location, onset, progression and associated digestive or urinary changes.", "Review recent medication changes, exposures and relevant prior episodes without guessing pregnancy status."}},
@@ -138,8 +138,8 @@ func (e *Encounter) groundedQuestion() bool {
 				continue
 			}
 			q.Key = "sample_timing"
-			q.Reason = "The report gives a collection date. The timing of your symptoms relative to this sample is still unclear."
-			question = "Did your symptoms start before or after the sample for this report entry was collected?"
+			q.Reason = "The collection date helps distinguish routine testing from testing related to symptoms."
+			question = "Did you have any symptoms around the time this sample was collected? If so, when did they start?"
 		default:
 			continue
 		}
@@ -169,7 +169,7 @@ func (e *Encounter) updateReportConflicts() {
 		if fid != "" {
 			e.Contradictions = append(e.Contradictions, Contradiction{Concept: r.Row.Name + " — the recollection and report differ", FactIDs: []string{fid, r.FactID}})
 		} else if disagreement.MatchString(r.Row.Note) {
-			e.Contradictions = append(e.Contradictions, Contradiction{Concept: r.Row.Name + " — the patient disputes the report", FactIDs: []string{r.FactID}})
+			e.Contradictions = append(e.Contradictions, Contradiction{Concept: r.Row.Name + " — the user disputes the report", FactIDs: []string{r.FactID}})
 		}
 	}
 }

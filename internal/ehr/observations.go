@@ -922,7 +922,7 @@ func ParseObservations(raw []byte, patientID, fhirBase string) (Preview, error) 
 	p := Preview{Rows: []Row{}, SkippedByReason: map[string]int{}}
 	base, ok := canonicalBase(fhirBase)
 	if !ok || !fhirID.MatchString(patientID) || patientID == "." || patientID == ".." {
-		return p, errors.New("Valid pinned FHIR base and patient context required")
+		return p, errors.New("The configured FHIR address and record identity are required")
 	}
 	if len(raw) == 0 || len(raw) > maxObservationBytes || !utf8.Valid(raw) {
 		return p, errors.New("FHIR search response is unreadable or exceeds the local size limit")

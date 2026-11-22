@@ -52,7 +52,7 @@ func FromEncounter(e *clinical.Encounter) Brief {
 			b.Changes = append(b.Changes, a)
 		}
 	}
-	for _, f := range e.Facts {
+	for _, f := range e.ForDisplay().Facts {
 		if f.Active {
 			b.Facts = append(b.Facts, f)
 		}

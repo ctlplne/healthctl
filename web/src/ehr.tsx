@@ -115,7 +115,7 @@ export function EhrConnect({ e, run, busy }: { e: Encounter } & Work) {
     <section className="panel portal-entry">
       <div className="topic-mark">
         <Hospital size={17} />
-        Patient portal
+        Health portal
       </div>
       <h2>Import lab results</h2>
       {error ? (
@@ -132,7 +132,7 @@ export function EhrConnect({ e, run, busy }: { e: Encounter } & Work) {
         <p role="status">Checking this installation’s portal settings…</p>
       ) : !portal.enabled ? (
         <p>
-          A patient portal hasn’t been connected to this installation. You can
+          A health portal hasn’t been connected to this installation. You can
           upload a report or paste its text.
         </p>
       ) : (
@@ -155,7 +155,7 @@ export function EhrConnect({ e, run, busy }: { e: Encounter } & Work) {
           </dl>
           {e.demo && (
             <p className="metadata">
-              This is a synthetic demo encounter. Use a test patient record.
+              This is a synthetic demo encounter. Use a test user record.
             </p>
           )}
           <button
@@ -163,7 +163,7 @@ export function EhrConnect({ e, run, busy }: { e: Encounter } & Work) {
             disabled={busy}
             onClick={() => run(start)}
           >
-            Connect to patient portal
+            Connect to health portal
           </button>
         </>
       )}
@@ -340,7 +340,7 @@ export function PortalReturn({
       <main id="main-content" className="portal-content">
         <div className="topic-mark">
           <Hospital size={17} />
-          Patient portal
+          Health portal
         </div>
         <h1>{preview ? 'Choose lab results' : 'Return from your portal'}</h1>
         {failure && (

@@ -139,7 +139,7 @@ func (s *Server) upload(w http.ResponseWriter, r *http.Request, owner int) error
 	if err != nil {
 		return err
 	}
-	emit(w, 200, e)
+	emit(w, 200, e.ForDisplay())
 	return nil
 }
 
@@ -260,6 +260,6 @@ func (s *Server) removePhoto(w http.ResponseWriter, r *http.Request, owner int) 
 	if err != nil {
 		return err
 	}
-	emit(w, 200, e)
+	emit(w, 200, e.ForDisplay())
 	return nil
 }

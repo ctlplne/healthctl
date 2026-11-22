@@ -149,7 +149,7 @@ export function BriefBody({
       <h1>Pre-visit brief</h1>
       <p className="metadata">
         {date(b.updatedAt, true)} · Age {b.age} ·{' '}
-        {b.confirmed ? 'Patient-confirmed history' : 'Unconfirmed history'}
+        {b.confirmed ? 'Confirmed by the user' : 'Unconfirmed history'}
         {e.demo ? ' · Synthetic demo' : ''}
       </p>
       <aside className="brief-notice">
@@ -175,7 +175,7 @@ export function BriefBody({
       <p>{b.concern}</p>
       {b.agenda && (
         <p>
-          <strong>Patient’s main question</strong> · {b.agenda}
+          <strong>Main question for the visit</strong> · {b.agenda}
         </p>
       )}
       {!!b.changes?.length && (
@@ -196,7 +196,7 @@ export function BriefBody({
         )}
       {!!b.feedback?.length && (
         <section>
-          <h3>Patient-reviewed clinician feedback</h3>
+          <h3>Clinician feedback reviewed by the user</h3>
           <CompactList
             values={b.feedback.map(
               (f) =>
