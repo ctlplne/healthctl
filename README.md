@@ -51,7 +51,15 @@ python3 scripts/init.py
 docker compose up -d --build --wait
 ```
 
-To build the exact beta 5 desktop revision, check out `v0.2.0-beta.5` before building. You can also use the prebuilt Docker image. Download the archive for your Docker engine’s architecture ([AMD64](https://github.com/ctlplne/healthctl/releases/download/v0.2.0-beta.5/healthctl-linux-amd64.tar.gz) or [ARM64](https://github.com/ctlplne/healthctl/releases/download/v0.2.0-beta.5/healthctl-linux-arm64.tar.gz)) and [verify its checksum](https://github.com/ctlplne/healthctl/releases/download/v0.2.0-beta.5/SHA256SUMS). From the initialized checkout, run the following, replacing `arm64` with `amd64` on Intel or AMD machines.
+To build the exact beta 5 desktop revision, check out `v0.2.0-beta.5` before building. To use the prebuilt image on a fresh checkout, run `python3 scripts/init.py`, then:
+
+```bash
+docker pull ghcr.io/ctlplne/healthctl:v0.2.0-beta.5
+docker tag ghcr.io/ctlplne/healthctl:v0.2.0-beta.5 clinical-history-app
+docker compose up -d --no-build --wait
+```
+
+The public image supports AMD64 and ARM64. To transfer it as a file, download the archive for your Docker engine’s architecture ([AMD64](https://github.com/ctlplne/healthctl/releases/download/v0.2.0-beta.5/healthctl-linux-amd64.tar.gz) or [ARM64](https://github.com/ctlplne/healthctl/releases/download/v0.2.0-beta.5/healthctl-linux-arm64.tar.gz)) and [verify its checksum](https://github.com/ctlplne/healthctl/releases/download/v0.2.0-beta.5/SHA256SUMS). From the initialized checkout, run the following, replacing `arm64` with `amd64` on Intel or AMD machines.
 
 ```bash
 docker load -i healthctl-linux-arm64.tar.gz
