@@ -74,7 +74,8 @@ func (s *Store) Timeline(ctx context.Context, owner int) ([]*clinical.Encounter,
 				compact.Facts = append(compact.Facts, f)
 			}
 		}
-		result = append(result, compact)
+		display := compact.ForDisplay()
+		result = append(result, &display)
 	}
 	return result, rows.Err()
 }

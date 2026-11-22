@@ -10,6 +10,10 @@ The backend runs race-enabled Go and PostgreSQL integration tests. The browser j
 
 Native Linux x86-64 and Arm64 runners test the actual packaged images with a synthetic encounter, offline transcription and an encrypted desktop backup and restore. An Apple silicon macOS runner assembles the disk image, mounts it, verifies the ad-hoc signature, and compares its images with the tested Arm payload. Download the ad-hoc DMG from the workflow run for testing. Release tags can also sign and notarize the tested application on GitHub. The complete installed-launcher test with Docker Desktop remains available on a Mac. [macOS distribution and verification](desktop.md#distribution-and-verification)
 
+## Cross-platform public betas
+
+Build the Apple silicon DMG and Windows x64 EXE from the same commit on main that users can check out for Docker Compose. The Mac public beta bundles the tagged build source. Exercise that disk image with the desktop verification drill on Apple silicon. For Windows, a Windows runner builds and opens the executable. A Linux runner then starts the journal using that exact executable and verifies a synthetic export after restart. A matching Windows beta tag publishes the verified files and checksums. Update the installation links after both downloads exist. [Windows workflow](../.github/workflows/windows.yml) · [Mac drill](desktop.md#distribution-and-verification)
+
 ## Publish a version
 
 1. Choose a release commit on `main` and set its application and installer versions. Push a matching tag in `vMAJOR.MINOR.PATCH` form. The **Prepare release** workflow verifies the tag, reruns CI and release qualification for that commit, then creates a draft GitHub Release with tested Linux image archives, checksums and build attestations.
