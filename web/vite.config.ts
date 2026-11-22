@@ -41,7 +41,7 @@ export default defineConfig({
     enforce: 'pre',
     transform(code, id) {
       if (!id.endsWith('/src/styles.css')) return
-      return {code: code.replace(/(['"])__MODEL_GUIDANCE_PRINT__\1/, JSON.stringify(guidance)).replace(/(['"])__PREVIEW_NOTICE_PRINT__\1/, JSON.stringify(preview)), map: null}
+      return {code: code.replace(/(['"])__MODEL_GUIDANCE_PRINT__\1/, JSON.stringify(guidance)).replace(/(['"])__PREVIEW_NOTICE_PRINT__\1/, JSON.stringify(preview).replace(". Verify", ".\\a Verify")), map: null}
     },
     transformIndexHtml(html) {
       return html.replace('<!-- model-guidance -->', escape(guidance)).replace('<!-- preview-notice -->', escape(preview))

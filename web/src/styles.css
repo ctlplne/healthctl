@@ -1712,6 +1712,7 @@ summary {
   }
   @bottom-left {
     content: '__PREVIEW_NOTICE_PRINT__';
+    white-space: pre-line;
     font:
       8pt Arial,
       sans-serif;
@@ -1719,6 +1720,8 @@ summary {
   }
   @bottom-right {
     content: counter(page) ' / ' counter(pages);
+    width: 12mm;
+    white-space: nowrap;
     font:
       8pt Arial,
       sans-serif;
