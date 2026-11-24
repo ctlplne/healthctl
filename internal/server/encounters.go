@@ -177,6 +177,9 @@ func (s *Server) deliver(w http.ResponseWriter, r *http.Request, owner int, e *c
 		// durable job; replayed receipts only read the snapshot.
 		if fresh {
 			if err := s.enqueue(r.Context(), owner, e, task, s.localPlanOrigin(r) != ""); err != nil {
+				// The revision is saved but no call will run for it. Record a
+				// failure the user can retry instead of leaving it waiting.
+				s.failUnqueued(r.Context(), owner, e, task)
 				return err
 			}
 		}
@@ -193,6 +196,16 @@ func (s *Server) deliver(w http.ResponseWriter, r *http.Request, owner int, e *c
 	s.refreshEvidence(r.Context(), owner, e)
 	emit(w, http.StatusOK, e.ForDisplay())
 	return nil
+}
+
+func (s *Server) failUnqueued(ctx context.Context, owner int, e *clinical.Encounter, task string) {
+	ctx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 5*time.Second)
+	defer cancel()
+	rev := e.Revision
+	e.Fail(task)
+	if err := s.Store.Finish(ctx, owner, e, rev); err != nil && s.Logger != nil {
+		s.Logger.Print("event=encounter_completion_unavailable")
+	}
 }
 
 func (s *Server) finishModel(ctx context.Context, owner int, e *clinical.Encounter, task string, localPlan bool) error {
@@ -293,12 +306,26 @@ func (s *Server) finishModel(ctx context.Context, owner int, e *clinical.Encount
 	defer cancel()
 	return s.Store.Finish(writeCtx, owner, e, rev)
 }
+
+// export downloads the report as a file. It needs a recent password.
 func (s *Server) export(w http.ResponseWriter, r *http.Request, owner int) error {
+	return s.writeReport(w, r, owner, true)
+}
+
+// report shows the same report on screen. Everything in it is already visible
+// to the signed-in owner, so it needs no fresh password.
+func (s *Server) report(w http.ResponseWriter, r *http.Request, owner int) error {
+	return s.writeReport(w, r, owner, false)
+}
+
+func (s *Server) writeReport(w http.ResponseWriter, r *http.Request, owner int, attachment bool) error {
 	e, err := s.Store.Get(r.Context(), owner, r.PathValue("id"))
 	if err != nil {
 		return err
 	}
-	w.Header().Set("Content-Disposition", `attachment; filename="healthctl.json"`)
+	if attachment {
+		w.Header().Set("Content-Disposition", `attachment; filename="healthctl.json"`)
+	}
 	s.refreshEvidence(r.Context(), owner, e)
 	report := e.Report()
 	report.Installation = s.installationSettings()

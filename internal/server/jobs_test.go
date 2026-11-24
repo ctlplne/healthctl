@@ -179,12 +179,22 @@ func TestJobQueuePostgres(t *testing.T) {
 		t.Fatal(err)
 	}
 	stopFirst() // the first server stops; its workers exit
+	// Start up the way cmd/healthctl does: recover pending encounters first,
+	// then start the server. A call with a job row must survive the recovery.
+	if err := db.RecoverPending(t.Context()); err != nil {
+		t.Fatal(err)
+	}
 	second, stopSecond := context.WithCancel(t.Context())
 	restarted := newTestServer(db, io.Discard)
 	restarted.Lifetime = second
 	restarted.Handler()
 	waitFor(t, "the interrupted job to resume", func() bool { st := jobStatus(t, restarted, e.ID); return len(st) == 2 && st[1] == "done" })
 	stopSecond()
+	var resumed clinical.Encounter
+	check(t, c.call("GET", "/api/encounters/"+e.ID, nil), 200, &resumed)
+	if resumed.Pending != "" || resumed.State == clinical.StateFailedRecoverably {
+		t.Fatalf("the resumed call must finish the turn, not fail it: %s", resumed.State)
+	}
 
 	// A panic in one call is recorded and leaves a recoverable failure.
 	third, stopThird := context.WithCancel(t.Context())
@@ -198,5 +208,52 @@ func TestJobQueuePostgres(t *testing.T) {
 	check(t, c.call("GET", "/api/encounters/"+broken.ID, nil), 200, &failed)
 	if failed.State != clinical.StateFailedRecoverably || failed.FailedTask != "interview" || len(failed.Answers) == 0 {
 		t.Fatalf("a crash must keep the history and offer a retry: %s", failed.State)
+	}
+}
+
+// If the model call can't be queued after the revision is saved, the
+// encounter shows a failure the user can retry instead of waiting forever.
+func TestUnqueuedCallFailsRecoverablyPostgres(t *testing.T) {
+	db, _, _ := testStore(t)
+	var cancelled, concurrent, peak atomic.Int32
+	started, release := make(chan struct{}, 8), make(chan struct{})
+	mock := blockingModel(t, started, release, &cancelled, &concurrent, &peak)
+	defer mock.Close()
+	defer close(release)
+	base := mock.URL + "/v1"
+	t.Setenv("CLINICAL_ALLOWED_ENDPOINTS", base)
+	s := newTestServer(db, io.Discard)
+	c := caller{h: s.Handler()}
+	c.signup(t)
+	cfg := clinical.ProviderRef{Kind: "compatible", Endpoint: base, Model: "fixture", Structured: "prompt"}
+	selectProvider(t, c, cfg)
+	if _, err := db.DB.ExecContext(t.Context(), "ALTER TABLE model_jobs RENAME TO model_jobs_unavailable"); err != nil {
+		t.Fatal(err)
+	}
+	b, _ := json.Marshal(intake(cfg, "Fictional ankle discomfort"))
+	req := httptest.NewRequestWithContext(t.Context(), "POST", "http://localhost/api/encounters", bytes.NewReader(b))
+	req.Header.Set("Prefer", "respond-async")
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-CSRF-Token", c.csrf)
+	req.AddCookie(c.cookie)
+	w := httptest.NewRecorder()
+	c.h.ServeHTTP(w, req)
+	if w.Code < 500 {
+		t.Fatalf("a failed queue must be reported, got %d", w.Code)
+	}
+	if _, err := db.DB.ExecContext(t.Context(), "ALTER TABLE model_jobs_unavailable RENAME TO model_jobs"); err != nil {
+		t.Fatal(err)
+	}
+	var out struct {
+		Encounters []struct {
+			ID      string
+			Pending string
+			State   string
+		}
+	}
+	check(t, c.call("GET", "/api/encounters", nil), 200, &out)
+	list := out.Encounters
+	if len(list) != 1 || list[0].Pending != "" || list[0].State != string(clinical.StateFailedRecoverably) {
+		t.Fatalf("the encounter must offer a retry, got %+v", list)
 	}
 }

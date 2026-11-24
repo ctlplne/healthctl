@@ -493,7 +493,9 @@ func (s *Store) Delete(ctx context.Context, owner int, id string, expected int) 
 }
 
 // RecoverPending runs on startup of the single application instance. Reads never
-// dispatch a model call. Recovery enables an explicit retry following a power loss.
+// dispatch a model call. A call that was waiting in the job queue is left for
+// the worker pool to resume; any other interrupted call becomes a failure the
+// user can retry.
 func (s *Store) RecoverPending(ctx context.Context) error {
 	rows, err := s.DB.QueryContext(ctx, "SELECT owner_id,id,payload FROM encounters")
 	if err != nil {
@@ -512,6 +514,14 @@ func (s *Store) RecoverPending(ctx context.Context) error {
 			return err
 		}
 		if task := e.PendingTask(); task != "" {
+			// A background call with a job row is resumed by the worker pool.
+			var queued bool
+			if err = s.DB.QueryRowContext(ctx, "SELECT EXISTS(SELECT 1 FROM model_jobs WHERE encounter_id=$1 AND revision=$2 AND task=$3 AND status IN ('queued','running'))", id, e.Revision, task).Scan(&queued); err != nil {
+				return err
+			}
+			if queued {
+				continue
+			}
 			rev := e.Revision
 			e.Fail(task)
 			if err = s.Finish(ctx, owner, e, rev); err != nil && !errors.Is(err, ErrConflict) {
