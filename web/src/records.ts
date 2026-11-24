@@ -57,7 +57,12 @@ export type QuestionsSource = {
   reviewId: string
   reason: string
   pathway: string
+  topic?: string
+  // The model's own note about a question it proposed, shown only as a labeled suggestion.
+  modelNote?: string
 }
+export type Gap = { pathway: string; element: string; note: string }
+export type RedFlagQuestion = { key: string; pathway: string; question: string }
 export type Region = {
   locale: string
   units: string
@@ -81,6 +86,8 @@ export type Summary = {
   confirmedAt: string
   factIds: string[]
   answerIds: string[]
+  gaps?: Gap[]
+  unansweredRedFlags?: RedFlagQuestion[]
 }
 export function latestReview(e: Encounter, docId: string, rowId: string) {
   return (e.reportReviews || [])

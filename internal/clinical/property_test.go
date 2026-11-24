@@ -13,10 +13,11 @@ import (
 //   - an active warning is cleared only by correcting its source;
 //   - no active finding cites a missing or superseded answer;
 //   - an assessment is never current after the history changes;
-//   - every export carries the notice, review status and every active warning.
+//   - every export carries the notice, review status and every active warning;
+//   - a yes to one of the app's red-flag questions always leaves a warning.
 func TestRandomActionInvariants(t *testing.T) {
-	texts := []string{"Yesterday", "No", "not sure", "skip", "I have chest pain and no fever", "It started 3 days ago after a run", "My mother has asthma", "None", "Getting worse", "I'd rather not answer", "doesn't apply to me", "I take ibuprofen 400 mg", DemoConcern, "I feel suicidal", "I'm fine", "She was struggling to breathe."}
-	actions := []string{"answer", "answer", "answer", "correct_answer", "correct_fact", "review", "confirm", "assess", "retry", "continue", "focus_interview", "report_emergency", "correct_intake", "visual_observation", "set_episode"}
+	texts := []string{"Yesterday", "No", "not sure", "skip", "I have chest pain and no fever", "It started 3 days ago after a run", "My mother has asthma", "None", "Getting worse", "I'd rather not answer", "doesn't apply to me", "I take ibuprofen 400 mg", DemoConcern, "I feel suicidal", "I'm fine", "She was struggling to breathe.", "I have a cough.", "I have a headache.", "Yes"}
+	actions := []string{"answer", "answer", "answer", "correct_answer", "correct_fact", "review", "confirm", "assess", "retry", "continue", "focus_interview", "report_emergency", "correct_intake", "visual_observation", "set_episode", "red_flag", "red_flag", "safety_check"}
 	const sequences, steps = 1500, 25
 	checked := 0
 	for seed := int64(0); seed < sequences; seed++ {
@@ -49,6 +50,7 @@ func TestRandomActionInvariants(t *testing.T) {
 					}
 				}
 				history := e.HistoryRevision
+				answersBefore := len(e.Answers)
 				action := "model"
 				if task := e.PendingTask(); task != "" {
 					in, err := e.ModelInput(task)
@@ -87,6 +89,13 @@ func TestRandomActionInvariants(t *testing.T) {
 						c.Category = "Eye"
 					case "set_episode":
 						c.EpisodeTitle = "Episode"
+					case "red_flag":
+						if len(e.RedFlagsDue) > 0 {
+							c.Category = e.RedFlagsDue[r.Intn(len(e.RedFlagsDue))].Key
+						}
+						c.Status = []string{"yes", "no", "unsure"}[r.Intn(3)]
+					case "safety_check":
+						c.Category, c.Status = "review", []string{"none", "changed", "emergency"}[r.Intn(3)]
 					}
 					_ = e.Apply(c, "")
 				}
@@ -94,6 +103,20 @@ func TestRandomActionInvariants(t *testing.T) {
 				for _, w := range e.Warnings {
 					if before[w.ID] && !w.Active && action != "correct_answer" && action != "correct_fact" {
 						fail("warning %s (%s) was cleared by %s", w.ID, w.Rule, action)
+					}
+				}
+				if (action == "red_flag" || action == "answer") && len(e.Answers) > answersBefore {
+					// Check the answer this step added.
+					for _, a := range e.Answers[answersBefore:] {
+						if a.Active && a.QuestionSource != nil && strings.HasPrefix(a.QuestionSource.Key, "red_flag:") && a.Text == "Yes" {
+							warned := false
+							for _, w := range e.Warnings {
+								warned = warned || w.Active && w.Evidence.AnswerID == a.ID
+							}
+							if !warned {
+								fail("a yes to red flag %s left no warning", a.QuestionSource.Key)
+							}
+						}
 					}
 				}
 				for _, f := range e.Facts {

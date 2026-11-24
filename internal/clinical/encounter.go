@@ -18,7 +18,11 @@ func id(prefix string, n int) string { return fmt.Sprintf("%s%d", prefix, n+1) }
 func validText(s string, limit int) bool {
 	return utf8.ValidString(s) && strings.TrimSpace(s) != "" && len(s) <= limit
 }
-func (e *Encounter) touch()              { e.Revision++; e.UpdatedAt = time.Now().UTC() }
+func (e *Encounter) touch() {
+	e.Revision++
+	e.UpdatedAt = time.Now().UTC()
+	e.refreshCompleteness()
+}
 func (e *Encounter) PendingTask() string { return e.Pending }
 
 func New(encounterID string, intake Intake, provider ProviderRef, emergency string) (*Encounter, error) {
@@ -56,6 +60,7 @@ func New(encounterID string, intake Intake, provider ProviderRef, emergency stri
 	} else if e.GuidedHistory && e.Provider.Kind == "chatgpt" && e.Pending == "interview" {
 		e.askPlanOpening()
 	}
+	e.refreshCompleteness()
 	return e, nil
 }
 
@@ -150,11 +155,15 @@ func (e *Encounter) recordFindingAt(f FindingProposal, source, supersedes string
 			return
 		}
 	}
-	e.Facts = append(e.Facts, Fact{
+	fact := Fact{
 		FindingProposal: f, ID: id("f", len(e.Facts)), HistoryRevision: e.HistoryRevision,
 		SourceType: source, StartByte: i, EndByte: i + len(f.Quote),
 		Active: true, Corrected: corrected, Supersedes: supersedes,
-	})
+	}
+	if t, ok := lookupConcept(f.Concept); ok {
+		fact.Term, fact.Code = t.Term, t.Code
+	}
+	e.Facts = append(e.Facts, fact)
 }
 
 func (e *Encounter) rebuildContradictions() {
@@ -164,7 +173,7 @@ func (e *Encounter) rebuildContradictions() {
 			continue
 		}
 		for _, b := range e.Facts[i+1:] {
-			if !b.Active || !strings.EqualFold(a.Concept, b.Concept) || a.Subject != b.Subject || !sameTime(a.TimeContext, b.TimeContext) {
+			if !b.Active || !sameConcept(a.Concept, b.Concept) || a.Subject != b.Subject || !sameTime(a.TimeContext, b.TimeContext) {
 				continue
 			}
 			if a.Status == "reported_present" && b.Status == "explicitly_denied" || b.Status == "reported_present" && a.Status == "explicitly_denied" {
@@ -204,6 +213,13 @@ func (e *Encounter) Apply(c Command, emergency string) error {
 		e.changed()
 		e.appendAnswer("visual_observation", "What did you notice yourself? ("+c.Category+")", strings.TrimSpace(c.Text), "", emergency)
 		e.routeInterview()
+	case "red_flag":
+		if e.Pending != "" {
+			return errors.New("Finish or cancel the current request before answering the safety question")
+		}
+		if err := e.answerRedFlag(c, emergency); err != nil {
+			return err
+		}
 	case "safety_check":
 		if e.Pending != "" {
 			return errors.New("Finish or cancel the current request before answering the safety question")
@@ -295,7 +311,9 @@ func (e *Encounter) Apply(c Command, emergency string) error {
 			return errors.New("Open the history review before confirming it")
 		}
 		if e.ConfirmedRevision != e.HistoryRevision {
+			e.refreshCompleteness()
 			s := Summary{
+				Gaps: append([]Gap(nil), e.Gaps...), UnansweredRedFlags: append([]RedFlagQuestion(nil), e.RedFlagsDue...),
 				Outstanding: append([]string{}, e.Outstanding...), Contradictions: append([]Contradiction{}, e.Contradictions...),
 				Age: e.Age, PregnancyRelated: e.PregnancyRelated, HistoryRevision: e.HistoryRevision,
 				ConfirmedAt: time.Now().UTC(), FactIDs: []string{}, AnswerIDs: []string{},
@@ -450,6 +468,7 @@ func (e *Encounter) applyAnswer(c Command, emergency string) error {
 	}
 	e.Answers[len(e.Answers)-1].QuestionSource = source
 	e.Answers[len(e.Answers)-1].ReviewIDs = append([]string(nil), deps...)
+	e.recordRedFlag(e.Answers[len(e.Answers)-1], emergency)
 	if topic := backgroundFor(question); kind == "reply" && topic != nil && a.Disposition == "none" {
 		e.recordFinding(FindingProposal{Evidence: Evidence{a.ID, a.Text}, Concept: topic.concept, Status: "explicitly_denied", Subject: "self"}, "patient_answer", "", false)
 	}
@@ -466,6 +485,11 @@ func (e *Encounter) applyAnswer(c Command, emergency string) error {
 	e.routeInterview()
 	if c.Action == "answer" && !e.Focused && source != nil && source.Key == "background" && a.Disposition != "provided" && e.Pending == "interview" {
 		e.askNextBackground()
+	}
+	// A plain answer to one of the app's own questions needs no model call
+	// before the app asks its next one.
+	if c.Action == "answer" && appQuestion(source) && a.Disposition != "provided" && e.Pending == "interview" {
+		_ = e.askNextRedFlag() || e.askNextGap()
 	}
 	return nil
 }

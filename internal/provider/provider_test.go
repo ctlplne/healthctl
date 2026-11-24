@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/ctlplne/healthctl/internal/clinical"
 	"github.com/ctlplne/healthctl/internal/contract"
 	"io"
 	"net/http"
@@ -457,5 +458,13 @@ func TestPromptMatchesValidator(t *testing.T) {
 	}
 	if strings.Contains(promptText, "Keep up to 8 choices") {
 		t.Fatal("hand-written limits would drift from the validator")
+	}
+	if !strings.Contains(instructions, clinical.IntentText()) {
+		t.Fatal("the prompt must list the application's question intents")
+	}
+	for _, k := range clinical.IntentKeys() {
+		if !strings.Contains(instructions, k) {
+			t.Fatalf("intent %s missing from the prompt", k)
+		}
 	}
 }

@@ -46,13 +46,13 @@ Status: `[x]` done with proof · `[ ]` open · `[h]` handoff, prepared with next
 - [x] **S8** Clinical sign-off metadata per policy version, shown in exports; a policy can't be called reviewed without a record. Files: `internal/clinical/policy_review.go`. Proof: `TestPolicyReviewRecord`, `TestProvenanceValidatorVersionPostgres` (exports carry `policyReview`).
 - [x] **S9** Safety metrics on the gold set run on every release; CI fails on any missed urgent case. Proof: the `safety` CI job runs `TestCorpus` (fails on any missed urgent sentence) and posts the metrics to the job summary.
 - [x] **V6** Separate output schemas per task with enums. Files: `internal/provider/schema.go`. Proof: `TestTaskSchemas`.
-- [x] **V7** Prompt limits generated from the validator's constants. Files: `internal/contract/contract.go`, `internal/provider/contracts/clinical-v8.txt`. Proof: `TestPromptMatchesValidator`.
+- [x] **V7** Prompt limits generated from the validator's constants. Files: `internal/contract/contract.go`, `internal/provider/contracts/clinical-v9.txt` (v8 when this item landed). Proof: `TestPromptMatchesValidator`.
 - [x] **V8** `validatorVersion` and an input hash recorded in provenance. Proof: `TestProvenanceValidatorVersionPostgres`, `TestPolicyReviewRecord` (stable input hash).
-- [ ] **V9** Question intents: the model picks an intent and its slots from an app catalog and the app writes the wording; free-text questions are a fallback with stricter checks. Proof: `TestQuestionIntents`.
-- [ ] **V10** Answer choices come from intent templates. Proof: `TestIntentChoices`.
-- [ ] **C1** App-owned completeness per pathway; only the app or the user ends the interview. Proof: `TestCompletenessGate`.
-- [ ] **C2** Red-flag questions for each active pathway are asked before review unless the user stops. Proof: `TestRedFlagCoverage`.
-- [ ] **C3** App-owned question budget and dedup; background questions only when relevant. Proof: `TestQuestionBudget`, scorecard question count.
+- [x] **V9** Question intents: the model picks an intent and its slots from an app catalog and the app writes the wording; free-text questions are a fallback with stricter checks (one question ending in "?", at most 300 bytes, no compound question, no repeat of an element the app already asked). Prompt `clinical-v9` lists the catalog, generated from code. Files: `internal/clinical/intents.go`, `question_source.go`, `model.go`, `internal/provider/schema.go`. Proof: `TestQuestionIntents`, `TestPromptMatchesValidator`.
+- [x] **V10** Answer choices come from intent templates; a free-text choice that names a symptom or urgent sign the user hasn't reported is dropped (`choice_introduces_symptom`). Files: `intents.go`, `sanitize.go`. Proof: `TestIntentChoices`.
+- [x] **C1** App-owned completeness per pathway (onset, course, severity, character, location, triggers, prior episodes, medicine changes). When the model proposes review, the app first asks what is still missing in its own words; if the user stops, the gaps stay listed and go into the confirmed summary, and the model can't remove them. Files: `intents.go`, `model.go`, `web/src/redflags.tsx`, `web/src/history.tsx`, `web/src/handoff.tsx`. Proof: `TestCompletenessGate`, `web/src/redflags.test.tsx`. `TestGuidedHistoryFromSparseConcernToCorrectedExport` now answers the app's two new questions before review; none of its assertions changed.
+- [x] **C2** Red-flag questions for each active pathway are asked before review unless the user stops; a yes raises the emergency warning without the model; any still due are asked on the review screen and recorded in the summary. Development content (policy `development-5`, pathways `adult-development-v4`). Files: `intents.go`, `encounter.go`, `web/src/redflags.tsx`. Proof: `TestRedFlagCoverage`, the property test invariant "a yes to a red flag always warns".
+- [x] **C3** App-owned question budget (12 model questions; then the question becomes an open item) and dedup by intent and by element; a background or app question already covered by the user's words or an earlier question is not asked. Files: `intents.go`, `model.go`. Proof: `TestQuestionBudget`; the regenerated scorecard records the question counts.
 - [ ] **M1** Explicit transition table with one transition helper and a generated diagram. Proof: `TestTransitionTable`.
 - [ ] **M2** One typed command per action; irrelevant fields are rejected. Proof: `TestTypedCommands`.
 - [ ] **M4** `Encounter` split into sub-records with a payload schema version and migrations. Proof: `TestPayloadMigration`.
@@ -88,8 +88,8 @@ Status: `[x]` done with proof · `[ ]` open · `[h]` handoff, prepared with next
 ## P2: maintainability and polish
 
 - [ ] **S10** Emergency-contact and locale settings validated at startup and shown in exports. Proof: `TestStartupConfig`.
-- [ ] **V11** Controlled vocabulary for concepts (plain term plus optional code). Proof: `TestConceptVocabulary`.
-- [ ] **C4** "Why this question?" written by the app. Proof: `TestQuestionReasonAppAuthored`.
+- [x] **V11** Controlled vocabulary for concepts (plain term plus an ICD-10-CM code where well established, development content); facts carry the term and code, and contradictions compare terms. Files: `internal/clinical/vocabulary.go`, `encounter.go`. Proof: `TestConceptVocabulary`.
+- [x] **C4** "Why this question?" written by the app: intent questions use the catalog reason, free-text and report questions a fixed app sentence, and the model's own note is kept separately and shown only as a labeled suggestion. Files: `question_source.go`, `web/src/encounter.tsx`. Proof: `TestQuestionReasonAppAuthored`.
 - [ ] **M5** No display-time "patient"→"user" rewriting; stored wording migrated. Proof: `TestStoredWordingMigrated`.
 - [ ] **M6** Special-case regexes folded into the context engine. Proof: corpus + `TestNoSpecialCaseRegexes`.
 - [ ] **O7** Deterministic evidence selection near the input budget. Proof: `TestEvidenceSelection`.

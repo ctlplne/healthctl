@@ -49,6 +49,14 @@ export type Brief = {
   priorities: string[]
   scopeReason: string
 }
+// notYetAsked lists the app's own safety questions and completeness gaps.
+export function notYetAsked(e: Encounter) {
+  return [
+    ...(e.redFlagsDue || []).map((r) => 'Safety question not answered · ' + r.question),
+    ...(e.gaps || []).map((g) => g.note),
+  ]
+}
+
 // CompactList never drops items silently: a shortened list says how many more
 // there are and where to find them.
 export function CompactList({ values, limit, more = 'in the provenance appendix' }: { values: string[]; limit?: number; more?: string }) {
@@ -271,6 +279,12 @@ export function BriefBody({
       )}
       <h3>Open questions</h3>
       <CompactList values={b.outstanding || []} limit={5} />
+      {!!(e.redFlagsDue?.length || e.gaps?.length) && (
+        <>
+          <h3>Not yet asked · listed by the app</h3>
+          <CompactList values={notYetAsked(e)} />
+        </>
+      )}
       <h3>Provisional AI hypotheses</h3>
       {b.assessment?.items?.length ? (
         <p>
@@ -679,7 +693,7 @@ export function Appendix({ e, name }: { e: Encounter; name: string }) {
         </aside>
       ))}
       <h2>Open questions and conflicts</h2>
-      <CompactList values={[...(e.contradictions || []).map((c) => 'Conflict · ' + c.concept), ...(e.outstanding || [])]} />
+      <CompactList values={[...(e.contradictions || []).map((c) => 'Conflict · ' + c.concept), ...(e.outstanding || []), ...notYetAsked(e)]} />
       <h2>Answer sources</h2>
       {e.answers.map((a) => (
         <section key={a.id}>

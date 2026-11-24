@@ -24,7 +24,7 @@ const (
 	NoticeVersion = "2026-11-v2"
 	Notice        = "Free public preview (beta). Use healthctl to organize your history and questions for a visit. AI suggestions are experimental and not reviewed by a healthcare professional. They can be wrong or miss serious illness. Ask a qualified healthcare professional to verify the findings before making care decisions. Do not use healthctl to diagnose yourself, change treatment, or decide it is safe to wait. For a possible emergency, seek local emergency care immediately."
 	ReviewStatus  = "not_clinician_reviewed"
-	PolicyVersion = "development-4"
+	PolicyVersion = "development-5"
 	DemoConcern   = "My nose is runny and I keep sneezing."
 )
 
@@ -155,6 +155,9 @@ type Fact struct {
 	Confirmed       bool   `json:"confirmed"`
 	Corrected       bool   `json:"corrected"`
 	Supersedes      string `json:"supersedes,omitempty"`
+	// Term and Code map the concept to the app vocabulary when it names one.
+	Term string `json:"term,omitempty"`
+	Code string `json:"code,omitempty"`
 }
 
 type Warning struct {
@@ -258,12 +261,17 @@ type Summary struct {
 	ConfirmedAt      time.Time       `json:"confirmedAt"`
 	FactIDs          []string        `json:"factIds"`
 	AnswerIDs        []string        `json:"answerIds"`
+	// Gaps and UnansweredRedFlags record what the app still expected when the
+	// history was confirmed.
+	Gaps               []Gap             `json:"gaps,omitempty"`
+	UnansweredRedFlags []RedFlagQuestion `json:"unansweredRedFlags,omitempty"`
 }
 
 type Turn struct {
 	QuestionSource  *QuestionSource `json:"questionSource,omitempty"`
 	Task            string          `json:"task"`
 	Question        string          `json:"question,omitempty"`
+	Asked           bool            `json:"asked,omitempty"`
 	Reason          string          `json:"reason"`
 	HistoryRevision int             `json:"historyRevision"`
 	Meta            ModelMeta       `json:"meta"`
@@ -285,6 +293,8 @@ type IntakeRevision struct {
 type Encounter struct {
 	AssessmentAcknowledgments []AssessmentAcknowledgment `json:"assessmentAcknowledgments,omitempty"`
 	SafetyChecks              []SafetyCheck              `json:"safetyChecks,omitempty"`
+	RedFlagsDue               []RedFlagQuestion          `json:"redFlagsDue,omitempty"`
+	Gaps                      []Gap                      `json:"gaps,omitempty"`
 
 	DemoPractice          bool                   `json:"demoPractice,omitempty"`
 	FocusedFrom           int                    `json:"focusedFrom,omitempty"`

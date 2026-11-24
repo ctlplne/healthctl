@@ -78,6 +78,8 @@ export type Fact = {
   historyRevision?: number
   id: string
   concept: string
+  term?: string
+  code?: string
   quote: string
   answerId: string
   status: string
@@ -138,6 +140,8 @@ export type SafetyCheck = {
 }
 export type Encounter = EncounterRow & {
   safetyChecks?: SafetyCheck[]
+  redFlagsDue?: import('./records').RedFlagQuestion[]
+  gaps?: import('./records').Gap[]
   returnSource?: string
   agenda?: string
   narrativeFirst?: boolean

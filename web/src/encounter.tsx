@@ -545,6 +545,11 @@ export function EncounterPage({
                               .find((t) => t.question === e.question)?.reason ||
                             'This question addresses missing information in your history.'}
                         </p>
+                        {e.questionSource?.modelNote && (
+                          <p className="model-note">
+                            <strong>Model’s note (a suggestion, not checked by the app):</strong> {e.questionSource.modelNote}
+                          </p>
+                        )}
                         {e.questionSource?.documentId && (
                           <button
                             className="text-button"

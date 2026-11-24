@@ -6,24 +6,25 @@ package contract
 import "fmt"
 
 const (
-	MaxChoices          = 8
-	MaxChoiceBytes      = 160
-	MaxOutstanding      = 16
-	MaxOutstandingBytes = 300
-	MaxFindings         = 32
-	MaxUrgent           = 8
-	MaxItems            = 8
-	MaxQuestionBytes    = 500
-	MaxReasonBytes      = 700
-	MaxConceptBytes     = 120
-	MaxTimeBytes        = 180
-	MaxValueBytes       = 120
-	MaxUnitsBytes       = 64
-	MaxItemNameBytes    = 120
-	MaxExplanationBytes = 800
-	MaxLimitations      = 8
-	MaxLimitationBytes  = 300
-	MaxReferences       = 12
+	MaxChoices           = 8
+	MaxChoiceBytes       = 160
+	MaxOutstanding       = 16
+	MaxOutstandingBytes  = 300
+	MaxFindings          = 32
+	MaxUrgent            = 8
+	MaxItems             = 8
+	MaxQuestionBytes     = 500
+	MaxFreeQuestionBytes = 300
+	MaxReasonBytes       = 700
+	MaxConceptBytes      = 120
+	MaxTimeBytes         = 180
+	MaxValueBytes        = 120
+	MaxUnitsBytes        = 64
+	MaxItemNameBytes     = 120
+	MaxExplanationBytes  = 800
+	MaxLimitations       = 8
+	MaxLimitationBytes   = 300
+	MaxReferences        = 12
 )
 
 // LimitsText is appended to the system prompt.

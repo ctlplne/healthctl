@@ -1,5 +1,6 @@
 import { detailLine } from './visitPrep'
 import { SafetyNet, safetyCheckDue } from './safetynet'
+import { Gaps, RedFlags } from './redflags'
 import { useState, useEffect } from 'react'
 import { Check, Pencil, Quote } from 'lucide-react'
 import type { ReactNode } from 'react'
@@ -442,6 +443,14 @@ export function History({
           <BulletList values={e.outstanding} />
         </section>
       )}
+      {!e.scopeReason && !e.pending && (
+        <RedFlags
+          due={e.redFlagsDue || []}
+          busy={busy}
+          onAnswer={(key, answer) => void onAction({ action: 'red_flag', category: key, status: answer })}
+        />
+      )}
+      {!e.scopeReason && <Gaps gaps={e.gaps || []} />}
       {!e.scopeReason && (
         <section className="panel confirm-panel">
           {e.provider.kind === 'chatgpt' && <PlanUsage />}

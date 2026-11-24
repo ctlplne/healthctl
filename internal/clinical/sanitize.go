@@ -49,6 +49,17 @@ func Sanitize(in Input, p Proposal) (Proposal, []Rejection, error) {
 			}
 			out.Choices = []string{}
 		}
+		if p.Action == "ask" && !strings.HasPrefix(strings.ToLower(strings.TrimSpace(p.Reason)), "[intent") {
+			kept := []string{}
+			for i, c := range out.Choices {
+				if choiceAllowed(in, c) {
+					kept = append(kept, c)
+				} else {
+					drop("choices", i, ReasonChoiceSymptom)
+				}
+			}
+			out.Choices = kept
+		}
 		for i, f := range p.Findings {
 			if len(out.Findings) >= contract.MaxFindings {
 				drop("findings", i, ReasonTooMany)

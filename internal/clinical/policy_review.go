@@ -25,6 +25,7 @@ var policyRecords = map[string]PolicyRecord{
 	"development-2": {Version: "development-2", Status: "development", Note: notReviewed},
 	"development-3": {Version: "development-3", Status: "development", Note: notReviewed},
 	"development-4": {Version: "development-4", Status: "development", Note: notReviewed},
+	"development-5": {Version: "development-5", Status: "development", Note: notReviewed},
 }
 
 // PolicyReview returns the review record for a policy version.

@@ -9,17 +9,18 @@ import (
 	"slices"
 	"unicode/utf8"
 
+	"github.com/ctlplne/healthctl/internal/clinical"
 	"github.com/ctlplne/healthctl/internal/contract"
 )
 
 //go:embed contracts/proposal-v1.schema.json
 var proposalSchema json.RawMessage
 
-//go:embed contracts/clinical-v8.txt
+//go:embed contracts/clinical-v9.txt
 var promptText string
 
 // instructions states the contract limits from the same constants the validator uses.
-var instructions = promptText + "\n" + contract.LimitsText()
+var instructions = promptText + "\n" + contract.LimitsText() + "\n" + clinical.IntentText()
 
 //go:embed contracts/repair-v1.txt
 var repairInstructions string

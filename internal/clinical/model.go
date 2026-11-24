@@ -49,16 +49,23 @@ func (e *Encounter) Accept(task string, p Proposal, meta ModelMeta, emergency st
 	for i := range p.Items {
 		p.Items[i].Limitations = userLabels(p.Items[i].Limitations)
 	}
-	qsource, err := questionSource(in, p)
+	r, err := questionSource(in, p)
 	if err != nil {
 		return err
 	}
+	qsource := r.source
 	if qsource != nil {
+		if r.intent != "" {
+			p.Question, p.Choices = r.question, r.choices
+		}
 		p.Reason = qsource.Reason
-		if len(e.Pathways) > 0 {
+		if len(e.Pathways) > 0 && qsource.Pathway == "" {
 			qsource.Pathway = e.Pathways[0].ID
 		}
 	}
+	// The app owns the question budget. Past it, a proposed question becomes an
+	// open item and the app moves on to its own questions or the review.
+	overBudget := task == "interview" && p.Action == "ask" && e.modelQuestionsAsked() >= maxModelQuestions
 	e.Pending = ""
 	e.Failure = ""
 	e.FailedTask = ""
@@ -137,7 +144,8 @@ func (e *Encounter) Accept(task string, p Proposal, meta ModelMeta, emergency st
 			e.ReviewExtraction = false
 		case e.hasWarning():
 			e.State = "interrupted_for_safety"
-		case p.Action == "ask" && len(e.Answers) < 64:
+		case p.Action == "ask" && len(e.Answers) < 64 && !overBudget:
+			e.Turns[len(e.Turns)-1].Asked = true
 			e.State = "interviewing"
 			e.Question = p.Question
 			e.QuestionReviewIDs = inputReviews(in)
@@ -152,9 +160,12 @@ func (e *Encounter) Accept(task string, p Proposal, meta ModelMeta, emergency st
 					}
 				}
 			}
-		case p.Action == "review" && !e.Focused && e.ReturnSource == "" && len(e.Answers) < 64 && (e.askOpeningDetail(in) || e.askNextBackground()):
+		case (p.Action == "review" || overBudget) && !e.Focused && e.ReturnSource == "" && len(e.Answers) < 64 && (e.askOpeningDetail(in) || e.askNextBackground() || e.askNextRedFlag() || e.askNextGap()):
 		default:
 			e.State = "history_review"
+		}
+		if overBudget && !contains(e.Outstanding, p.Question) {
+			e.Outstanding = append(e.Outstanding, p.Question)
 		}
 	}
 	e.touch()
@@ -447,12 +458,26 @@ func validateUrgent(in Input, ev Evidence) error {
 	return nil
 }
 
-func questionIssue(in Input, p Proposal) error {
+func questionIssue(in Input, p Proposal, r resolved) error {
 	if !validText(p.Question, contract.MaxQuestionBytes) || !validText(p.Reason, contract.MaxReasonBytes) {
 		return reasonErr(ReasonQuestion, "A question must explain which uncertainty it addresses")
 	}
 	if strings.Count(p.Question, "?") > 1 {
 		return reasonErr(ReasonMultipleQuestions, "Ask one focused question per turn")
+	}
+	if r.intent == "" {
+		// A free-text question is a fallback with stricter checks.
+		if err := freeTextIssue(p.Question); err != nil {
+			return err
+		}
+		for _, c := range p.Choices {
+			if !choiceAllowed(in, c) {
+				return reasonErr(ReasonChoiceSymptom, "A choice names a symptom the user hasn't reported")
+			}
+		}
+		if el := questionElement(p.Question); el != "" && answeredElement(in.Answers, el) {
+			return reasonErr(ReasonAlreadyAnswered, "The app already asked about that")
+		}
 	}
 	topic := backgroundFor(p.Question)
 	for _, a := range in.Answers {
@@ -463,12 +488,31 @@ func questionIssue(in Input, p Proposal) error {
 	return nil
 }
 
+// answeredElement reports whether one of the app's own questions about this
+// element was already answered.
+func answeredElement(answers []Answer, element string) bool {
+	for _, a := range answers {
+		if !a.Active || a.QuestionSource == nil {
+			continue
+		}
+		k := a.QuestionSource.Key
+		if strings.HasPrefix(k, "intent:") && intentCatalog[strings.TrimPrefix(k, "intent:")].element == element || k == "symptom_story" && questionElement(a.Question) == element {
+			return true
+		}
+	}
+	return false
+}
+
 // Validate is the strict gate before a proposal touches the aggregate. Every
 // item must be valid. Sanitize drops invalid items first, so a valid remainder
 // can still be accepted.
 func Validate(in Input, p Proposal) error {
-	if _, err := questionSource(in, p); err != nil {
+	r, err := questionSource(in, p)
+	if err != nil {
 		return err
+	}
+	if r.intent != "" {
+		p.Question, p.Choices = r.question, r.choices
 	}
 	if !listValid(p.Outstanding, contract.MaxOutstanding, contract.MaxOutstandingBytes) || !listValid(p.Choices, contract.MaxChoices, contract.MaxChoiceBytes) || badOutput(p.Reason, contract.MaxReasonBytes) || badOutput(p.Question, contract.MaxQuestionBytes) || len(p.Findings) > contract.MaxFindings || len(p.UrgentEvidence) > contract.MaxUrgent || len(p.Items) > contract.MaxItems {
 		return reasonErr(ReasonAdvice, "Model output exceeds the permitted content or size")
@@ -479,7 +523,7 @@ func Validate(in Input, p Proposal) error {
 			return reasonErr(ReasonInvalidAction, "Invalid interview action")
 		}
 		if p.Action == "ask" {
-			if err := questionIssue(in, p); err != nil {
+			if err := questionIssue(in, p, r); err != nil {
 				return err
 			}
 		} else if p.Question != "" || len(p.Choices) > 0 {

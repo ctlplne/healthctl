@@ -49,11 +49,15 @@ const (
 	ReasonAlteredHistory         = "assessment_alters_history"
 	ReasonEmptyDifferential      = "empty_differential"
 	ReasonUnknownTask            = "unknown_task"
+	ReasonUnknownIntent          = "unknown_intent"
+	ReasonChoiceSymptom          = "choice_introduces_symptom"
 )
 
 // reasonHints are the fixed explanations sent back with a repair request.
 var reasonHints = map[string]string{
 	ReasonQuoteNotFound:          "quote a contiguous span that exists in the cited active answer",
+	ReasonUnknownIntent:          "use one intent from the application catalog, with a topic only where the intent needs one",
+	ReasonChoiceSymptom:          "remove choices that name a symptom or urgent sign the user has not reported",
 	ReasonQuoteAmbiguous:         "quote enough surrounding words to identify one occurrence",
 	ReasonSuperseded:             "do not restore a finding the user corrected",
 	ReasonAttributes:             "use the allowed status and subject values and the field length limits",

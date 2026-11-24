@@ -78,13 +78,23 @@ func TestGuidedHistoryFromSparseConcernToCorrectedExport(t *testing.T) {
 			medication = e.Answers[len(e.Answers)-1]
 		}
 	}
+	firstBackground := slices.IndexFunc(e.Answers, func(a Answer) bool { return a.ID == medication.ID })
+	turn(t, e, Proposal{Action: "review"})
+	// Before review the app asks its own red-flag question for dizziness and the
+	// completeness question the history still lacks (what it feels like).
+	for _, reply := range []string{"No", "Not sure"} {
+		if e.State != "interviewing" || !appQuestion(e.QuestionSource) || e.Pending != "" {
+			t.Fatalf("expected the app's own question before review, got %q (%s)", e.Question, e.State)
+		}
+		apply(t, e, Command{Action: "answer", Text: reply})
+	}
 	turn(t, e, Proposal{Action: "review"})
 	if e.State != "history_review" || len(e.Facts) != 1 || e.Facts[0].Status != "explicitly_denied" || e.Facts[0].Concept != backgroundTopics[0].concept {
 		t.Fatalf("unsafe or missing background facts: %+v", e.Facts)
 	}
 	r := e.Report()
 	for i, status := range []string{"none", "unknown", "not_applicable", "skipped"} {
-		if got := r.Answers[len(r.Answers)-4+i]; got.Disposition != status || got.Question != backgroundTopics[i].question {
+		if got := r.Answers[firstBackground+i]; got.Disposition != status || got.Question != backgroundTopics[i].question {
 			t.Fatalf("export %d: %+v", i, got)
 		}
 	}

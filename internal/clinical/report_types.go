@@ -81,6 +81,10 @@ type QuestionSource struct {
 	Reason        string `json:"reason"`
 	Pathway       string `json:"pathway,omitempty"`
 	Key           string `json:"key,omitempty"`
+	Topic         string `json:"topic,omitempty"`
+	// ModelNote keeps the model's own note about a question it proposed. The
+	// app writes Reason; the note is shown only as a labeled model suggestion.
+	ModelNote string `json:"modelNote,omitempty"`
 }
 
 type FactOrigin struct {

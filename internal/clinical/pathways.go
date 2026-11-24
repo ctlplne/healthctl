@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-const PathwayVersion = "adult-development-v3"
+const PathwayVersion = "adult-development-v4"
 
 type pathwayDefinition struct {
 	id      string

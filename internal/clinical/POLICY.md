@@ -31,3 +31,13 @@ Version `development-4` replaces the earlier clause-wide checks with one context
 - **Every input.** Answers, corrections, diary saves, witness accounts, visual notes, report passages and review notes, dictation drafts, return-visit clarifications, reconciliation notes and outcomes all pass through the same screen.
 
 The regression corpus in `testdata/corpus` (650 synthetic sentences) passes with no missed urgent sentence. Held-out sets written after the rules show the limits of keyword rules: before tuning, the rules missed 24 of 34 urgent sentences in the first held-out set and 20 of 27 in the second. Silence from these rules never means a person can wait. The explicit emergency question and the model's flags remain essential, and clinical review is still required.
+
+## Development policy v5: red-flag questions, completeness and question intents
+
+Version `development-5` and pathway version `adult-development-v4` move more of the interview under the application's control. All of this is development content. It has not been clinically reviewed.
+
+- **Red-flag questions.** For each active pathway the app asks its own safety questions before the history review: for example "Have you coughed up any blood?" for respiratory symptoms, or "Did this headache come on suddenly and severely, reaching its worst within about a minute?" for a headache. A yes raises the emergency warning without asking the model. "Not sure" is listed for the clinician. Any red flag still unanswered appears on the review screen and in the confirmed summary.
+- **Completeness.** Each pathway lists what the app expects, such as onset, course, severity, character, location, triggers, prior episodes and medicine changes. The user's own words, or an earlier question, can already cover an element. The app asks the rest in its own wording before review. If the user stops early, the gaps stay listed in the app's words; the model cannot remove them.
+- **Question intents.** The model names an intent from the application catalog (`intents.go`) and the app writes the question, the choices and the "Why this question?" text. A free-text question is a fallback with stricter checks, and its choices may not name a symptom or urgent sign the user hasn't reported.
+- **Question budget.** The model may ask at most 12 questions in one encounter. After that its proposed question becomes an open item.
+- **Concept vocabulary.** Findings are mapped to a plain term with an ICD-10-CM code where one is well established (`vocabulary.go`, `development-1`), so contradiction checks compare synonyms as one finding.
