@@ -50,7 +50,8 @@ export function Diary({ onClose, onVisit }: { onClose: () => void; onVisit?: (id
     [error, setError] = useState(''),
     [key, setKey] = useState(() => crypto.randomUUID()),
     [confirm, setConfirm] = useState(''),
-    [warning, setWarning] = useState<ScreenResult>()
+    [warning, setWarning] = useState<ScreenResult>(),
+    [urgentNow, setUrgentNow] = useState(false)
   useEffect(() => {
     api<DiaryEntry[]>('/diary')
       .then(setItems)
@@ -77,6 +78,7 @@ export function Diary({ onClose, onVisit }: { onClose: () => void; onVisit?: (id
               onset: new Date(start).toISOString(),
               end: end ? new Date(end).toISOString() : '',
               approximate: approx,
+              urgentNow,
             })
             setItems((old) => [item, ...old.filter((x) => x.id !== item.id)])
             setWarning(item.warning)
@@ -84,6 +86,7 @@ export function Diary({ onClose, onVisit }: { onClose: () => void; onVisit?: (id
             setStart(localNow())
             setEnd('')
             setApprox(false)
+            setUrgentNow(false)
             setKey(crypto.randomUUID())
           } catch (e) {
             setError(e instanceof Error ? e.message : 'Could not save episode.')
@@ -127,6 +130,14 @@ export function Diary({ onClose, onVisit }: { onClose: () => void; onVisit?: (id
             onChange={(ev) => setApprox(ev.target.checked)}
           />{' '}
           These times are approximate
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={urgentNow}
+            onChange={(ev) => setUrgentNow(ev.target.checked)}
+          />{' '}
+          This is happening now and I think I may be having a medical emergency
         </label>
         <div className="actions">
           <button className="primary" disabled={busy}>

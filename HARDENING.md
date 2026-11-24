@@ -42,7 +42,7 @@ Status: `[x]` done with proof · `[ ]` open · `[h]` handoff, prepared with next
 ## P1: reliability and trust
 
 - [x] **S6** Two warning tiers ("Seek emergency care" and "Get this checked promptly") with app-authored text, both kept until the source is corrected. Proof: `TestWarningTiers`, `TestModelUrgentFlagNeverFailsTurn`; the UI, report and brief label check warnings separately.
-- [ ] **S7** App-owned safety-net questions before confirming the history, at the start of a return visit, and for a diary episode happening now. Proof: `TestSafetyNetQuestions`.
+- [x] **S7** App-owned safety-net questions before confirming the history, at the start of a return visit, and for a diary episode happening now. Files: `internal/clinical/safetynet.go`, `web/src/safetynet.tsx`, `web/src/history.tsx`, `web/src/encounter.tsx`, `web/src/diary.tsx`. Proof: `TestSafetyNetQuestions`, `web/src/safetynet.test.tsx`, browser journeys answer it before confirming.
 - [ ] **S8** Clinical sign-off metadata per policy version, shown in exports; a policy can't be called reviewed without a record. Proof: `TestPolicyReviewRecord`.
 - [x] **S9** Safety metrics on the gold set run on every release; CI fails on any missed urgent case. Proof: the `safety` CI job runs `TestCorpus` (fails on any missed urgent sentence) and posts the metrics to the job summary.
 - [ ] **V6** Separate output schemas per task with enums. Proof: `TestTaskSchemas`.

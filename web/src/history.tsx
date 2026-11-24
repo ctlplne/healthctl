@@ -1,4 +1,5 @@
 import { detailLine } from './visitPrep'
+import { SafetyNet, safetyCheckDue } from './safetynet'
 import { useState, useEffect } from 'react'
 import { Check, Pencil, Quote } from 'lucide-react'
 import type { ReactNode } from 'react'
@@ -444,7 +445,13 @@ export function History({
       {!e.scopeReason && (
         <section className="panel confirm-panel">
           {e.provider.kind === 'chatgpt' && <PlanUsage />}
-          {e.confirmedRevision !== e.historyRevision ? (
+          {e.confirmedRevision !== e.historyRevision && !e.pending && safetyCheckDue(e, 'review') ? (
+            <SafetyNet
+              point="review"
+              busy={busy}
+              onAnswer={(answer) => void onAction({ action: 'safety_check', category: 'review', status: answer })}
+            />
+          ) : e.confirmedRevision !== e.historyRevision ? (
             <>
               <h2>Does this reflect what you reported?</h2>
               <p>

@@ -130,7 +130,14 @@ export type EncounterRow = {
   provider: Provider
   demo?: boolean
 }
+export type SafetyCheck = {
+  historyRevision: number
+  point: 'review' | 'return'
+  answer: 'none' | 'changed' | 'emergency'
+  at: string
+}
 export type Encounter = EncounterRow & {
+  safetyChecks?: SafetyCheck[]
   returnSource?: string
   agenda?: string
   narrativeFirst?: boolean

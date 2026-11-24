@@ -2260,3 +2260,15 @@ pre {
 .safety-fallback .callout {
   margin-bottom: 0.75rem;
 }
+.safety-net {
+  border: 1px solid #e9c2ab;
+  background: #fff8f3;
+}
+.safety-net h2 {
+  font-size: 1.1rem;
+  margin: 0 0 0.4rem;
+}
+.primary.danger {
+  background: #9a3412;
+  border-color: #9a3412;
+}

@@ -204,6 +204,13 @@ func (e *Encounter) Apply(c Command, emergency string) error {
 		e.changed()
 		e.appendAnswer("visual_observation", "What did you notice yourself? ("+c.Category+")", strings.TrimSpace(c.Text), "", emergency)
 		e.routeInterview()
+	case "safety_check":
+		if e.Pending != "" {
+			return errors.New("Finish or cancel the current request before answering the safety question")
+		}
+		if err := e.safetyCheck(c, emergency); err != nil {
+			return err
+		}
 	case "set_episode":
 		if e.Pending != "" {
 			return errors.New("Finish or cancel the current request before changing the episode")

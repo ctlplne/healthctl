@@ -1,4 +1,5 @@
 import { ObservationPhotos } from './observationPhotos'
+import { SafetyNet, safetyCheckDue } from './safetynet'
 import { useQuestionDraft } from './draft'
 import { VisitPrep } from './visitPrep'
 import { ReadBack, VoiceInput } from './voice'
@@ -524,6 +525,13 @@ export function EncounterPage({
                   </>
                 ) : (
                   <>
+                    {e.returnSource && safetyCheckDue(e, 'return') && (
+                      <SafetyNet
+                        point="return"
+                        busy={busy}
+                        onAnswer={(answer) => void act({ action: 'safety_check', category: 'return', status: answer })}
+                      />
+                    )}
                     <h2 aria-live="polite" aria-atomic="true">
                       {e.question || 'Add to your history'}
                     </h2>

@@ -162,8 +162,14 @@ async function finishBackground(page: Page) {
     await page.getByRole('button', { name: 'Save answer' }).click()
   }
 }
-async function reviewAndAssess(page: Page) {
+// The app asks its own safety question before a history can be confirmed.
+async function confirmHistory(page: Page) {
+  await expect(page.getByRole('heading', { name: 'A quick safety check' })).toBeVisible()
+  await page.getByRole('button', { name: 'No, nothing new or worse' }).click()
   await page.getByRole('button', { name: 'Confirm my history' }).click()
+}
+async function reviewAndAssess(page: Page) {
+  await confirmHistory(page)
   await acknowledgeAndAssess(page)
 }
 async function acknowledgeAndAssess(page: Page) {
@@ -336,7 +342,7 @@ test('Urgent screen interrupts the interview and persists in print and JSON afte
     path: info.outputPath('guidance-and-urgent-warning.png'),
   })
   await page.getByRole('button', { name: 'Review my history' }).click()
-  await page.getByRole('button', { name: 'Confirm my history' }).click()
+  await confirmHistory(page)
   await expect(warning).toBeVisible()
   await expect(page.getByRole('checkbox', { name: /I understand these limits/ })).not.toBeChecked()
   await page.locator('.assessment-request').screenshot({ path: info.outputPath('assessment-choice.png') })
@@ -771,7 +777,7 @@ test('Returning user reviews a dated medication and groups two encounters into o
     .fill('I previously took a fictional study medication.')
   await page.getByLabel('Finding', { exact: true }).fill(medication)
   await page.getByRole('button', { name: 'Save correction' }).click()
-  await page.getByRole('button', { name: 'Confirm my history' }).click()
+  await confirmHistory(page)
   await page.getByRole('button', { name: 'Reconcile earlier history' }).click()
   await page
     .getByText('Group this visit into an episode', { exact: true })
@@ -817,6 +823,7 @@ test('Returning user reviews a dated medication and groups two encounters into o
   const note = 'I am no longer taking the fictional study medication.'
   await finding.getByLabel('How does this apply now?').fill(note)
   await finding.getByRole('button', { name: 'Add to current history' }).click()
+  await page.getByRole('button', { name: 'No, nothing new or worse' }).click()
   await expect(
     page.getByRole('button', { name: 'Confirm my history' }),
   ).toBeEnabled()
@@ -1231,7 +1238,7 @@ test('A slow model leaves intake immediately and completes the same saved encoun
     (await (await page.request.get('/api/encounters/' + id)).json()).turns,
   ).toHaveLength(1)
   await page.getByRole('button', { name: 'History review', exact: true }).click()
-  await page.getByRole('button', { name: 'Confirm my history' }).click()
+  await confirmHistory(page)
   await page.route('**/api/encounters/' + id, route => route.abort('failed'), { times: 1 })
   await acknowledgeAndAssess(page)
   await expect(page.getByRole('status').filter({ hasText: 'Preparing your provisional estimate' })).toBeVisible()

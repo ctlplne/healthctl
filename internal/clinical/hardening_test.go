@@ -201,3 +201,32 @@ func TestWarningTiers(t *testing.T) {
 		t.Fatal("a current event must raise an interrupting warning")
 	}
 }
+
+func TestSafetyNetQuestions(t *testing.T) {
+	e := intake(t, "My nose is runny", false)
+	turn(t, e, Proposal{Action: "review"})
+	if !e.SafetyCheckDue("review") {
+		t.Fatal("the safety question must be due before confirming")
+	}
+	apply(t, e, Command{Action: "safety_check", Category: "review", Status: "none"})
+	if e.SafetyCheckDue("review") || e.hasAnyWarning() {
+		t.Fatal("a no answer is recorded without a warning")
+	}
+	apply(t, e, Command{Action: "safety_check", Category: "review", Status: "changed"})
+	if e.State != "interviewing" || e.QuestionSource == nil || e.QuestionSource.Key != "safety_net" || !e.hasAnyWarning() || e.hasWarning() {
+		t.Fatalf("a change must ask what changed and raise a check warning: %s %+v", e.State, e.Warnings)
+	}
+	apply(t, e, Command{Action: "answer", Text: "Now I can't breathe."})
+	if !e.hasWarning() {
+		t.Fatal("the described change must be screened")
+	}
+	urgent := intake(t, "My nose is runny", false)
+	turn(t, urgent, Proposal{Action: "review"})
+	apply(t, urgent, Command{Action: "safety_check", Category: "review", Status: "emergency"})
+	if !urgent.hasWarning() || urgent.State != "interrupted_for_safety" {
+		t.Fatal("an emergency answer must interrupt with the explicit warning")
+	}
+	if res, ok := ScreenDiary(DiaryEntry{Text: "It happened again.", UrgentNow: true}, ""); !ok || res.Level != warningEmergency {
+		t.Fatal("a diary emergency answer must warn")
+	}
+}

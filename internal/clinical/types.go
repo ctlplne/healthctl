@@ -282,6 +282,7 @@ type IntakeRevision struct {
 
 type Encounter struct {
 	AssessmentAcknowledgments []AssessmentAcknowledgment `json:"assessmentAcknowledgments,omitempty"`
+	SafetyChecks              []SafetyCheck              `json:"safetyChecks,omitempty"`
 
 	DemoPractice          bool                   `json:"demoPractice,omitempty"`
 	FocusedFrom           int                    `json:"focusedFrom,omitempty"`

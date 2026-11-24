@@ -455,6 +455,9 @@ type DiaryEntry struct {
 	End         string    `json:"end,omitempty"`
 	Approximate bool      `json:"approximate"`
 	Recorded    time.Time `json:"recordedAt"`
+	// UrgentNow is the user's answer to "Do you think you may be having a
+	// medical emergency right now?" when the episode is happening now.
+	UrgentNow bool `json:"urgentNow,omitempty"`
 	// Warning is set only by the application's safety screen.
 	Warning *ScreenResult `json:"warning,omitempty"`
 }
@@ -462,6 +465,9 @@ type DiaryEntry struct {
 // ScreenDiary runs the safety screen on a diary entry when it is saved. An
 // episode that started more than two days ago asks for a prompt check.
 func ScreenDiary(d DiaryEntry, emergency string) (ScreenResult, bool) {
+	if d.UrgentNow {
+		return ScreenResult{Level: warningEmergency, Quote: urgentYes, Message: warningMessage("explicit_screen", warningEmergency, emergency), PolicyVersion: PolicyVersion}, true
+	}
 	res, ok := ScreenText(d.Text, emergency)
 	if !ok {
 		return res, false
