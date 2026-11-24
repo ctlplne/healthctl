@@ -92,7 +92,12 @@ def postgres_tests():
         passed = len(re.findall(r"^--- PASS: \S*Postgres", out.stdout, re.M))
         skipped = len(re.findall(r"^--- SKIP: \S*Postgres", out.stdout, re.M))
         ok = out.returncode == 0 and passed > 0 and skipped == 0
-        return ok, f"{passed} PostgreSQL tests passed, {skipped} skipped" if ok else tail(out.stdout + out.stderr, 25)
+        if ok:
+            return ok, f"{passed} PostgreSQL tests passed, {skipped} skipped"
+        # Show the failing tests and their messages, not just the end of the log.
+        lines = (out.stdout + out.stderr).splitlines()
+        failing = [l for i, l in enumerate(lines) if "--- FAIL" in l or re.search(r"_test\.go:\d+:", l) or "panic:" in l or "DATA RACE" in l]
+        return ok, "\n".join(failing[:40]) or tail(out.stdout + out.stderr, 25)
     finally:
         run(["docker", "rm", "-f", name])
 

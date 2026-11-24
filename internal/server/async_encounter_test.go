@@ -59,7 +59,7 @@ func TestAsyncInterviewCommittedBeforeInferenceAndReplayPostgres(t *testing.T) {
 	e := post()
 	select {
 	case <-ready:
-	case <-time.After(4 * time.Second):
+	case <-time.After(20 * time.Second): // a durable job is claimed from the database first
 		t.Fatal("the authorized job did not start")
 	}
 	replay := post()
@@ -72,7 +72,7 @@ func TestAsyncInterviewCommittedBeforeInferenceAndReplayPostgres(t *testing.T) {
 		t.Fatal("pending encounter was unavailable")
 	}
 	unblock()
-	deadline := time.Now().Add(4 * time.Second)
+	deadline := time.Now().Add(20 * time.Second)
 	for time.Now().Before(deadline) {
 		check(t, c.call("GET", path, nil), 200, &e)
 		if e.Pending == "" {

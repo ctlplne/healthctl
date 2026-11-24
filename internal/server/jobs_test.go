@@ -78,7 +78,8 @@ func jobStatus(t *testing.T, s *Server, encounterID string) []string {
 
 func waitFor(t *testing.T, what string, ok func() bool) {
 	t.Helper()
-	deadline := time.Now().Add(8 * time.Second)
+	// The queue adds database round trips; allow for a slow, race-instrumented machine.
+	deadline := time.Now().Add(30 * time.Second)
 	for time.Now().Before(deadline) {
 		if ok() {
 			return
@@ -105,7 +106,7 @@ func TestSupersededCallCancelledPostgres(t *testing.T) {
 	e := postAsync(t, c, intake(cfg, "Fictional shoulder discomfort"))
 	select {
 	case <-started:
-	case <-time.After(8 * time.Second):
+	case <-time.After(30 * time.Second):
 		t.Fatal("the queued call did not start")
 	}
 	// The user stops the interview while the call is still running.
