@@ -28,11 +28,16 @@ func (m Remote) Reference() clinical.ProviderRef {
 func (m Remote) Propose(ctx context.Context, in clinical.Input) (clinical.Proposal, clinical.ModelMeta, error) {
 	var p clinical.Proposal
 	_, meta, err := m.Client.Generate(ctx, m.Config, in.Task, in, func(raw []byte) error {
-		p = clinical.Proposal{}
-		if err := json.Unmarshal(raw, &p); err != nil {
+		var candidate clinical.Proposal
+		if err := json.Unmarshal(raw, &candidate); err != nil {
 			return err
 		}
-		return clinical.Validate(in, p)
+		clean, _, err := clinical.Sanitize(in, candidate)
+		if err != nil {
+			return err
+		}
+		p = clean
+		return nil
 	})
 	return p, clinical.ModelMeta{Provider: meta.Provider, Endpoint: meta.Endpoint, RequestedModel: meta.RequestedModel, ReturnedModel: meta.ReturnedModel, PromptVersion: meta.PromptVersion, SchemaVersion: meta.SchemaVersion, AppVersion: meta.AppVersion, Settings: meta.Settings}, err
 }

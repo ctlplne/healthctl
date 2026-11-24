@@ -160,7 +160,7 @@ func (s *Server) refreshEvidence(ctx context.Context, owner int, e *clinical.Enc
 		}
 	}
 }
-func (s *Server) recordModelUsage(parent context.Context, owner int, cfg provider.Config, m provider.Metadata, callErr error) {
+func (s *Server) recordModelUsage(parent context.Context, owner int, cfg provider.Config, m provider.Metadata, callErr error, rejected []clinical.Rejection) {
 	ctx, cancel := context.WithTimeout(context.WithoutCancel(parent), 3*time.Second)
 	defer cancel()
 	status := "returned"
@@ -174,8 +174,9 @@ func (s *Server) recordModelUsage(parent context.Context, owner int, cfg provide
 		s.Logger.Printf("event=chatgpt_request_failed http=%d shape=%s code=%s param=%s request_id=%s", planErr.HTTPStatus, planErr.BodyShape, planErr.Code, planErr.Param, planErr.RequestID)
 	}
 	u := m.Usage
-	_, err := s.Store.DB.ExecContext(ctx, `INSERT INTO model_operations(owner_id,provider,model,returned_model,destination_hash,status,requests,retries,input_tokens,output_tokens,usage_complete,duration_ms,estimated_usd)
-		VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`, owner, cfg.Kind, cfg.Model, m.ReturnedModel, evidence.Hash([]byte(cfg.Destination())), status, u.Requests, u.Retries, u.InputTokens, u.OutputTokens, u.Requests > 0 && u.Requests == u.Reported, u.DurationMS, u.EstimatedUSD)
+	counts, _ := json.Marshal(clinical.RejectionCounts(rejected))
+	_, err := s.Store.DB.ExecContext(ctx, `INSERT INTO model_operations(owner_id,provider,model,returned_model,destination_hash,status,requests,retries,input_tokens,output_tokens,usage_complete,duration_ms,estimated_usd,validator_version,rejected_items,failure_reason)
+		VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)`, owner, cfg.Kind, cfg.Model, m.ReturnedModel, evidence.Hash([]byte(cfg.Destination())), status, u.Requests, u.Retries, u.InputTokens, u.OutputTokens, u.Requests > 0 && u.Requests == u.Reported, u.DurationMS, u.EstimatedUSD, clinical.ValidatorVersion, counts, m.FailureReason)
 	if err != nil && s.Logger != nil {
 		s.Logger.Print("event=usage_record_unavailable")
 	}
@@ -231,7 +232,48 @@ func (s *Server) qualification(w http.ResponseWriter, r *http.Request, owner int
 		}
 		return n.Float64
 	}
+	validation, err := s.validationSummary(ctx, owner)
+	if err != nil {
+		return err
+	}
 	rate := provider.ReadRate(cfg)
-	emit(w, 200, object{"configurations": configs, "budget": provider.Budgets(), "rates": object{"inputUSDPerMillion": rate.Input, "outputUSDPerMillion": rate.Output}, "usage": object{"operations": operations, "failures": failed, "requests": requests, "retries": retries, "inputTokens": inputs, "outputTokens": outputs, "incompleteUsageOperations": incomplete, "unpricedOperations": unpriced, "pricedSubtotalUSD": value(cost), "p50LatencyMs": value(p50), "p95LatencyMs": value(p95)}})
+	emit(w, 200, object{"configurations": configs, "budget": provider.Budgets(), "rates": object{"inputUSDPerMillion": rate.Input, "outputUSDPerMillion": rate.Output}, "usage": object{"operations": operations, "failures": failed, "requests": requests, "retries": retries, "inputTokens": inputs, "outputTokens": outputs, "incompleteUsageOperations": incomplete, "unpricedOperations": unpriced, "pricedSubtotalUSD": value(cost), "p50LatencyMs": value(p50), "p95LatencyMs": value(p95)}, "validation": validation})
 	return nil
+}
+
+// validationSummary counts dropped items and failed calls by reason code. The
+// codes are fixed application strings, so they reveal nothing about a history.
+func (s *Server) validationSummary(ctx context.Context, owner int) (object, error) {
+	dropped := object{}
+	rows, err := s.Store.DB.QueryContext(ctx, `SELECT key, sum(value::int) FROM model_operations, jsonb_each_text(rejected_items) WHERE owner_id=$1 GROUP BY key ORDER BY key`, owner)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var code string
+		var n int64
+		if err := rows.Scan(&code, &n); err != nil {
+			return nil, err
+		}
+		dropped[code] = n
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	failures := object{}
+	rows2, err := s.Store.DB.QueryContext(ctx, `SELECT failure_reason, count(*) FROM model_operations WHERE owner_id=$1 AND status='failed' AND failure_reason<>'' GROUP BY failure_reason ORDER BY failure_reason`, owner)
+	if err != nil {
+		return nil, err
+	}
+	defer rows2.Close()
+	for rows2.Next() {
+		var code string
+		var n int64
+		if err := rows2.Scan(&code, &n); err != nil {
+			return nil, err
+		}
+		failures[code] = n
+	}
+	return object{"validatorVersion": clinical.ValidatorVersion, "droppedItems": dropped, "failedCalls": failures}, rows2.Err()
 }

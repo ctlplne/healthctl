@@ -58,7 +58,7 @@ func TestLibraryLifecycleAndUsagePostgres(t *testing.T) {
 		t.Fatal("withdrawn source returned to new search")
 	}
 	m := provider.Metadata{Usage: provider.Usage{Requests: 2, Reported: 1, Retries: 1, InputTokens: 10, OutputTokens: 5, DurationMS: 123}}
-	s.recordModelUsage(t.Context(), 1, provider.Config{Kind: "openai", Model: "fixture"}, m, nil)
+	s.recordModelUsage(t.Context(), 1, provider.Config{Kind: "openai", Model: "fixture"}, m, nil, nil)
 	var metrics struct {
 		Usage struct{ Operations, Requests, IncompleteUsageOperations int }
 	}

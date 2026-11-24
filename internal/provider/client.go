@@ -71,6 +71,9 @@ func (c *Client) run(parent context.Context, cfg Config, p call, validate func([
 	defer func() {
 		usage.finish(started, cfg)
 		meta.Usage = usage
+		if resultErr != nil {
+			meta.FailureReason = failureReason(resultErr)
+		}
 		if meta.Settings == nil {
 			meta.Settings = map[string]any{}
 		}
@@ -106,8 +109,10 @@ func (c *Client) run(parent context.Context, cfg Config, p call, validate func([
 		}
 		if err == nil {
 			err = validateJSON(reply, &schema)
-			if err == nil && validate != nil && validate(reply) != nil {
-				err = errInvalid
+			if err == nil && validate != nil {
+				if verr := validate(reply); verr != nil {
+					err = &invalidOutput{cause: verr}
+				}
 			}
 		}
 		if ctx.Err() != nil {
@@ -142,8 +147,49 @@ func (c *Client) run(parent context.Context, cfg Config, p call, validate func([
 		mayRepair = false
 		// Previous output can contain injection or fabricated facts. Recreate from
 		// the original evidence without reinserting invalid output into the prompt.
+		// The hint names the application checks that failed, in the app's words.
 		p.system += "\n" + repairInstructions
+		var hint RepairHinter
+		if errors.As(err, &hint) {
+			p.system += "\n" + hint.RepairHint()
+		}
 	}
+}
+
+// RepairHinter is implemented by validator errors that can explain, in fixed
+// application wording, which checks a proposal failed.
+type RepairHinter interface{ RepairHint() string }
+
+// ReasonCoder is implemented by validator errors with a fixed reason code.
+type ReasonCoder interface{ ReasonCode() string }
+
+type invalidOutput struct{ cause error }
+
+func (e *invalidOutput) Error() string   { return errInvalid.Error() }
+func (e *invalidOutput) Unwrap() []error { return []error{errInvalid, e.cause} }
+
+// failureReason classifies a failed call with a fixed, nonclinical code.
+func failureReason(err error) string {
+	var rc ReasonCoder
+	switch {
+	case errors.As(err, &rc):
+		return rc.ReasonCode()
+	case errors.Is(err, context.DeadlineExceeded):
+		return "timeout"
+	case errors.Is(err, context.Canceled):
+		return "cancelled"
+	case errors.Is(err, errInvalid):
+		return "schema_mismatch"
+	case errors.Is(err, errEnvelope):
+		return "unreadable_response"
+	case errors.Is(err, errIncomplete):
+		return "incomplete_response"
+	}
+	var plan *ChatGPTError
+	if errors.As(err, &plan) {
+		return "plan_error"
+	}
+	return "provider_error"
 }
 
 func (c *Client) request(ctx context.Context, cfg Config, key string, body []byte, retryAvailable *bool, usage *Usage) ([]byte, string, error) {

@@ -187,17 +187,29 @@ func (s *Server) finishModel(ctx context.Context, owner int, e *clinical.Encount
 		} else {
 			cfg := provider.Config(e.Provider)
 			var m provider.Metadata
-			var raw []byte
-			raw, m, err = s.Models.Generate(ctx, cfg, task, in, func(b []byte) error {
+			var rejected []clinical.Rejection
+			// Each item is checked on its own. Invalid items are dropped with a
+			// reason code and the valid remainder is used. Only a problem with
+			// the whole proposal fails the call and asks the model to repair it.
+			_, m, err = s.Models.Generate(ctx, cfg, task, in, func(b []byte) error {
 				var candidate clinical.Proposal
 				if err := json.Unmarshal(b, &candidate); err != nil {
 					return err
 				}
-				return clinical.Validate(in, candidate)
+				clean, dropped, err := clinical.Sanitize(in, candidate)
+				if err != nil {
+					return err
+				}
+				p, rejected = clean, dropped
+				return nil
 			})
-			s.recordModelUsage(ctx, owner, cfg, m, err)
-			if err == nil {
-				err = json.Unmarshal(raw, &p)
+			s.recordModelUsage(ctx, owner, cfg, m, err, rejected)
+			if m.Settings == nil {
+				m.Settings = map[string]any{}
+			}
+			m.Settings["validatorVersion"] = clinical.ValidatorVersion
+			if len(rejected) > 0 {
+				m.Settings["rejectedItems"] = clinical.RejectionCounts(rejected)
 			}
 			meta = clinical.ModelMeta{Provider: m.Provider, Endpoint: m.Endpoint, RequestedModel: m.RequestedModel, ReturnedModel: m.ReturnedModel, PromptVersion: m.PromptVersion, SchemaVersion: m.SchemaVersion, AppVersion: m.AppVersion, Settings: m.Settings}
 		}

@@ -365,3 +365,46 @@ func TestUsageAcrossFailedOutputAndRepair(t *testing.T) {
 		t.Fatal("missing usage on rejection reported as complete")
 	}
 }
+
+func TestRepairCarriesReasonCodes(t *testing.T) {
+	c, cfg := newFixtureClient(t)
+	var second string
+	calls := 0
+	c.fixtureTransport(func(r *http.Request) (*http.Response, error) {
+		calls++
+		data, _ := io.ReadAll(r.Body)
+		if calls == 2 {
+			second = string(data)
+		}
+		reply := proposal
+		if calls == 1 {
+			reply = strings.Replace(proposal, "The history can be checked.", "REJECTED-MODEL-TEXT", -1)
+		}
+		return response(200, envelope(cfg.Kind, reply)), nil
+	})
+	_, meta, err := c.Generate(t.Context(), cfg, "interview", struct{}{}, func(p []byte) error {
+		if strings.Contains(string(p), "REJECTED-MODEL-TEXT") {
+			return hintError{}
+		}
+		return nil
+	})
+	if err != nil || calls != 2 {
+		t.Fatalf("repair did not complete: calls=%d err=%v", calls, err)
+	}
+	if !strings.Contains(second, "APP-AUTHORED-HINT multiple_questions") || strings.Contains(second, "REJECTED-MODEL-TEXT") {
+		t.Fatal("the repair request must carry the app's reason codes and never the rejected text")
+	}
+	if meta.FailureReason != "" {
+		t.Fatal("a repaired call is not a failure")
+	}
+	_, meta, err = c.Generate(t.Context(), cfg, "interview", struct{}{}, func([]byte) error { return hintError{} })
+	if err == nil || meta.FailureReason != "multiple_questions" {
+		t.Fatalf("a failed call must record its reason code, got %q", meta.FailureReason)
+	}
+}
+
+type hintError struct{}
+
+func (hintError) Error() string      { return "invalid" }
+func (hintError) RepairHint() string { return "APP-AUTHORED-HINT multiple_questions" }
+func (hintError) ReasonCode() string { return "multiple_questions" }

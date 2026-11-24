@@ -34,6 +34,7 @@ type Config struct {
 
 type Metadata struct {
 	Usage          Usage          `json:"usage"`
+	FailureReason  string         `json:"failureReason,omitempty"`
 	Provider       string         `json:"provider"`
 	Endpoint       string         `json:"endpoint"`
 	RequestedModel string         `json:"requestedModel"`
