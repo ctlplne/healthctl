@@ -117,13 +117,28 @@ try {
     })
   assert.equal(record.state, 'history_review')
   await page.reload()
+  await tabTo(
+    page.getByRole('button', { name: /My nose is runny and I keep sneezing/ }).first(),
+    'Synthetic encounter',
+  )
+  await page.keyboard.press('Enter')
+  await pause(240)
+  // The review asks the app's own safety questions before the history can be
+  // confirmed. Answer each one by keyboard, as a screen-reader user would.
+  for (let asked = 0; asked < 6; asked++) {
+    const question = page
+      .getByRole('group')
+      .filter({ has: page.getByRole('button', { name: 'Not sure', exact: true }) })
+      .first()
+    if (!(await question.count())) break
+    await tabTo(question.getByRole('button', { name: 'No', exact: true }), 'Safety question')
+    await page.keyboard.press('Enter')
+    await pause(400)
+  }
+  await tabTo(page.getByRole('button', { name: 'No, nothing new or worse', exact: true }), 'Quick safety check')
+  await page.keyboard.press('Enter')
+  await pause(400)
   const targets = [
-    [
-      page
-        .getByRole('button', { name: /My nose is runny and I keep sneezing/ })
-        .first(),
-      'Synthetic encounter',
-    ],
     [page.getByRole('button', { name: 'Confirm my history', exact: true }), 'Confirm my history'],
     [page.getByRole('checkbox', { name: /I understand these limits/ }), 'Assessment acknowledgment', 'Space'],
     ...[
@@ -158,6 +173,7 @@ try {
     'Username',
     'Password',
     'Sign in',
+    'nothing new or worse',
     'Confirm my history',
     'I understand these limits',
     'Generate provisional estimate',
