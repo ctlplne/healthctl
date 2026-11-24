@@ -20,6 +20,8 @@ RUN go mod download
 COPY cmd ./cmd
 COPY internal ./internal
 COPY evaluation ./evaluation
+# TestTransitionTable checks that this generated diagram matches the code.
+COPY docs/state-machine.md ./docs/state-machine.md
 RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /app ./cmd/healthctl
 
 FROM debian:bookworm-slim@sha256:734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d96a961d3376b179bc AS readers
