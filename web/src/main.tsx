@@ -551,7 +551,7 @@ function App() {
               }
             >
               <LogOut size={17} />
-              Sign out everywhere
+              End every session
             </button>
           </div>
         </aside>
