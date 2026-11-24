@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { api } from './api'
+import { api, RequestError } from './api'
 
 // ReauthDialog asks for the password before export, sharing, deletion or a
 // provider change when the last sign-in was more than a few minutes ago.
@@ -13,8 +13,14 @@ export function ReauthDialog({ onDone }: { onDone: (ok: boolean) => void }) {
     try {
       await api('/reauth', 'POST', { password })
       onDone(true)
-    } catch {
-      setError('That password did not match. Try again.')
+    } catch (err) {
+      // A wrong password is 401. Anything else (too many attempts, no
+      // connection) is reported as the server or the network said it.
+      setError(
+        err instanceof RequestError && err.status !== 401
+          ? err.message
+          : 'That password did not match. Try again.',
+      )
     } finally {
       setBusy(false)
       setPassword('')

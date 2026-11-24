@@ -175,3 +175,17 @@ export function upload<T>(
     xhr.send(data)
   })
 }
+
+// download fetches a file through api(), so an expired password window asks
+// for the password instead of saving an error, and then saves it under name.
+export async function download(path: string, name: string, doc: Document = document) {
+  const data = await api<unknown>(path)
+  const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }))
+  const link = doc.createElement('a')
+  link.href = url
+  link.download = name
+  doc.body.append(link)
+  link.click()
+  link.remove()
+  setTimeout(() => URL.revokeObjectURL(url), 0)
+}

@@ -2,7 +2,7 @@ import { detailLine } from './visitPrep'
 import { regionalMeasurement, RegionContext } from './region'
 import { useContext, useEffect, useState } from 'react'
 import { ClipboardList, Download, KeyRound } from 'lucide-react'
-import { api } from './api'
+import { api, download } from './api'
 import { Callout } from './shared'
 import type { Assessment, Encounter, Fact, Fields } from './types'
 import { date, human } from './types'
@@ -567,7 +567,7 @@ export function Interop({
         <button
           className="secondary"
           disabled={busy}
-          onClick={() => run(async () => setJson(await api(base + '/export')))}
+          onClick={() => run(async () => setJson(await api(base + '/report')))}
         >
           Preview complete JSON
         </button>
@@ -614,6 +614,10 @@ export function Interop({
             className="secondary"
             href={'/api' + base + '/fhir'}
             download="healthctl-r4.json"
+            onClick={(ev) => {
+              ev.preventDefault()
+              run(() => download(base + '/fhir', 'healthctl-r4.json'))
+            }}
           >
             <Download size={16} />
             Download FHIR R4

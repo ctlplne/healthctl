@@ -28,7 +28,7 @@ import { Callout, ContextBox, DemoTag, Notice, PageTitle } from './shared'
 import { AssessmentRequest, History } from './history'
 import { Estimate, ReportBody, UrgencyReminder } from './report'
 import type { Run } from './forms'
-import { api } from './api'
+import { api, download } from './api'
 import { SourceReview } from './documents'
 import { Destination, PlanUsage, ManageUsage } from './chatgpt'
 import { Timeline } from './timeline'
@@ -249,7 +249,7 @@ export function EncounterPage({
   }
   const openReport = () =>
     run(async () => {
-      const doc = await api<Report>('/encounters/' + e.id + '/export')
+      const doc = await api<Report>('/encounters/' + e.id + '/report')
       if (doc.revision > e.revision) onUpdate(doc)
       setReport(doc)
       setFormat('user')
@@ -925,6 +925,10 @@ export function EncounterPage({
                     className="secondary"
                     href={'/api/encounters/' + e.id + '/export'}
                     download="healthctl.json"
+                    onClick={(ev) => {
+                      ev.preventDefault()
+                      run(() => download('/encounters/' + e.id + '/export', 'healthctl.json'))
+                    }}
                   >
                     <Download size={17} />
                     Download JSON
