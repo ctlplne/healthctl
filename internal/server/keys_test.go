@@ -7,6 +7,7 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/json"
+	"fmt"
 	"io"
 	"testing"
 
@@ -47,8 +48,30 @@ func TestReceiptKeyIndependentPostgres(t *testing.T) {
 		return b
 	}
 	before := payload(db)
+	unwrap := func(k []byte) cipher.AEAD {
+		var wrapped []byte
+		if err := db.DB.QueryRowContext(ctx, "SELECT wrapped FROM data_key WHERE id=1").Scan(&wrapped); err != nil {
+			t.Fatal(err)
+		}
+		block, _ := aes.NewCipher(k)
+		kek, _ := cipher.NewGCMWithRandomNonce(block)
+		dek, err := kek.Open(nil, nil, wrapped, []byte("data-key"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		block, _ = aes.NewCipher(dek)
+		box, _ := cipher.NewGCMWithRandomNonce(block)
+		return box
+	}
+	oldData := unwrap(key)
+	recordAAD := []byte(fmt.Sprintf("encounter/v1/%d/%s", 1, e.ID))
+	if _, err := oldData.Open(nil, nil, before, recordAAD); err != nil {
+		t.Fatalf("the test reads records the way the store seals them: %v", err)
+	}
 
-	// Rotation re-wraps the keys and leaves every record as it was.
+	// Rotation issues a fresh data key and re-encrypts every record, so
+	// neither the old installation key nor the data key it wrapped (kept in
+	// any older backup) reads the records any more.
 	next := bytes.Repeat([]byte{0x5a}, 32)
 	if err := db.Rotate(ctx, next); err != nil {
 		t.Fatal(err)
@@ -58,8 +81,17 @@ func TestReceiptKeyIndependentPostgres(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer reopened.DB.Close()
-	if !bytes.Equal(before, payload(reopened)) {
-		t.Fatal("rotation rewrote a record instead of re-wrapping the keys")
+	after := payload(reopened)
+	if bytes.Equal(before, after) {
+		t.Fatal("rotation left a record under the old data key")
+	}
+	if _, err := oldData.Open(nil, nil, after, recordAAD); err == nil {
+		t.Fatal("the old data key still reads a record after rotation")
+	}
+	var legacy bool
+	reopened.DB.QueryRowContext(ctx, "SELECT legacy FROM data_key WHERE id=1").Scan(&legacy)
+	if legacy {
+		t.Fatal("after rotation the data key is no longer an installation key")
 	}
 	if got, err := reopened.Get(ctx, 1, e.ID); err != nil || got.ID != e.ID {
 		t.Fatalf("the rotated installation can't read its records: %v", err)
