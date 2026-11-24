@@ -163,3 +163,29 @@ Missed urgent rows by file: urgent 87, mixed 41, witness 30, uncertain 18, past 
 ## Label changes
 
 None. No corpus label was changed after the baseline.
+
+## Final full run
+
+On 2026-11-24, `python3 scripts/check_hardening.py` at commit `5d6b666` exited 0:
+
+```text
+[PASS] go vet ./cmd/... ./internal/... ./evaluation/... clean
+[PASS] go build ./... go build ./... ok
+[PASS] go test -race ./cmd/... ./internal/... ./evaluation/... 13 packages passed
+[PASS] PostgreSQL integration tests 19 PostgreSQL tests passed, 0 skipped
+[PASS] web tsc, vite build and unit tests tsc clean, vite build ok, 29 web unit tests passed
+[PASS] corpus metrics 0 of 324 urgent sentences missed, 0 of 595 correct extractions rejected (0.0%), 0 of 53 must-reject accepted, 1 of 332 false alarms
+[PASS] one urgent sentence through every input path 15 encounter input paths warned (corrected answer, corrected finding, diary entry in a visit, episode log, intake agenda, intake background, inta…
+[PASS] random-action property test 1500 random sequences, 37500 steps, every invariant held
+[PASS] held-out set informational: 12 of 28 untouched urgent sentences missed, 0 of 12 false alarms
+[PASS] fresh release scorecard without drift no drift from the committed scorecard; Evaluated 84 interviews and 6 report comparisons.
+[PASS] mutation check for internal/clinical 14 of 14 mutants killed
+[PASS] scripts/check_docs.py Checked 154 relative links in 40 documents.
+[PASS] Python script and study tests 22 script tests and the study tests passed
+[PASS] python3 scripts/verify.py  Image clinical-history-qa-browser-tests Building
+HARDENING.md summary: 77 done, 7 handoff, 0 open outside HANDOFF
+[PASS] HARDENING.md has no open items outside HANDOFF 77 done, 7 handoff (H1, H2, H3, H4, H5, H6, H7), 0 open
+ALL CHECKS PASSED
+```
+
+Earlier full runs that day each failed one environment-specific check, fixed before this run: the race-enabled container suite needed a ten-minute limit, the Go build stage lacked the generated state diagram, a queue test needed longer waits on a loaded machine, and a new button's name collided with an existing browser-test locator.
