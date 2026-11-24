@@ -224,3 +224,5 @@ Two problems noted in the live run were then fixed as well:
 
 Still open: the "Ask your clinician about" lines for a runny nose mention pneumonia and a clot in the lung, which needs clinical review.
 
+Full run after these fixes, at commit `3f67a41` (2026-11-24): `python3 scripts/check_hardening.py` printed `ALL CHECKS PASSED`. All 15 checks passed, including 21 PostgreSQL tests, 43 web unit tests, the browser journeys in `scripts/verify.py`, a release scorecard with no drift and 14 of 14 mutants killed. HARDENING.md showed 77 done, 7 handoff and 0 open.
+
