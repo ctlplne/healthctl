@@ -44,8 +44,8 @@ Choose the Windows launcher, the Apple silicon launcher, or Docker Compose. Each
 | Path | What you need | How to start |
 | --- | --- | --- |
 | Docker Compose | Git, Python 3 and a running Docker engine with Compose v2 | Build from source or load the verified image for your architecture. [Docker instructions](#docker-compose) |
-| Windows desktop launcher | An Intel or AMD x64 Windows PC with Docker Desktop using WSL 2 and Linux containers. SmartScreen may block this unsigned beta. | [Download the Windows EXE](https://github.com/ctlplne/healthctl/releases/download/v0.2.0-beta.5/healthctl-windows-x64.exe), double-click it, and select **Open journal or try the demo**. [Windows installation](docs/windows.md) |
-| macOS desktop launcher | An Apple silicon Mac and Docker Desktop. The beta download is unnotarized and macOS may block it. | [Download the beta DMG](https://github.com/ctlplne/healthctl/releases/download/v0.2.0-beta.5/healthctl-0.2.0-beta.5-macos-arm64.dmg), drag healthctl to Applications, then choose **Open journal or try the demo**. The first launch uses the internet to build the services. [Desktop installation](docs/desktop.md) |
+| Windows desktop launcher | An Intel or AMD x64 Windows PC with Docker Desktop using WSL 2 and Linux containers. SmartScreen may block this unsigned beta. | [Download the Windows EXE](https://github.com/ctlplne/healthctl/releases/download/v0.2.0-beta.6/healthctl-windows-x64.exe), double-click it, and select **Open journal or try the demo**. [Windows installation](docs/windows.md) |
+| macOS desktop launcher | An Apple silicon Mac and Docker Desktop. The beta download is unnotarized and macOS may block it. | [Download the beta DMG](https://github.com/ctlplne/healthctl/releases/download/v0.2.0-beta.6/healthctl-0.2.0-beta.6-macos-arm64.dmg), drag healthctl to Applications, then choose **Open journal or try the demo**. The first launch uses the internet to build the services. [Desktop installation](docs/desktop.md) |
 
 ### Docker Compose
 
@@ -58,15 +58,15 @@ python3 scripts/init.py
 docker compose up -d --build --wait
 ```
 
-To build the exact beta 5 desktop revision, check out `v0.2.0-beta.5` before building. To use the prebuilt image on a fresh checkout, run `python3 scripts/init.py`, then:
+To build the exact beta 6 desktop revision, check out `v0.2.0-beta.6` before building. To use the prebuilt image on a fresh checkout, run `python3 scripts/init.py`, then:
 
 ```bash
-docker pull ghcr.io/ctlplne/healthctl:v0.2.0-beta.5
-docker tag ghcr.io/ctlplne/healthctl:v0.2.0-beta.5 clinical-history-app
+docker pull ghcr.io/ctlplne/healthctl:v0.2.0-beta.6
+docker tag ghcr.io/ctlplne/healthctl:v0.2.0-beta.6 clinical-history-app
 docker compose up -d --no-build --wait
 ```
 
-The public image supports AMD64 and ARM64. To transfer it as a file, download the archive for your Docker engine’s architecture ([AMD64](https://github.com/ctlplne/healthctl/releases/download/v0.2.0-beta.5/healthctl-linux-amd64.tar.gz) or [ARM64](https://github.com/ctlplne/healthctl/releases/download/v0.2.0-beta.5/healthctl-linux-arm64.tar.gz)) and [verify its checksum](https://github.com/ctlplne/healthctl/releases/download/v0.2.0-beta.5/SHA256SUMS). From the initialized checkout, run the following, replacing `arm64` with `amd64` on Intel or AMD machines.
+The public image supports AMD64 and ARM64. To transfer it as a file, download the archive for your Docker engine’s architecture ([AMD64](https://github.com/ctlplne/healthctl/releases/download/v0.2.0-beta.6/healthctl-linux-amd64.tar.gz) or [ARM64](https://github.com/ctlplne/healthctl/releases/download/v0.2.0-beta.6/healthctl-linux-arm64.tar.gz)) and [verify its checksum](https://github.com/ctlplne/healthctl/releases/download/v0.2.0-beta.6/SHA256SUMS). From the initialized checkout, run the following, replacing `arm64` with `amd64` on Intel or AMD machines.
 
 ```bash
 docker load -i healthctl-linux-arm64.tar.gz
