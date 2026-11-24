@@ -455,6 +455,22 @@ type DiaryEntry struct {
 	End         string    `json:"end,omitempty"`
 	Approximate bool      `json:"approximate"`
 	Recorded    time.Time `json:"recordedAt"`
+	// Warning is set only by the application's safety screen.
+	Warning *ScreenResult `json:"warning,omitempty"`
+}
+
+// ScreenDiary runs the safety screen on a diary entry when it is saved. An
+// episode that started more than two days ago asks for a prompt check.
+func ScreenDiary(d DiaryEntry, emergency string) (ScreenResult, bool) {
+	res, ok := ScreenText(d.Text, emergency)
+	if !ok {
+		return res, false
+	}
+	if start, err := time.Parse(time.RFC3339, d.Onset); err == nil && time.Since(start) > 48*time.Hour && res.Level == warningEmergency {
+		res.Level = warningCheck
+		res.Message = warningMessage("reported_warning", warningCheck, emergency)
+	}
+	return res, true
 }
 
 func (d DiaryEntry) Valid() bool {

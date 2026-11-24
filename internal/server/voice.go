@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/binary"
+	"github.com/ctlplne/healthctl/internal/clinical"
 	"io"
 	"net/http"
 	"os"
@@ -95,8 +96,18 @@ func (s *Server) voice(w http.ResponseWriter, r *http.Request, _ int) error {
 			return bad("No speech was recognized.")
 		}
 	}
-	emit(w, 200, object{"draft": transcript, "destination": mode})
+	emit(w, 200, s.draftResponse(transcript, mode))
 	return nil
+}
+
+// draftResponse screens a dictation draft before the user reviews it, so an
+// urgent report is visible even if the words are never saved.
+func (s *Server) draftResponse(transcript, mode string) object {
+	out := object{"draft": transcript, "destination": mode}
+	if res, ok := clinical.ScreenText(transcript, s.Emergency); ok {
+		out["warning"] = res
+	}
+	return out
 }
 
 // The browser produces one canonical PCM header. Reject alternate containers

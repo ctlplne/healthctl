@@ -28,6 +28,11 @@ func (s *Server) diary(w http.ResponseWriter, r *http.Request, owner int) error 
 		if !requestID.MatchString(d.ID) || !d.Valid() {
 			return bad("Check the episode times and describe what happened.")
 		}
+		// The application decides the warning. A client-supplied value is discarded.
+		d.Warning = nil
+		if res, ok := clinical.ScreenDiary(d, s.Emergency); ok {
+			d.Warning = &res
+		}
 		saved, err := s.Store.SaveDiary(r.Context(), owner, d)
 		if err != nil {
 			return err

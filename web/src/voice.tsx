@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { ScreenAlert, type ScreenResult } from './screen'
 import { api } from './api'
 
 export function encodeWav(chunks: Float32Array[]) {
@@ -107,6 +108,7 @@ export function VoiceInput({
     [busy, setBusy] = useState(false),
     [clip, setClip] = useState<Blob>(),
     [draft, setDraft] = useState(''),
+    [warning, setWarning] = useState<ScreenResult>(),
     [checked, setChecked] = useState(false),
     [error, setError] = useState('')
   const request = useRef<AbortController | null>(null)
@@ -202,7 +204,7 @@ export function VoiceInput({
     setBusy(true)
     setError('')
     try {
-      const r = await api<{ draft: string }>(
+      const r = await api<{ draft: string; warning?: ScreenResult }>(
         '/voice?destination=' + mode,
         'POST',
         clip,
@@ -213,6 +215,7 @@ export function VoiceInput({
       )
       if (!alive.current) return
       setDraft(r.draft)
+      setWarning(r.warning)
       setChecked(false)
     } catch (err) {
       if (alive.current)
@@ -298,6 +301,7 @@ export function VoiceInput({
           )}
           {(draft || mode === 'paste') && (
             <>
+              {warning && <ScreenAlert warning={warning} />}
               <label>
                 Transcript to review
                 <textarea

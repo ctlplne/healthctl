@@ -15,6 +15,11 @@ type Qualification = {
   budget: Record<string, unknown>
   rates: Record<string, unknown>
   usage: Record<string, unknown>
+  validation?: {
+    validatorVersion: string
+    droppedItems: Record<string, number>
+    failedCalls: Record<string, number>
+  }
 }
 const label = (s: string) =>
   s.replace(/([a-z])([A-Z])/g, '$1 $2').replaceAll('_', ' ')
@@ -75,6 +80,20 @@ export function Operator({
             <Metrics items={qualification.rates} />
             <h3>Local usage</h3>
             <Metrics items={qualification.usage} />
+            {qualification.validation && (
+              <>
+                <h3>Validation outcomes</h3>
+                <p>
+                  Reason codes for model output the application set aside. They
+                  are fixed labels and contain no history. Validator{' '}
+                  {qualification.validation.validatorVersion}.
+                </p>
+                <h4>Dropped items</h4>
+                <Metrics items={qualification.validation.droppedItems} />
+                <h4>Failed calls</h4>
+                <Metrics items={qualification.validation.failedCalls} />
+              </>
+            )}
             <p>
               ChatGPT plan limits and credits · <ManageUsage />
             </p>

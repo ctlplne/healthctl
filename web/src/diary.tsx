@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { api } from './api'
 import { VoiceInput } from './voice'
+import { ScreenAlert, type ScreenResult } from './screen'
 import type { Encounter, EncounterRow } from './types'
+
 
 export type DiaryEntry = {
   id: string
@@ -10,6 +12,7 @@ export type DiaryEntry = {
   end?: string
   approximate: boolean
   recordedAt: string
+  warning?: ScreenResult
 }
 export type ReturnSelection = {
   clarifications: { index: number; words: string }[]
@@ -46,7 +49,8 @@ export function Diary({ onClose, onVisit }: { onClose: () => void; onVisit?: (id
     [busy, setBusy] = useState(false),
     [error, setError] = useState(''),
     [key, setKey] = useState(() => crypto.randomUUID()),
-    [confirm, setConfirm] = useState('')
+    [confirm, setConfirm] = useState(''),
+    [warning, setWarning] = useState<ScreenResult>()
   useEffect(() => {
     api<DiaryEntry[]>('/diary')
       .then(setItems)
@@ -75,6 +79,7 @@ export function Diary({ onClose, onVisit }: { onClose: () => void; onVisit?: (id
               approximate: approx,
             })
             setItems((old) => [item, ...old.filter((x) => x.id !== item.id)])
+            setWarning(item.warning)
             setText('')
             setStart(localNow())
             setEnd('')
@@ -133,8 +138,10 @@ export function Diary({ onClose, onVisit }: { onClose: () => void; onVisit?: (id
         </div>
       </form>
       {error && <p role="alert">{error}</p>}
+      {warning && <ScreenAlert warning={warning} />}
       {items.map((x) => (
         <article className="history-row" key={x.id}>
+          {x.warning && <p className={'diary-warning ' + x.warning.level}>{x.warning.level === 'check' ? 'Check promptly' : 'Urgent warning'} · {x.warning.message}</p>}
           <p>{x.text}</p>
           <small>
             Started {new Date(x.onset).toLocaleString()}

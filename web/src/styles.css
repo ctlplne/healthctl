@@ -2194,3 +2194,28 @@ pre {
 .visual-record summary { cursor: pointer; font-weight: 600; }
 .visual-record form { display: grid; gap: .75rem; }
 .visual-record label { display: grid; gap: .35rem; }
+.screen-alert {
+  flex-direction: column;
+  gap: 0.35rem;
+  border: 1px solid #e9c2ab;
+  background: #fff0e7;
+  color: #713d26;
+  margin: 0.75rem 0;
+}
+.screen-alert.check,
+.diary-warning.check {
+  background: #fdf6e3;
+  border-color: #e4d3a0;
+  color: #5c4710;
+}
+.screen-alert small {
+  font-size: 0.78rem;
+}
+.diary-warning {
+  font-size: 0.86rem;
+  padding: 0.45rem 0.7rem;
+  border-radius: 6px;
+  border: 1px solid #e9c2ab;
+  background: #fff0e7;
+  color: #713d26;
+}
