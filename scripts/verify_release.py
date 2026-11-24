@@ -24,6 +24,9 @@ MODEL_GUIDANCE = (ROOT / "internal/clinical/model-guidance.txt").read_text().str
 
 def same(left, right, message):
     if left != right:
+        if isinstance(left, dict) and isinstance(right, dict):
+            fields = sorted(k for k in left.keys() | right.keys() if left.get(k) != right.get(k))
+            message += " (fields that differ: " + ", ".join(fields) + ")"
         raise AssertionError(message)
 
 
@@ -78,6 +81,7 @@ def main():
             BYOM_API_KEY="",
             CLINICAL_ALLOWED_ENDPOINTS="http://fixture:8090/v1",
             CLINICAL_BACKUP_KEEP="1",
+            CLINICAL_BACKUP_KEEP_DAYS="1",
             CLINICAL_BACKUP_INTERVAL_HOURS="24",
         )
         for name in (
@@ -300,6 +304,13 @@ def main():
                     stdout=out,
                 )
             compose(source, "up", "-d", "--build", "--wait", "app", "fixture")
+            # The session from before the upgrade still works, but a download
+            # needs the password again (migration 012).
+            try:
+                c.call(vpath + "/export", reauth=False)
+                raise AssertionError("a session from before the upgrade downloaded without the password")
+            except HTTPError as refused:
+                same(refused.code, 403, "a session from before the upgrade was not asked for the password")
             upgraded = c.call(vpath + "/export")
             same(c.call("/ehr"), {"enabled": False}, "unconfigured portal attempted to enable itself")
             passed("Upgraded installation keeps portal integration disabled until the operator configures it")
@@ -316,7 +327,7 @@ def main():
                 same(old[field], upgraded[field], "migration changed " + field)
             same(upgraded["modelGuidance"], MODEL_GUIDANCE, "old encounter export lost current model guidance")
             passed(
-                "Upgrade preserved the baseline owner, active session, evidence, warning state and historical assessment"
+                "Upgrade preserved the baseline owner, active session (which re-enters the password to download), evidence, warning state and historical assessment"
             )
             if args.study_pair:
                 print_handout(True)
@@ -615,6 +626,12 @@ def main():
                 else:
                     raise AssertionError("scheduler did not complete first backup")
                 compose(source, "--profile", "backups", "stop", "backup")
+                # Backups are kept by age: an archive goes only when it is past
+                # the newest CLINICAL_BACKUP_KEEP and older than
+                # CLINICAL_BACKUP_KEEP_DAYS. Age the first archive past the limit.
+                aged = time.strftime("%Y%m%d%H%M", time.gmtime(time.time() - 3 * 86400))
+                compose(source, "run", "--rm", "--no-deps", "-T", "--entrypoint", "sh", "backup", "-c",
+                        "touch -t " + aged + " /var/lib/postgresql/data/clinical-*.dump")
                 compose(source, "run", "--rm", "--no-deps", "-T", "backup", "once")
                 count = compose(
                     source,
@@ -631,7 +648,7 @@ def main():
                 ).stdout
                 assert int(count) == 1
                 passed(
-                    "Scheduled worker created a restorable archive; the next backup retained the configured count"
+                    "Scheduled worker created a restorable archive; the next backup removed an archive past the configured count and age"
                 )
                 compose(
                     source,
@@ -667,7 +684,7 @@ def main():
             env.update(
                 CLINICAL_LOCALE="en-IN",
                 CLINICAL_UNITS="metric",
-                CLINICAL_EMERGENCY_CONTACT="Fictional district emergency desk",
+                CLINICAL_EMERGENCY_CONTACT="Fictional district emergency desk: call 112",
             )
             compose(dest, "up", "-d", "--build", "--wait", "app")
             other = Client("18442")
@@ -680,6 +697,15 @@ def main():
             after = other.call(path + "/export")
             for report in (before, after):
                 report.pop("exportedAt")
+            # Every export records the regional settings in effect. The
+            # restored installation deliberately uses different ones.
+            restored_settings = after.pop("installation")
+            before.pop("installation")
+            same(
+                {k: restored_settings.get(k) for k in ("locale", "units", "emergencyContact")},
+                {"locale": "en-IN", "units": "metric", "emergencyContact": "Fictional district emergency desk: call 112"},
+                "the restored export does not record the settings in effect",
+            )
             same(before, after, "restore altered encounter")
             for url, h in originals.items():
                 same(

@@ -7,6 +7,7 @@ import secrets
 import subprocess
 import tempfile
 from pathlib import Path
+from urllib.error import HTTPError
 from urllib.request import build_opener, HTTPCookieProcessor, Request
 
 root = Path(__file__).resolve().parents[1]
@@ -31,13 +32,26 @@ class Client:
         self.jar = http.cookiejar.CookieJar()
         self.browser = build_opener(HTTPCookieProcessor(self.jar))
         self.csrf = ""
+        self.password = ""
 
-    def call(self, path, method="GET", body=None):
+    def call(self, path, method="GET", body=None, reauth=True):
         payload = json.dumps(body).encode() if body is not None else None
         request = Request(self.url + path, method=method, data=payload,
                           headers={"Content-Type": "application/json", "X-CSRF-Token": self.csrf})
-        with self.browser.open(request, timeout=20) as response:
-            value = json.load(response)
+        try:
+            with self.browser.open(request, timeout=20) as response:
+                value = json.load(response)
+        except HTTPError as refused:
+            # Like the app, enter the password again when a download, sharing
+            # or deletion needs a recent sign-in, then retry once.
+            if refused.code != 403 or not reauth or not self.password:
+                raise
+            if not json.loads(refused.read() or b"{}").get("reauth"):
+                raise
+            self.call("/reauth", "POST", {"password": self.password}, reauth=False)
+            return self.call(path, method, body, reauth=False)
+        if path in ("/setup", "/login") and body and body.get("password"):
+            self.password = body["password"]
         if "csrf" in value:
             self.csrf = value["csrf"]
         return value
