@@ -1,0 +1,43 @@
+# Final held-out set, written after every rule change on the hardening branch
+# and measured once without tuning. Synthetic sentences, development labels,
+# not clinically reviewed.
+warn | self | My chest has felt like an elephant is sitting on it for the last twenty minutes. |
+warn | self | I keep getting this awful crushing feeling behind my ribs and my left arm is tingling. |
+warn | self | I can only get a few words out before I have to stop and catch my breath. |
+warn | self | My lips and fingertips have gone a bluish colour since this afternoon. |
+warn | self | The right side of my mouth won't move properly and my words are coming out jumbled. |
+warn | self | Out of nowhere I lost the vision in my left eye about an hour ago. |
+warn | self | This is the worst headache I have ever had and it hit me like a thunderclap. |
+warn | self | My neck is so stiff I can't bend it and I have a high fever. |
+warn | self | I passed out in the kitchen this morning and hit my head. |
+warn | self | My throat feels like it is closing up after I ate the shrimp. |
+warn | self | My tongue swelled up and my face is puffy after the bee sting. |
+warn | self | I have been throwing up something that looks like coffee grounds. |
+warn | self | My poo has been jet black and sticky for two days. |
+warn | self | I am bleeding heavily and it won't stop even with pressure. |
+warn | self | I took the whole bottle of my sleeping pills an hour ago. |
+warn | self | I don't see the point anymore and I have been planning how to end it. |
+warn | self | I have been cutting myself again tonight. |
+warn | self | My belly is rigid and the pain is unbearable when I move. |
+warn | self | One of my testicles suddenly became very painful and swollen. |
+warn | self | My calf is red, hot and swollen and now I feel short of breath. |
+warn | self | I had a seizure for the first time ever about thirty minutes ago. |
+warn | self | My heart is racing over 180 and I feel like I am going to faint. |
+warn | self | I am so confused I didn't recognise my own front door today. |
+warn | self | I have had no urine at all since yesterday and I feel terrible. |
+warn | witness | She went grey, clutched her chest and slumped in the chair. |
+warn | witness | He is breathing really fast and his lips look blue. |
+warn | reply: Have you had any trouble breathing? | Yes, even sitting still I am gasping. |
+warn | reply: Is anything new or getting worse? | The chest pain is spreading into my jaw now. |
+none | self | My knee has been a bit stiff in the mornings for a few weeks. |
+none | self | I have had a runny nose and a mild sore throat since Monday. |
+none | self | No chest pain, no shortness of breath, just a tickly cough. |
+none | self | My father had a heart attack when he was sixty. |
+none | self | Years ago I had a blood clot in my leg but it was treated. |
+none | self | I want to know what I should do if I ever get chest pain. |
+none | self | The rash on my arm is itchy but it isn't spreading. |
+none | self | I sometimes feel lightheaded if I stand up too fast after a hot shower. |
+none | self | My period has been heavier than usual this month but I feel fine. |
+none | witness | She said she has a mild headache from looking at screens. |
+none | reply: Have you coughed up any blood? | No, never. |
+none | reply: Any fainting or weakness on one side? | No, nothing like that. |

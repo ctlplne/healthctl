@@ -104,15 +104,35 @@ Status: `[x]` done with proof · `[ ]` open · `[h]` handoff, prepared with next
 
 ## HANDOFF (needs a person)
 
-- [h] **H1** Clinical review of the urgent rules, pathways, red flags and "don't miss" lines; name a clinical lead and a review cadence.
-- [h] **H2** Clinician-graded holdout as a release gate.
-- [h] **H3** Live-model baseline (script ready; needs credentials and approval).
-- [h] **H4** Code signing and notarization for macOS and Windows.
-- [h] **H5** Regulatory and license review.
-- [h] **H6** Backup and restore test on real Windows.
-- [h] **H7** Local dependency scan (blocked by this session's permission check).
+Each item is prepared; the next steps are exact.
 
-Next steps for each handoff item are filled in as the work that prepares it lands.
+- [h] **H1** Clinical review of the urgent rules, pathways, red flags, completeness elements, condition list, descriptions and "don't miss" lines.
+  1. Name a clinical lead and a backup reviewer.
+  2. Review, in this order: `internal/clinical/safety.go` (urgent signs and levels), `intents.go` (red-flag questions, completeness elements, intent wording), `conditions.go` (condition list, descriptions, "don't miss" lines), `vocabulary.go` (terms and ICD-10-CM codes), `pathways.go`, and the corpus labels in `testdata/corpus`.
+  3. Record the sign-off in `internal/clinical/policy_review.go` as a `PolicyRecord` for `development-5` with reviewer, date and scope, and set `DescriptionStatus` for reviewed descriptions; `TestPolicyReviewRecord` refuses a "reviewed" status without that record.
+  4. Repeat for every policy version, and at least every three months.
+- [h] **H2** Clinician-graded holdout as a release gate.
+  1. A clinician writes at least 100 synthetic sentences without seeing the rules, labeled `warn` or `none` in the corpus format, into `internal/clinical/testdata/holdout/`.
+  2. Run `CORPUS_DETAILS=1 go test -run TestCorpusHoldout -v ./internal/clinical` once and record the result here without tuning on it.
+  3. Agree the release threshold (for example, no missed `emergency` sentence) and make `holdout()` in `scripts/check_hardening.py` fail below it.
+- [h] **H3** Live-model baseline (needs your credentials and approval; it spends money).
+  1. For each of two or three models: `MODEL_LIVE_KIND=openai MODEL_LIVE_MODEL=<model> OPENAI_API_KEY=<key> go run ./cmd/evaluate -live -release -repeat 3 -out build/live-<model>.json` (or `anthropic` with `ANTHROPIC_API_KEY`; set the provider's reasoning setting for reasoning models).
+  2. Optionally `-simulate model` with `MODEL_SIMULATOR_ENDPOINT`, `MODEL_SIMULATOR_MODEL` and `MODEL_SIMULATOR_KEY`.
+  3. Record pass rate, rejection reason codes, wait times and tokens in `docs/verification-log.md` (extend `scripts/verification_log.py` to read the live files).
+- [h] **H4** Code signing and notarization for macOS and Windows.
+  1. macOS: a Developer ID Application certificate; sign the app with `codesign --options runtime --timestamp`, submit with `xcrun notarytool submit --wait`, and staple; add these steps to `.github/workflows/release.yml` with the certificate in a protected secret.
+  2. Windows: an Authenticode certificate; sign the EXE with `signtool sign /tr <timestamp URL> /td sha256 /fd sha256`.
+  3. Publish signed, digest-pinned images to GHCR so the Windows launcher can load images instead of building from source (completes R1 for Windows).
+- [h] **H5** Regulatory and license review.
+  1. Ask a regulatory adviser whether the app is a medical device in each target market (for example FDA software-as-a-medical-device guidance, EU MDR rule 11) given the urgent warnings and assessments.
+  2. Resolve the conflict between the license, which permits clinic use, and the beta notice, which says the app is not clinically reviewed; change the license or the notice before inviting any clinical use.
+- [h] **H6** Backup and restore test on real Windows.
+  1. On Windows 11 with Docker Desktop (WSL 2 engine), open the journal from the EXE and add a synthetic encounter.
+  2. Back up with `docker compose -p <workspace> exec -T db pg_dump -Fc ...` as in `docs/operations.md`, then **Delete this workspace**, open the journal again, restore the dump with the same key, and compare the export.
+  3. Check **Stop the workspace**, **Save logs** and **Remove all healthctl data**, and record the result in `docs/release.md`.
+- [h] **H7** Local dependency scan (this session's permission check blocked it).
+  1. Run `go run golang.org/x/vuln/cmd/govulncheck@v1.9.0 ./cmd/... ./internal/... ./evaluation/...` and `cd web && npm audit --audit-level=high`.
+  2. Fix or record any finding; the `dependencies` CI job runs the same checks on every push.
 
 ## Corpus baseline
 
@@ -132,13 +152,13 @@ Missed urgent rows by file: urgent 87, mixed 41, witness 30, uncertain 18, past 
 
 | Metric | Baseline | After development-4 |
 |---|---|---|
-| Rows | 552 | 650 (adds the two held-out sets below as lessons) |
-| Urgent sentences missed | 205 of 256 | 0 of 320 |
-| False alarms | 14 of 296 | 1 of 330 |
+| Rows | 552 | 656 (adds the two held-out sets below as lessons, and six run-on rows from the mutation check) |
+| Urgent sentences missed | 205 of 256 | 0 of 324 |
+| False alarms | 14 of 296 | 1 of 332 |
 | Correct extractions rejected | 129 of 595 | 0 of 595 |
 | Must-reject extractions accepted | 36 of 53 | 0 of 53 |
 
-**Held-out results (honest generalization).** Each held-out set was written after the rules and measured before any tuning on it. Set 1: 24 of 34 urgent sentences missed and 4 of 21 false alarms. Set 2, after tuning on set 1: 20 of 27 urgent sentences missed and 1 of 13 false alarms. Both sets were then added to the corpus as `lessons.txt` and `lessons-2.txt`. Keyword rules recognize only the phrasings they were shown. The model's urgent flags (S5) and the explicit emergency question carry the safety load, and clinical review (H1) is still required. A final untouched set is measured in K1.
+**Held-out results (honest generalization).** Each held-out set was written after the rules and measured before any tuning on it. Set 1: 24 of 34 urgent sentences missed and 4 of 21 false alarms. Set 2, after tuning on set 1: 20 of 27 urgent sentences missed and 1 of 13 false alarms. Both sets were then added to the corpus as `lessons.txt` and `lessons-2.txt`. Keyword rules recognize only the phrasings they were shown. The model's urgent flags (S5) and the explicit emergency question carry the safety load, and clinical review (H1) is still required. **Final untouched set (set 3).** Written after every rule change on this branch and measured once, without tuning (`testdata/holdout/holdout-3.txt`): 12 of 28 urgent sentences missed and 0 of 12 false alarms. The misses are new phrasings ("an elephant is sitting on it", "the whole bottle of my sleeping pills", "no urine at all since yesterday"). Better than sets 1 and 2, and still far from enough: the explicit safety questions, the red-flag questions, the model's urgent flags and clinical review (H1, H2) remain essential. `check_hardening.py` reports this set as information.
 
 ## Label changes
 
