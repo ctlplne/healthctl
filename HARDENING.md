@@ -1,0 +1,122 @@
+# healthctl hardening checklist
+
+This file tracks the `hardening` branch. It is the source of truth for what is done, what proves it, and what still needs a person. Each item lists its ID, the change, the main files, and the test or command that proves it.
+
+## Rules for every change
+
+1. The app decides state, safety, completeness, provenance, and any wording that isn't the user's own words or a labeled model suggestion.
+2. The model only proposes quoted findings, the next question's intent, and explanations that cite fact IDs.
+3. Each item is validated separately with a named reason code. Raising concern needs only an exact quote. Lowering it needs strong support. The model never clears a warning.
+4. All user text passes through one safety screen.
+5. A failure saves the history and tells the user what to do next.
+
+Tests, invariants and checks are never deleted or weakened to get a pass. All data is synthetic. New urgent phrases, red flags and pathway content are development content that has not been clinically reviewed.
+
+**Feature freeze:** no new user-facing features until every P0 item passes and a live-model baseline exists (see H3).
+
+Status: `[x]` done with proof · `[ ]` open · `[h]` handoff, prepared with next steps.
+
+## P0: safety and correctness
+
+- [ ] **E1** Labeled corpus of 500+ sentences (urgent, negated, past, third-party, witness, hypothetical, routine) with correct and must-reject extractions; baseline recorded below. Files: `internal/clinical/testdata/corpus.json`, `internal/clinical/corpus_test.go`. Proof: `go test -run TestCorpus -v ./internal/clinical`.
+- [ ] **S3** One shared context engine: scoped negation, experiencer by source, past, hypothetical, uncertainty. Used by the safety screen, the validator and contradiction checks. Files: `internal/clinical/context.go`, `safety.go`, `model.go`, `encounter.go`. Proof: `TestContext*`, corpus.
+- [ ] **S2** Experiencer by source type: he/she/they in a witness account mean the user. Files: `context.go`, `safety.go`. Proof: `TestWitnessThirdPersonWarns`, corpus witness rows.
+- [ ] **S1** Every input goes through the same screen: answers, corrections, diary saves, witness accounts, visual notes, report passages, dictation drafts, return-visit notes, outcomes. Files: `internal/clinical/*`, `internal/server/diary.go`, `internal/server/voice.go`. Proof: `TestEveryInputPathScreens`, `TestDiarySaveScreensPostgres`.
+- [ ] **S4** Wider urgent vocabulary, labeled development content; policy version `development-4`. Files: `safety.go`, `internal/clinical/POLICY.md`. Proof: corpus urgent rows.
+- [ ] **S5** A model urgent flag needs only an exact quote from an active, non-screen answer and never fails a turn. When app rules disagree it becomes a "check this" warning. Files: `model.go`, `safety.go`. Proof: `TestModelUrgentFlagNeverFailsTurn`.
+- [ ] **V1** Per-item validation: invalid findings, flags, choices and items are dropped one by one, and valid items and the question are kept. Files: `internal/clinical/sanitize.go`, `internal/server/encounters.go`. Proof: `TestSanitizeKeepsValidItems`.
+- [ ] **V2** Named reason codes for every rejection, stored in `model_operations` and shown in the qualification panel. Files: `internal/clinical/reasons.go`, `internal/store/migrations/007_*.sql`, `internal/server/evidence.go`, `web/src/operator.tsx`. Proof: `TestRejectionReasonsRecordedPostgres`, `TestReasonCodes`.
+- [ ] **V3** Targeted repair: a retry carries app-authored reason codes and item indexes, never rejected text. Files: `internal/provider/client.go`. Proof: `TestRepairCarriesReasonCodes`.
+- [ ] **V4** The advice filter checks instructions only in statements, so questions such as "Did you start taking…?" pass. Files: `model.go`. Proof: `TestAdviceFilterAllowsQuestions`.
+- [ ] **V5** Digits inside names (COVID-19, B12, type 2) are not numeric claims. Files: `model.go`. Proof: `TestGroundedNumbersIgnoresNames`.
+- [ ] **O1** Reasoning effort is chosen by task: medium or lower for interview turns, highest for assessment. Files: `internal/provider/chatgpt.go`. Proof: `TestEffortByTask`.
+- [ ] **D1** `init.py` refuses to create a new key when installation data already exists, and explains recovery. Files: `scripts/init.py`. Proof: `python3 -m unittest tests.test_init`.
+- [ ] **D2** Recovery kit: a script writes a private recovery sheet; the app shows a banner until the owner confirms the kit's fingerprint. Files: `scripts/recovery_kit.py`, `internal/server/recovery.go`, `web/src/*`. Proof: `TestRecoveryKitFingerprint`, `tests/test_recovery_kit.py`.
+- [ ] **D3** Backups on by default to a host folder, with last success shown in the app. Files: `compose.yaml`, `scripts/backup.sh`, `scripts/init.py`, store migration, server, web. Proof: `TestBackupStatusPostgres`, compose config check.
+- [ ] **F1** Drafts are tied to their question; when the question changes, the old draft is set aside and the user is told. Files: `web/src/encounter.tsx`. Proof: `web/src/*.test.ts`, Playwright.
+- [ ] **F2** No silent truncation: conflicts get their own section in the brief, and every shortened list says how many more there are. Files: `web/src/handoff.tsx`. Proof: unit test + Playwright.
+- [ ] **F3** An error boundary that still shows active urgent warnings. Files: `web/src/main.tsx`, `web/src/boundary.tsx`. Proof: unit test.
+- [ ] **M3** The random-action property test is permanent and runs in CI. Files: `internal/clinical/property_test.go`, `.github/workflows/ci.yml`. Proof: `TestRandomActionInvariants`.
+- [ ] **K1** `scripts/check_hardening.py` runs every required check and prints `ALL CHECKS PASSED`. Proof: the script exits 0.
+
+## P1: reliability and trust
+
+- [ ] **S6** Two warning tiers ("Seek emergency care" and "Get this checked promptly") with app-authored text, both kept until the source is corrected. Proof: `TestWarningTiers`.
+- [ ] **S7** App-owned safety-net questions before confirming the history, at the start of a return visit, and for a diary episode happening now. Proof: `TestSafetyNetQuestions`.
+- [ ] **S8** Clinical sign-off metadata per policy version, shown in exports; a policy can't be called reviewed without a record. Proof: `TestPolicyReviewRecord`.
+- [ ] **S9** Safety metrics on the gold set run on every release; CI fails on any missed urgent case. Proof: CI step + `TestCorpusSafety`.
+- [ ] **V6** Separate output schemas per task with enums. Proof: `TestTaskSchemas`.
+- [ ] **V7** Prompt limits generated from the validator's constants. Proof: `TestPromptMatchesValidator`.
+- [ ] **V8** `validatorVersion` and an input hash recorded in provenance. Proof: `TestProvenanceValidatorVersion`.
+- [ ] **V9** Question intents: the model picks an intent and its slots from an app catalog and the app writes the wording; free-text questions are a fallback with stricter checks. Proof: `TestQuestionIntents`.
+- [ ] **V10** Answer choices come from intent templates. Proof: `TestIntentChoices`.
+- [ ] **C1** App-owned completeness per pathway; only the app or the user ends the interview. Proof: `TestCompletenessGate`.
+- [ ] **C2** Red-flag questions for each active pathway are asked before review unless the user stops. Proof: `TestRedFlagCoverage`.
+- [ ] **C3** App-owned question budget and dedup; background questions only when relevant. Proof: `TestQuestionBudget`, scorecard question count.
+- [ ] **M1** Explicit transition table with one transition helper and a generated diagram. Proof: `TestTransitionTable`.
+- [ ] **M2** One typed command per action; irrelevant fields are rejected. Proof: `TestTypedCommands`.
+- [ ] **M4** `Encounter` split into sub-records with a payload schema version and migrations. Proof: `TestPayloadMigration`.
+- [ ] **O2** One model call in flight per encounter; superseded calls are cancelled. Proof: `TestSupersededCallCancelled`.
+- [ ] **O3** Durable job table with bounded workers, panic recovery and resume after restart. Proof: `TestJobQueuePostgres`.
+- [ ] **O4** Reasoning-aware API adapters: effort parameter where supported, output budget, streaming, and accurate timeout messages. Proof: provider tests.
+- [ ] **O5** The connection test runs a tiny synthetic interview through the real validator. Proof: `TestClinicalConnectionProbe`.
+- [ ] **O6** A capability record per provider and model, saved with results. Proof: `TestCapabilityRecorded`.
+- [ ] **A1** App-owned assessment rendering: vetted names, rationale built from fact IDs, reviewed descriptions where available. Proof: `TestAssessmentRendering`.
+- [ ] **A2** "Don't miss" lines per pathway (development content). Proof: `TestDontMissLines`.
+- [ ] **E3** Natural-language user simulator harness, scored by app invariants. Proof: `TestSimulatorHarness`.
+- [ ] **E4** Committed scorecards regenerated; CI fails on drift. Proof: `scripts/check_scorecard.py --drift`.
+- [ ] **F4** URL routing for deep links, Back and reload. Proof: unit test + Playwright.
+- [ ] **F5** No tab switch when a turn finishes; a "next question ready" notice; in-progress corrections kept. Proof: unit test.
+- [ ] **F6** Accessibility: focus moves to the new question and it is announced, radio groups are named, axe runs in Playwright. Proof: Playwright.
+- [ ] **F7** One data-fetching hook (timeout, abort, stale response, 401, CSRF refresh); upload progress and cancel. Proof: unit test.
+- [ ] **F8** Polling backs off and pauses when the tab is hidden. Proof: unit test.
+- [ ] **F9** Medicines and allergies in the brief come from recorded findings. Proof: unit test.
+- [ ] **D4** Key hierarchy: the receipt key is derived separately and rotation re-wraps keys. Proof: `TestReceiptKeyIndependent`.
+- [ ] **D5** Secrets passed as files; document and speech readers run without secrets or network. Proof: `TestReaderEnvironment`, compose check.
+- [ ] **D6** Automatic pre-upgrade snapshot, desktop rollback path, Postgres major-version upgrade plan. Proof: script test + docs.
+- [ ] **X1** Login throttling that can't lock the owner out. Proof: `TestLoginThrottlePostgres`.
+- [ ] **X2** One-time setup token for public-origin installs. Proof: `TestSetupTokenPostgres`.
+- [ ] **X3** Idle session timeout, sign out everywhere, re-authentication for export, share, delete and provider change. Proof: `TestSessionPolicyPostgres`.
+- [ ] **X4** CPU, memory and time limits on subprocesses; rate limits on upload and voice. Proof: unit tests.
+- [ ] **X5** Dependabot, govulncheck and npm audit in CI. Proof: workflow + local `govulncheck` run.
+- [ ] **R1** Prebuilt, digest-pinned images for desktop users; pinned speech-model revision. Proof: launcher test + Dockerfile check.
+- [ ] **R2** Retire the legacy `windows-*` tag release channel. Proof: workflow diff.
+- [ ] **R3** Launcher Stop, Delete, Logs and Uninstall; restore stops the old stack. Proof: `scripts/verify_desktop.py` checks.
+- [ ] **P2** Docs split into user guide, operator guide and verification log, with numbers generated from scorecards. Proof: `scripts/check_docs.py`.
+- [ ] **P3** CHANGELOG and decision records for safety and validator choices. Proof: files present + `check_docs.py`.
+
+## P2: maintainability and polish
+
+- [ ] **S10** Emergency-contact and locale settings validated at startup and shown in exports. Proof: `TestStartupConfig`.
+- [ ] **V11** Controlled vocabulary for concepts (plain term plus optional code). Proof: `TestConceptVocabulary`.
+- [ ] **C4** "Why this question?" written by the app. Proof: `TestQuestionReasonAppAuthored`.
+- [ ] **M5** No display-time "patient"→"user" rewriting; stored wording migrated. Proof: `TestStoredWordingMigrated`.
+- [ ] **M6** Special-case regexes folded into the context engine. Proof: corpus + `TestNoSpecialCaseRegexes`.
+- [ ] **O7** Deterministic evidence selection near the input budget. Proof: `TestEvidenceSelection`.
+- [ ] **O8** Cost and wait time per encounter shown to the owner. Proof: unit test.
+- [ ] **A3** Optional stability check for assessments. Proof: `TestAssessmentStability`.
+- [ ] **E6** Mutation testing for `internal/clinical`. Proof: `scripts/mutation_check.py`.
+- [ ] **F10** Polish: one date formatter, `autocomplete="off"` on clinical fields, warnings in the journal list, Firefox audio resampling, smaller components, lint and unit tests. Proof: `npm run lint`, `npm test`.
+- [ ] **D7** Time-based backup retention and loud failure logs. Proof: `tests/test_backup_script.py`.
+- [ ] **X6** Trusted Types in the CSP; healthcheck port read from config. Proof: `TestSecurityHeaders`.
+- [ ] **R4** Update notice without the app contacting any server. Proof: unit test.
+- [ ] **R5** Better default dictation model; `go build ./...` works locally. Proof: Dockerfile check + `go build ./...`.
+
+## HANDOFF (needs a person)
+
+- [h] **H1** Clinical review of the urgent rules, pathways, red flags and "don't miss" lines; name a clinical lead and a review cadence.
+- [h] **H2** Clinician-graded holdout as a release gate.
+- [h] **H3** Live-model baseline (script ready; needs credentials and approval).
+- [h] **H4** Code signing and notarization for macOS and Windows.
+- [h] **H5** Regulatory and license review.
+- [h] **H6** Backup and restore test on real Windows.
+
+Next steps for each handoff item are filled in as the work that prepares it lands.
+
+## Corpus baseline
+
+Recorded before any rule changed. Filled in by E1.
+
+## Label changes
+
+None yet.
