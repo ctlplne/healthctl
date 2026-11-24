@@ -49,14 +49,23 @@ Open the restored installation on the port you chose, sign in with the backed-up
 
 ## Scheduled backups
 
-From the application directory, enable the local backup worker.
+Scheduled backups run by default with `docker compose up`. `scripts/init.py` writes `CLINICAL_BACKUP_DIRECTORY` for a new installation, pointing to a `healthctl-backups` folder in your home directory, outside Docker and outside this checkout, so `docker compose down -v`, a Docker reset or deleting the checkout doesn't remove the backups too. Choose another folder with `python3 scripts/init.py --backup-directory /path/on/another/drive`. On Linux, init also sets `CLINICAL_BACKUP_USER` to your user so the worker can write there. An older `.env` without `CLINICAL_BACKUP_DIRECTORY` keeps using the `clinical_backups` Docker volume, and the journal says so.
 
 ```sh
-docker compose --profile backups up -d --wait backup
 docker compose logs --tail 10 backup
 ```
 
-The worker writes a PostgreSQL custom-format snapshot immediately, verifies its archive listing and repeats every `CLINICAL_BACKUP_INTERVAL_HOURS` (default 24). It retains `CLINICAL_BACKUP_KEEP` snapshots (default seven) and limits cleanup to its own dated filenames. Session tokens, brief access grants and the ChatGPT subscription vault are excluded. Defaults use the separate `clinical_backups` named volume. To store snapshots on another encrypted drive, set `CLINICAL_BACKUP_DIRECTORY` to an existing absolute path writable by the PostgreSQL container account. Back up the matching installation key independently. To pause scheduled backups, run `docker compose --profile backups stop backup`.
+The worker writes a PostgreSQL custom-format snapshot immediately, verifies its archive listing and repeats every `CLINICAL_BACKUP_INTERVAL_HOURS` (default 24). It retains `CLINICAL_BACKUP_KEEP` snapshots (default seven) and limits cleanup to its own dated filenames. Session tokens, brief access grants and the ChatGPT subscription vault are excluded. Each run records its time and outcome, never any clinical content, so the journal can show when the last backup finished or that one failed. A failed run logs `backup: FAILED` and leaves earlier snapshots unchanged. To pause scheduled backups, run `docker compose stop backup`.
+
+The snapshots don't contain the installation key. Save a recovery kit so a backup can be opened after this computer is lost:
+
+```sh
+python3 scripts/recovery_kit.py
+```
+
+The script writes a private file with the key and database password to your home folder (or `--output PATH`) and prints a short fingerprint. Move the file to a password manager or encrypted drive, then enter the fingerprint in the journal. The journal keeps asking until the fingerprint matches the key in use, asks again after a key rotation, and asks you to check the kit every six months.
+
+`scripts/init.py` refuses to create a new key when this Compose project already has a data volume, because a new key cannot read the existing journal. Restore the `.env` from your recovery kit instead.
 
 ## Owner recovery and key rotation
 

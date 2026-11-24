@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { InstallationSafety } from './safety'
 import { createRoot } from 'react-dom/client'
 import {
   BookOpen,
@@ -602,6 +603,8 @@ function App() {
                 />
               </RegionContext.Provider>
             ) : (
+              <>
+              <InstallationSafety />
               <Journal
                 rows={records}
                 settings={settings}
@@ -630,6 +633,7 @@ function App() {
                 }}
                 onSettings={() => move('settings')}
               />
+              </>
             )}
           </main>
           <footer className="workspace-footer">

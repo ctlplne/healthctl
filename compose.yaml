@@ -68,11 +68,10 @@ services:
     networks: [database, inference]
   backup:
     image: postgres:16.15-alpine@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea
-    profiles: [backups]
     restart: unless-stopped
     depends_on:
       db: {condition: service_healthy}
-    user: postgres
+    user: ${CLINICAL_BACKUP_USER:-postgres}
     entrypoint: ["/bin/sh", "/opt/backup.sh"]
     environment:
       PGHOST: db
@@ -81,6 +80,7 @@ services:
       PGPASSWORD: ${POSTGRES_PASSWORD}
       BACKUP_INTERVAL_HOURS: ${CLINICAL_BACKUP_INTERVAL_HOURS:-24}
       BACKUP_KEEP: ${CLINICAL_BACKUP_KEEP:-7}
+      BACKUP_DESTINATION: ${CLINICAL_BACKUP_DIRECTORY:-clinical_backups}
     volumes:
       - ${CLINICAL_BACKUP_DIRECTORY:-clinical_backups}:/var/lib/postgresql/data
       - ./scripts/backup.sh:/opt/backup.sh:ro

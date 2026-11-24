@@ -61,7 +61,9 @@ case "${1:-}" in
  active; target="${2:?Choose a backup filename}"; [[ ! -e "$target" ]] || fail "Choose a new backup filename."
  tmp="$(mktemp "$(dirname "$target")/.healthctl-backup-XXXXXXXX")";trap 'rm -f "$tmp"' EXIT
  { sed -n 's/^CLINICAL_DATA_KEY=//p' "$folder/settings.env"; compose exec -T db pg_dump -Fc -U clinicalhistory -d clinicalhistory --no-owner --no-acl --exclude-table-data=public.sessions --exclude-table-data=public.brief_access --exclude-table-data=public.chatgpt_vault </dev/null; } | "$resources/archive" seal 3<&3 > "$tmp"
- ln "$tmp" "$target" || fail "The backup could not be installed at that location.";;
+ ln "$tmp" "$target" || fail "The backup could not be installed at that location."
+ # Let the journal show when the last backup was made. A failure here never undoes the backup.
+ compose exec -T db psql -U clinicalhistory -d clinicalhistory -q -c "INSERT INTO backup_status(id,last_attempt,last_success,last_error,destination_kind) VALUES(1,now(),now(),'','desktop_manual') ON CONFLICT (id) DO UPDATE SET last_attempt=now(),last_success=now(),last_error='',destination_kind='desktop_manual'" </dev/null >/dev/null 2>&1 || true;;
  restore)
  file="${2:?Choose a backup}";[[ -f "$file" ]] || fail "Backup missing."
  allocate

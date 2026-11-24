@@ -2219,3 +2219,25 @@ pre {
   background: #fff0e7;
   color: #713d26;
 }
+.installation-safety {
+  border: 1px solid #e4d3a0;
+  background: #fdf9ec;
+  margin-bottom: 1rem;
+}
+.installation-safety h2 {
+  font-size: 1.15rem;
+  margin: 0 0 0.5rem;
+}
+.installation-safety code {
+  font-size: 0.85rem;
+}
+.installation-safety .inline-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.6rem;
+  margin: 0.6rem 0;
+}
+.installation-safety .inline-form label {
+  flex: 1 1 14rem;
+}

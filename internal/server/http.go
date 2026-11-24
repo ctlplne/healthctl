@@ -135,6 +135,7 @@ func (s *Server) Handler() http.Handler {
 	s.chatGPTRoutes(m)
 	s.interchangeRoutes(m)
 	s.evidenceRoutes(m)
+	s.installationRoutes(m)
 	m.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) { emit(w, 404, object{"error": "Unknown API operation."}) })
 	m.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(200); io.WriteString(w, "ok\n") })
 	m.HandleFunc("GET /readyz", func(w http.ResponseWriter, r *http.Request) {

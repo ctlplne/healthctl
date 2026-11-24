@@ -441,3 +441,18 @@ func (s *Store) RecoverPending(ctx context.Context) error {
 	}
 	return rows.Err()
 }
+
+const recoveryLabel = "healthctl-recovery-kit-v1"
+
+// RecoveryFingerprint identifies the installation key that a recovery kit must
+// hold. It is derived one way from the key and changes when the key rotates.
+// scripts/recovery_kit.py computes the same value.
+func (s *Store) RecoveryFingerprint() string {
+	m := hmac.New(sha256.New, s.key)
+	m.Write([]byte(recoveryLabel))
+	h := fmt.Sprintf("%x", m.Sum(nil))[:12]
+	return h[0:4] + "-" + h[4:8] + "-" + h[8:12]
+}
+
+// FingerprintForTest computes the recovery fingerprint for a raw key.
+func FingerprintForTest(key []byte) string { return (&Store{key: key}).RecoveryFingerprint() }
