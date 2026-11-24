@@ -1,5 +1,5 @@
 ARG SYFT_IMAGE=anchore/syft:v1.57.2@sha256:e97e20b6e6d1699c60296b66ab337941724f9bd06ac279d893eda89601fc4b2a
-FROM node:22-bookworm@sha256:363e1587494626837fa7f9a23bdb453d13b0ff3c67c705c2805cfc69c2d2fad7 AS ui
+FROM node:25-bookworm@sha256:78839ac448c23517f8eab2e8f7943d9b4f73979eb7f8bed2c73dbf72ff869e7b AS ui
 WORKDIR /ui
 COPY web/package*.json ./
 RUN npm ci --no-fund --no-audit
