@@ -2269,6 +2269,7 @@ pre {
   margin: 0 0 0.4rem;
 }
 .primary.danger {
+  color: #fff;
   background: #9a3412;
   border-color: #9a3412;
 }

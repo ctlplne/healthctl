@@ -328,7 +328,7 @@ export function EncounterPage({
                     Your history is saved, so you can return to the journal while you wait.</>}</p>
               </>
             ) : readyMessage && (
-              <p className="model-ready" role="status">
+              <p className="model-ready">
                 {readyMessage}{' '}
                 {ready.goTo && (
                   <button type="button" className="text-button" onClick={() => setTab(ready.goTo!)}>

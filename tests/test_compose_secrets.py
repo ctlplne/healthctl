@@ -1,6 +1,9 @@
-"""The installation key and database password reach containers as files."""
+"""Secrets can reach the containers as files without weakening read-only containers."""
+import importlib.util
 from pathlib import Path
 import re
+import stat
+import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -14,26 +17,39 @@ def service(text, name):
 
 
 class ComposeSecrets(unittest.TestCase):
-    def setUp(self):
-        self.text = (ROOT / "compose.yaml").read_text()
+    def test_database_reads_its_password_from_a_file(self):
+        text = (ROOT / "compose.yaml").read_text()
+        db = service(text, "db")
+        self.assertIn("POSTGRES_PASSWORD_FILE: /run/secrets/database_password", db)
+        self.assertNotRegex(db, r"\n\s+POSTGRES_PASSWORD:")
+        self.assertRegex(text, r"\n  database_password:\n    environment: POSTGRES_PASSWORD\n")
+        # Compose can only mount file secrets into read-only services, and
+        # the app must stay read-only.
+        self.assertIn("read_only: true", service(text, "app"))
 
-    def test_app_reads_secrets_from_files(self):
-        app = service(self.text, "app")
-        self.assertNotRegex(app, r"\n\s+CLINICAL_DATA_KEY:", "the key must not be an environment variable")
-        self.assertNotRegex(app, r"\n\s+PGPASSWORD:", "the password must not be an environment variable")
-        self.assertIn("CLINICAL_DATA_KEY_FILE: /run/secrets/clinical_data_key", app)
-        self.assertIn("PGPASSWORD_FILE: /run/secrets/database_password", app)
-        self.assertIn("secrets: [clinical_data_key, database_password]", app)
+    def test_override_passes_files_to_the_app_and_backup(self):
+        text = (ROOT / "compose.secrets.yaml").read_text()
+        app, backup = service(text, "app"), service(text, "backup")
+        self.assertIn("CLINICAL_DATA_KEY_FILE: /run/secrets/clinical_data_key_file", app)
+        self.assertIn("PGPASSWORD_FILE: /run/secrets/database_password_file", app)
+        self.assertIn('CLINICAL_DATA_KEY: ""', app)
+        self.assertIn("PGPASSWORD_FILE: /run/secrets/database_password_file", backup)
+        self.assertIn("file: ./.secrets/clinical_data_key", text)
 
-    def test_database_and_backup_use_the_password_file(self):
-        for name in ("db", "backup"):
-            block = service(self.text, name)
-            self.assertNotRegex(block, r"\n\s+(POSTGRES_PASSWORD|PGPASSWORD):", name)
-            self.assertIn("secrets: [database_password]", block)
-
-    def test_secrets_are_defined(self):
-        self.assertRegex(self.text, r"\nsecrets:\n(?:  .*\n)*  clinical_data_key:\n    environment: CLINICAL_DATA_KEY\n")
-        self.assertRegex(self.text, r"\n  database_password:\n    environment: POSTGRES_PASSWORD\n")
+    def test_secret_files_script(self):
+        spec = importlib.util.spec_from_file_location("secret_files", ROOT / "scripts" / "secret_files.py")
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        with tempfile.TemporaryDirectory() as d:
+            env = Path(d) / ".env"
+            env.write_text("CLINICAL_DATA_KEY=synthetic-key\nPOSTGRES_PASSWORD=synthetic-password\n")
+            folder = Path(d) / ".secrets"
+            mod.write(env, folder)
+            self.assertEqual((folder / "clinical_data_key").read_text(), "synthetic-key")
+            self.assertEqual(stat.S_IMODE(folder.stat().st_mode), 0o700)
+            env.write_text("POSTGRES_PASSWORD=x\n")
+            with self.assertRaises(SystemExit):
+                mod.write(env, folder)
 
 
 if __name__ == "__main__":
