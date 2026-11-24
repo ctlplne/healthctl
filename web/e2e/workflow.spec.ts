@@ -135,6 +135,14 @@ async function start(
   await guidanceVisible(page, true)
   return e.id as string
 }
+// After a reload the encounter is still open (F4). Older steps that went back
+// through the journal still work when the journal is shown.
+async function reopen(page: Page, concern: string | RegExp) {
+  const row = page.getByRole('button', { name: concern instanceof RegExp ? concern : new RegExp(concern) })
+  await expect(page.getByRole('heading', { name: 'Encounter record' }).or(row.first())).toBeVisible()
+  if (await row.count()) await row.first().click()
+  await expect(page.getByRole('heading', { name: 'Encounter record' })).toBeVisible()
+}
 async function remove(page: Page) {
   await page.getByText('Manage encounter', { exact: true }).click()
   await page
@@ -419,7 +427,7 @@ test('Compatible endpoint rejection, recovery and explicit destination changes',
   ).toBeVisible()
   await guidanceVisible(page, true)
   await page.reload()
-  await page.getByRole('button', { name: new RegExp(concern) }).click()
+  await reopen(page, concern)
   await page.getByRole('button', { name: 'Retry provider request' }).click()
   await expect(
     page.getByRole('heading', {
@@ -1499,7 +1507,7 @@ async function accessible(page: Page, screen: string) {
   const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze()
   const serious = result.violations
     .filter((v) => v.impact === 'serious' || v.impact === 'critical')
-    .map((v) => screen + ': ' + v.id + ' (' + v.nodes.length + ')')
+    .map((v) => screen + ': ' + v.id + ' ' + v.nodes.map((n) => n.target.join(' ')).join(', '))
   expect(serious).toEqual([])
 }
 test('Main screens pass automated accessibility checks', async ({ page }) => {

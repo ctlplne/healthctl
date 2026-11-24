@@ -7,6 +7,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/hmac"
+	"crypto/rand"
 	"crypto/sha256"
 	"database/sql"
 	"embed"
@@ -27,27 +28,38 @@ var ErrConflict = errors.New("record changed or request identifier was reused")
 var ErrProviderChanged = errors.New("provider settings changed")
 
 type Store struct {
-	DB         *sql.DB
+	DB *sql.DB
+	// box encrypts records with the data key. kek is the installation key; it
+	// only wraps the data key and the receipt key and seals the key check.
 	box        cipher.AEAD
+	kek        cipher.AEAD
 	key        []byte
 	receiptKey []byte
+	dataLegacy bool
+}
+
+func aead(key []byte) (cipher.AEAD, error) {
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return nil, err
+	}
+	return cipher.NewGCMWithRandomNonce(block)
 }
 
 func Open(ctx context.Context, dsn string, key []byte) (*Store, error) {
-	block, err := aes.NewCipher(key)
-	if err != nil || len(key) != 32 {
+	if len(key) != 32 {
 		return nil, errors.New("expected a 256-bit installation key")
 	}
-	box, err := cipher.NewGCMWithRandomNonce(block)
+	kek, err := aead(key)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("expected a 256-bit installation key")
 	}
 	db, err := sql.Open("pgx", dsn)
 	if err != nil {
 		return nil, err
 	}
 	db.SetMaxOpenConns(12)
-	s := &Store{DB: db, box: box, key: key}
+	s := &Store{DB: db, kek: kek, key: key}
 	if err = s.migrate(ctx); err != nil {
 		db.Close()
 		return nil, err
@@ -90,29 +102,88 @@ func (s *Store) migrate(ctx context.Context) error {
 			return err
 		}
 	}
+	var existing bool
+	if err = tx.QueryRowContext(ctx, "SELECT EXISTS(SELECT 1 FROM installation_key WHERE id=1)").Scan(&existing); err != nil {
+		return err
+	}
 	const check = "Clinical History installation key check"
-	sealed := s.box.Seal(nil, nil, []byte(check), []byte("key-check"))
+	sealed := s.kek.Seal(nil, nil, []byte(check), []byte("key-check"))
 	if _, err = tx.ExecContext(ctx, "INSERT INTO installation_key(id, verifier) VALUES(1,$1) ON CONFLICT DO NOTHING", sealed); err != nil {
 		return err
 	}
 	if err = tx.QueryRowContext(ctx, "SELECT verifier FROM installation_key WHERE id=1").Scan(&sealed); err != nil {
 		return err
 	}
-	plain, err := s.box.Open(nil, nil, sealed, []byte("key-check"))
+	plain, err := s.kek.Open(nil, nil, sealed, []byte("key-check"))
 	if err != nil || string(plain) != check {
 		return errors.New("installation data key mismatch")
 	}
-	wrapped := s.box.Seal(nil, nil, s.key, []byte("submission-key"))
-	if _, err = tx.ExecContext(ctx, "INSERT INTO receipt_key VALUES(1,$1) ON CONFLICT DO NOTHING", wrapped); err != nil {
+	if err = s.loadDataKey(ctx, tx, existing); err != nil {
 		return err
 	}
-	if err = tx.QueryRowContext(ctx, "SELECT wrapped FROM receipt_key WHERE id=1").Scan(&wrapped); err != nil {
-		return err
-	}
-	if s.receiptKey, err = s.box.Open(nil, nil, wrapped, []byte("submission-key")); err != nil {
+	if err = s.loadReceiptKey(ctx, tx); err != nil {
 		return err
 	}
 	return tx.Commit()
+}
+
+// loadDataKey unwraps the data key, creating it on first use. A new
+// installation gets a random key. An installation whose records were written
+// before the key hierarchy keeps its original key as the data key.
+func (s *Store) loadDataKey(ctx context.Context, tx *sql.Tx, existing bool) error {
+	var wrapped []byte
+	err := tx.QueryRowContext(ctx, "SELECT wrapped, legacy FROM data_key WHERE id=1").Scan(&wrapped, &s.dataLegacy)
+	if errors.Is(err, sql.ErrNoRows) {
+		dek := s.key
+		s.dataLegacy = existing
+		if !existing {
+			dek = make([]byte, 32)
+			if _, err = rand.Read(dek); err != nil {
+				return err
+			}
+		}
+		wrapped = s.kek.Seal(nil, nil, dek, []byte("data-key"))
+		if _, err = tx.ExecContext(ctx, "INSERT INTO data_key(id, wrapped, legacy) VALUES(1,$1,$2)", wrapped, s.dataLegacy); err != nil {
+			return err
+		}
+	} else if err != nil {
+		return err
+	}
+	dek, err := s.kek.Open(nil, nil, wrapped, []byte("data-key"))
+	if err != nil || len(dek) != 32 {
+		return errors.New("installation data key mismatch")
+	}
+	s.box, err = aead(dek)
+	return err
+}
+
+// loadReceiptKey unwraps the key for submission receipts. It is random and
+// independent of the installation and data keys. An older installation used
+// its installation key here; that key is replaced once, which only affects a
+// retry of a request submitted before the upgrade.
+func (s *Store) loadReceiptKey(ctx context.Context, tx *sql.Tx) error {
+	var wrapped []byte
+	var independent bool
+	err := tx.QueryRowContext(ctx, "SELECT wrapped, independent FROM receipt_key WHERE id=1").Scan(&wrapped, &independent)
+	if err == nil {
+		if s.receiptKey, err = s.kek.Open(nil, nil, wrapped, []byte("submission-key")); err != nil {
+			return err
+		}
+		if independent {
+			return nil
+		}
+	} else if !errors.Is(err, sql.ErrNoRows) {
+		return err
+	}
+	if s.receiptKey == nil || hmac.Equal(s.receiptKey, s.key) {
+		s.receiptKey = make([]byte, 32)
+		if _, err = rand.Read(s.receiptKey); err != nil {
+			return err
+		}
+	}
+	wrapped = s.kek.Seal(nil, nil, s.receiptKey, []byte("submission-key"))
+	_, err = tx.ExecContext(ctx, "INSERT INTO receipt_key(id, wrapped, independent) VALUES(1,$1,true) ON CONFLICT (id) DO UPDATE SET wrapped=EXCLUDED.wrapped, independent=true", wrapped)
+	return err
 }
 
 func (s *Store) Digest(v any) ([]byte, error) {

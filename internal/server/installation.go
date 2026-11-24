@@ -5,6 +5,7 @@ import (
 	"crypto/subtle"
 	"database/sql"
 	"errors"
+	"github.com/ctlplne/healthctl/internal/sandbox"
 	"net/http"
 	"strings"
 	"time"
@@ -56,7 +57,7 @@ func (s *Server) installationSafety(w http.ResponseWriter, r *http.Request, owne
 			backup["lastSuccess"] = success.Time
 		}
 	}
-	emit(w, 200, object{"recoveryKit": kit, "backup": backup})
+	emit(w, 200, object{"recoveryKit": kit, "backup": backup, "readers": sandbox.Status()})
 	return nil
 }
 

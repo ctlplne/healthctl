@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/binary"
 	"github.com/ctlplne/healthctl/internal/clinical"
+	"github.com/ctlplne/healthctl/internal/sandbox"
 	"io"
 	"net/http"
 	"os"
@@ -78,7 +79,8 @@ func (s *Server) voice(w http.ResponseWriter, r *http.Request, _ int) error {
 		if err = os.WriteFile(input, wav, 0600); err != nil {
 			return err
 		}
-		cmd := exec.CommandContext(ctx, cli, "-m", model, "-f", input, "-l", "en", "-t", "2", "-nt", "-otxt", "-of", out)
+		// The speech reader gets no secrets and, where possible, no network.
+		cmd := sandbox.Command(ctx, cli, "-m", model, "-f", input, "-l", "en", "-t", "2", "-nt", "-otxt", "-of", out)
 		if cmd.Run() != nil {
 			return problem{422, "Local transcription failed. The recording is available to retry or transcribe another way."}
 		}

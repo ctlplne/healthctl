@@ -275,17 +275,18 @@ export function BriefBody({
 
         </>
       )}
+      <h3>Open questions and conflicts</h3>
       {!!b.contradictions?.length && (
         <>
-          <h3>Conflicts to clarify</h3>
+          <h4>Conflicts to clarify</h4>
           <CompactList values={b.contradictions.map((c) => 'Conflict · ' + c.concept)} />
         </>
       )}
-      <h3>Open questions</h3>
+      <h4>Open questions</h4>
       <CompactList values={b.outstanding || []} limit={5} />
       {!!(e.redFlagsDue?.length || e.gaps?.length) && (
         <>
-          <h3>Not yet asked · listed by the app</h3>
+          <h4>Not yet asked · listed by the app</h4>
           <CompactList values={notYetAsked(e)} />
         </>
       )}

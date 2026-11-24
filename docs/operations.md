@@ -8,11 +8,11 @@ The default display name is `healthctl`. The Compose project still uses `clinica
 
 One owner account controls one installation. Choose a unique password and store it in a password manager. Passwords use bcrypt at cost 12. Session cookies are HTTP-only, same-site strict, expiring after 12 hours. The database stores session token hashes. Authenticated writes require a session-bound CSRF value and the HTTP server checks request origin and hostname. Sessions, exports and UI responses use no-store cache controls. Login attempts share a persistent budget of ten per ten-minute window on this single-owner installation.
 
-The app encrypts each clinical document with AES-256-GCM and a fresh, library-generated nonce. Associated data binds the owner and encounter IDs. A key verifier detects incorrect restore keys before the service starts. Metadata such as row IDs, timestamps, dataset size, owner username, password hash and nonclinical provider configuration remains visible to the database operator. Use an encrypted host volume and encrypted backups for this metadata, the private environment file, and downloaded reports. Access to the host, its Docker daemon, or both the data and its key gives access to the history. The key also encrypts uploaded originals using owner, encounter and document identifiers as associated data. Use the offline rotation command below to change keys while preserving the database and retry receipts.
+The app encrypts each clinical document with AES-256-GCM and a fresh, library-generated nonce, under a data key. The installation key in `.env` only wraps the data key and a separate, random key for submission receipts, so rotating the installation key re-wraps those two keys and never rewrites the records. An installation created before this key hierarchy keeps its original key as its data key. Associated data binds the owner and encounter IDs. A key verifier detects incorrect restore keys before the service starts. Metadata such as row IDs, timestamps, dataset size, owner username, password hash and nonclinical provider configuration remains visible to the database operator. Use an encrypted host volume and encrypted backups for this metadata, the private environment file, and downloaded reports. Access to the host, its Docker daemon, or both the data and its key gives access to the history. The key also encrypts uploaded originals using owner, encounter and document identifiers as associated data. Use the offline rotation command below to change keys while preserving the database and retry receipts.
 
 ChatGPT OAuth credentials use AES-256-GCM with the owner and host ID as associated data. Offline data-key rotation rewraps the credential vault. Owner recovery removes all subscription links.
 
-Secrets reside on the server. A local `.env` is created with mode 0600 and excluded from the build and repository. A production operator may use the provider adapter's `*_API_KEY_FILE` variables with explicit Docker secret mounts in a private Compose override. Supply one source for each key. Keep state, backups and secrets outside the source tree when distributing software. Backup storage keys should be managed separately from the database archive.
+Secrets reside on the server. A local `.env` is created with mode 0600 and excluded from the build and repository. Compose passes the installation key and the database password to the containers as secret files under `/run/secrets` (this needs Docker Compose 2.23 or later), so they don't appear in the containers' configuration. A production operator may use the provider adapter's `*_API_KEY_FILE` variables with explicit Docker secret mounts in a private Compose override. The local document and speech readers run with a fixed, minimal environment, so no key, password or URL reaches them, and on Linux in their own network namespace when the system allows one. Docker's default security profile doesn't, so inside the standard container they share the app's network; the installation safety panel shows which applies. Supply one source for each key. Keep state, backups and secrets outside the source tree when distributing software. Backup storage keys should be managed separately from the database archive.
 
 ## Locale and TLS
 
@@ -80,14 +80,18 @@ Recovery prompts privately for a new password, stops the HTTP service, updates t
 
 ## Upgrades and rollback
 
-Back up the database and retain the current image before an upgrade. For a clean checkout tracking `main` and using the default Compose project, run these commands. For a pinned installation, check out the intended revision in place of the pull.
+Upgrade with `scripts/upgrade.py`. It writes a verified pre-upgrade snapshot to the backup folder first (`pre-upgrade-<time>.dump`), keeps the current image as `clinical-history-app:previous`, and only then rebuilds and restarts. If the snapshot fails, nothing changes. For a clean checkout tracking `main`, run these commands; for a pinned installation, check out the intended revision in place of the pull.
 
 ```sh
-docker image tag clinical-history-app:latest clinical-history:before-upgrade
 git pull --ff-only origin main
-docker compose up -d --build --wait
-docker compose ps
+python3 scripts/upgrade.py
 ```
+
+To go back, `python3 scripts/upgrade.py --rollback` stops the app, recreates the database from the pre-upgrade snapshot and starts the previous image. Anything recorded after the upgrade is not kept, so export it first.
+
+**Desktop apps.** Choose **Back up now** before installing a new version. To roll back, reinstall the previous version and restore that backup with the same key.
+
+**PostgreSQL major versions.** The image pins PostgreSQL 16. A move to a newer major version is never automatic: take a snapshot with `scripts/upgrade.py` (or **Back up now**), start the new major version on an empty volume in a separate Compose project, restore the snapshot there with the same installation key, check a report and an original upload, and only then switch users over and retire the old volume. Keep the old volume until the new one has run through a full backup cycle.
 
 Migrations run transactionally. Older encounters retain their recorded model, policy and history revision. For an application rollback, restore the **pre-upgrade** snapshot into a separate empty Compose project using the matching key, and start its retained pre-upgrade image there. Confirm its report and original records before switching user access. A database created by the new release is intended for the new service. A local evidence collection can be rolled back separately in the operator interface, and its historical citations remain inspectable.
 

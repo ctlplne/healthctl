@@ -8,12 +8,12 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
+	"github.com/ctlplne/healthctl/internal/sandbox"
 	"image"
 	_ "image/jpeg"
 	"image/png"
 	"io"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -267,9 +267,9 @@ func (b *bounded) Write(p []byte) (int, error) {
 	return b.Buffer.Write(p)
 }
 func run(ctx context.Context, name string, args ...string) (string, error) {
-	cmd := exec.CommandContext(ctx, name, args...)
-	// Native readers receive no environment secrets, URLs, or caller-controlled switches.
-	cmd.Env = []string{"PATH=/usr/bin:/bin", "LC_ALL=C.UTF-8", "OMP_THREAD_LIMIT=1", "HOME=/nonexistent"}
+	// Native readers receive no environment secrets, URLs, or caller-controlled
+	// switches, and no network where the system allows that.
+	cmd := sandbox.Command(ctx, name, args...)
 	var out bounded
 	out.limit = 1 << 20
 	cmd.Stdout = &out

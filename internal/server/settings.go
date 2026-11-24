@@ -1,13 +1,18 @@
 package server
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/ctlplne/healthctl/internal/clinical"
 
 	"github.com/ctlplne/healthctl/internal/provider"
 )
+
+// probeTimeout bounds the synthetic interview sent by "Test connection".
+const probeTimeout = 4 * time.Second
 
 type settingsRequest struct {
 	Provider provider.Config `json:"provider"`
@@ -85,6 +90,10 @@ func (s *Server) testSettings(w http.ResponseWriter, r *http.Request, owner int)
 // a model that can't meet the contract fails at setup rather than mid-interview.
 // A transport or provider error leaves the probe inconclusive.
 func (s *Server) clinicalProbe(r *http.Request, cfg provider.Config) (object, bool) {
+	// A slow model must not hold up the connection test; it stays inconclusive.
+	ctx, cancel := context.WithTimeout(r.Context(), probeTimeout)
+	defer cancel()
+	r = r.WithContext(ctx)
 	text := "Synthetic connection check: a mild cough for two days, no fever."
 	in := clinical.Input{Task: "interview", Age: 40, Concern: text, Answers: []clinical.Answer{{ID: "a1", Kind: "concern", Question: "What brings you here?", Text: text, Active: true}}, Facts: []clinical.Fact{}, Contradictions: []clinical.Contradiction{}, Outstanding: []string{}, ActiveWarnings: []clinical.Warning{}, HistoryRevision: 1}
 	var dropped []clinical.Rejection

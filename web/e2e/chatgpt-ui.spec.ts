@@ -364,7 +364,10 @@ test('Existing ChatGPT encounters keep their account until the owner confirms a 
     return r.fulfill({ json: record })
   })
   await page.reload()
-  await page.getByRole('button', { name: /Fictional account switch/ }).click()
+  // A reload keeps the encounter open (F4); the journal row is used only if shown.
+  const row = page.getByRole('button', { name: /Fictional account switch/ })
+  await expect(page.getByRole('heading', { name: 'Encounter record' }).or(row)).toBeVisible()
+  if (await row.count()) await row.click()
   await expect(page.locator('.record-aside')).toContainText(first)
   await expect(
     page.getByRole('alert').getByRole('link', { name: 'Manage usage' }),

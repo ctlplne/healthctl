@@ -1,6 +1,8 @@
 #!/bin/sh
 # Scheduled PostgreSQL snapshots. Runs by default with docker compose up.
 set -eu
+# The database password arrives as a Compose secret file.
+if [ -n "${PGPASSWORD_FILE:-}" ] && [ -r "$PGPASSWORD_FILE" ] && [ -z "${PGPASSWORD:-}" ]; then PGPASSWORD=$(cat "$PGPASSWORD_FILE"); export PGPASSWORD; fi
 umask 077
 cd /var/lib/postgresql/data
 fail_config() { echo "backup: $1" >&2; exit 2; }

@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -43,7 +44,17 @@ func main() {
 	logger := log.New(os.Stderr, "healthctl ", log.LstdFlags|log.LUTC)
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
-	key, err := base64.StdEncoding.DecodeString(os.Getenv("CLINICAL_DATA_KEY"))
+	// Secrets can arrive as files (Compose secrets) instead of environment
+	// variables, so they don't appear in the container's configuration.
+	// An explicitly set variable wins, so maintenance runs keep working.
+	if password, ok := secretFile("PGPASSWORD"); ok && os.Getenv("PGPASSWORD") == "" {
+		os.Setenv("PGPASSWORD", password)
+	}
+	rawKey := os.Getenv("CLINICAL_DATA_KEY")
+	if rawKey == "" {
+		rawKey, _ = secretFile("CLINICAL_DATA_KEY")
+	}
+	key, err := base64.StdEncoding.DecodeString(rawKey)
 	if err != nil || len(key) != 32 {
 		logger.Fatal("invalid installation data key")
 	}
@@ -136,4 +147,18 @@ func main() {
 	if err = httpd.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		logger.Fatal("server stopped unexpectedly")
 	}
+}
+
+// secretFile reads NAME_FILE when it is set. The value is trimmed of a final
+// newline only.
+func secretFile(name string) (string, bool) {
+	path := os.Getenv(name + "_FILE")
+	if path == "" {
+		return "", false
+	}
+	b, err := os.ReadFile(path)
+	if err != nil || len(b) > 4096 {
+		return "", false
+	}
+	return strings.TrimRight(string(b), "\r\n"), true
 }

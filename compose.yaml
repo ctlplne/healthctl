@@ -6,7 +6,8 @@ services:
     environment:
       POSTGRES_DB: clinicalhistory
       POSTGRES_USER: clinicalhistory
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run python3 scripts/init.py}
+      POSTGRES_PASSWORD_FILE: /run/secrets/database_password
+    secrets: [database_password]
     volumes:
       - clinical_data:/var/lib/postgresql/data
     healthcheck:
@@ -29,10 +30,10 @@ services:
       PGHOST: db
       PGPORT: '5432'
       PGUSER: clinicalhistory
-      PGPASSWORD: ${POSTGRES_PASSWORD:?Run python3 scripts/init.py}
+      PGPASSWORD_FILE: /run/secrets/database_password
       PGDATABASE: clinicalhistory
       PGSSLMODE: disable
-      CLINICAL_DATA_KEY: ${CLINICAL_DATA_KEY:?Run python3 scripts/init.py}
+      CLINICAL_DATA_KEY_FILE: /run/secrets/clinical_data_key
       CLINICAL_DISPLAY_NAME: ${CLINICAL_DISPLAY_NAME:-healthctl}
       CLINICAL_LOCALE: ${CLINICAL_LOCALE:-en}
       CLINICAL_UNITS: ${CLINICAL_UNITS:-as-reported}
@@ -53,6 +54,9 @@ services:
       BYOM_API_KEY: ${BYOM_API_KEY:-}
       CLINICAL_MODEL_PRICES: ${CLINICAL_MODEL_PRICES:-}
       BYOM_KEY_ENDPOINT: ${BYOM_KEY_ENDPOINT:-}
+    # The installation key and database password reach the app as files, not
+    # environment variables (Docker Compose 2.23 or later).
+    secrets: [clinical_data_key, database_password]
     read_only: true
     tmpfs: ["/tmp:rw,noexec,nosuid,nodev,size=128m,mode=1777"]
     mem_limit: 1g
@@ -77,10 +81,11 @@ services:
       PGHOST: db
       PGUSER: clinicalhistory
       PGDATABASE: clinicalhistory
-      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGPASSWORD_FILE: /run/secrets/database_password
       BACKUP_INTERVAL_HOURS: ${CLINICAL_BACKUP_INTERVAL_HOURS:-24}
       BACKUP_KEEP: ${CLINICAL_BACKUP_KEEP:-7}
       BACKUP_DESTINATION: ${CLINICAL_BACKUP_DIRECTORY:-clinical_backups}
+    secrets: [database_password]
     volumes:
       - ${CLINICAL_BACKUP_DIRECTORY:-clinical_backups}:/var/lib/postgresql/data
       - ./scripts/backup.sh:/opt/backup.sh:ro
@@ -92,6 +97,12 @@ services:
 volumes:
   clinical_data:
   clinical_backups:
+secrets:
+  # Created from the values scripts/init.py writes to .env.
+  clinical_data_key:
+    environment: CLINICAL_DATA_KEY
+  database_password:
+    environment: POSTGRES_PASSWORD
 networks:
   database:
     internal: true

@@ -12,6 +12,14 @@ const pagePaths: Record<Exclude<Page, 'record'>, string> = {
 const tabs = ['interview', 'history', 'estimate', 'report', 'sources', 'followup', 'prep']
 const id = /^[A-Za-z0-9_-]{1,128}$/
 
+// isAppPath reports whether a path is one of the app's own screens. Other
+// paths, such as /auth/callback, belong to their own flows and are left alone.
+export function isAppPath(pathname: string): boolean {
+  if (Object.values(pagePaths).includes(pathname)) return true
+  const parts = pathname.split('/').filter(Boolean)
+  return parts[0] === 'encounters' && !!parts[1] && id.test(parts[1]) && parts.length <= 3 && (parts.length === 2 || tabs.includes(parts[2]))
+}
+
 export function parseRoute(pathname: string): Route {
   const parts = pathname.split('/').filter(Boolean)
   if (parts[0] === 'encounters' && parts[1] && id.test(parts[1])) {

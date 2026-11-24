@@ -33,7 +33,7 @@ import { Operator } from './operator'
 import { setLocale } from './types'
 import type { Region } from './records'
 import { api, RequestError, SIGNED_OUT, updateToken } from './api'
-import { parseRoute, routePath, type Page } from './route'
+import { isAppPath, parseRoute, routePath, type Page } from './route'
 import { schedule } from './poll'
 import { Auth, IntakeForm, Journal, ProviderEditor } from './forms'
 import { EncounterPage } from './encounter'
@@ -189,11 +189,16 @@ function App() {
   // Keep the URL in step with the screen, so links, Back and reload work.
   useEffect(() => {
     if (page === 'record' && !e) return
+    // Wait until a link to an encounter has opened it, and leave paths that
+    // belong to other flows (such as a sign-in callback) alone.
+    if (startRoute.page === 'record' && !startOpened.current) return
+    if (location.hash || !isAppPath(location.pathname)) return
     const path = routePath({ page, encounterId: e?.id })
-    if (!location.hash && location.pathname !== path && !location.pathname.startsWith(path + '/')) {
+    if (location.pathname !== path && !location.pathname.startsWith(path + '/')) {
       window.history.pushState(null, '', path + location.search)
     }
   }, [page, e?.id])
+  const startOpened = useRef(startRoute.page !== 'record' || !startRoute.encounterId)
   useEffect(() => {
     const follow = () => {
       const r = parseRoute(location.pathname)
@@ -204,7 +209,6 @@ function App() {
     window.addEventListener('popstate', follow)
     return () => window.removeEventListener('popstate', follow)
   })
-  const startOpened = useRef(false)
   useEffect(() => {
     if (session?.authenticated && startRoute.page === 'record' && startRoute.encounterId && !startOpened.current) {
       startOpened.current = true
@@ -629,7 +633,7 @@ function App() {
                   startAtSources={sourceEncounter === e.id}
                   initialTab={startRoute.encounterId === e.id ? startRoute.tab : undefined}
                   onTab={(tab) => {
-                    if (!location.hash) window.history.replaceState(null, '', routePath({ page: 'record', encounterId: e.id, tab }) + location.search)
+                    if (!location.hash && isAppPath(location.pathname)) window.history.replaceState(null, '', routePath({ page: 'record', encounterId: e.id, tab }) + location.search)
                   }}
                   name={session.displayName}
                   emergency={session.emergency}
