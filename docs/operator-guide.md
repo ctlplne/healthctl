@@ -13,6 +13,7 @@ Setting `CLINICAL_PUBLIC_ORIGIN` requires HTTPS and secure cookies. The owner ac
 ## Backups, keys and upgrades
 
 - Scheduled backups go to `CLINICAL_BACKUP_DIRECTORY`, are kept by age (`CLINICAL_BACKUP_KEEP_DAYS`, default 30) with a floor of the newest `CLINICAL_BACKUP_KEEP`, and every failure logs `backup: FAILED`. [Scheduled backups](operations.md#scheduled-backups)
+- A forgotten owner password is reset on the host: `python3 scripts/maintenance.py recover-owner` for Docker, or **Reset owner password…** in the desktop launchers. There is no email reset. A reset ends every session, revokes brief links and removes ChatGPT links. [Owner recovery](operations.md#owner-recovery-and-key-rotation)
 - Records are encrypted under a data key that the installation key wraps. `scripts/maintenance.py rotate-key` replaces the installation key, issues a fresh data key and re-encrypts every record in one transaction, so the old key and older backups' keys no longer read current data. [Key rotation](operations.md#owner-recovery-and-key-rotation)
 - `python3 scripts/upgrade.py` snapshots before it changes anything, and `--rollback` restores the snapshot and the previous image. [Upgrades and rollback](operations.md#upgrades-and-rollback)
 

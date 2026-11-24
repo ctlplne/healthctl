@@ -16,6 +16,7 @@ import {
   ShieldCheck,
 } from 'lucide-react'
 import { api, updateToken } from './api'
+import { ForgotPassword } from './forgot'
 import { Destination, PlanSettings, ManageUsage } from './chatgpt'
 import {
   Brand,
@@ -174,6 +175,7 @@ export function Auth({
               {setup ? 'Create owner account' : 'Sign in'}
             </button>
           </form>
+          {!setup && <ForgotPassword />}
           <div className="auth-notice">
             <Notice text={session.notice} />
             <a href="/privacy.html" target="_blank" rel="noreferrer">

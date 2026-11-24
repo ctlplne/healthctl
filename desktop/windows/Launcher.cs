@@ -209,6 +209,13 @@ internal sealed class Workspace
     // command for it under the same lock as Start. It never creates a workspace.
     private string Manage(string arguments, string failure)
     {
+        return WithWorkspace(delegate(string compose) { return Run(compose + arguments, failure); });
+    }
+
+    // WithWorkspace prepares an existing workspace under the launcher lock and
+    // passes the compose command prefix for it to body.
+    private string WithWorkspace(Func<string, string> body)
+    {
         var release = Package.Manifest();
         docker = FindDocker();
         if (!File.Exists(Path.Combine(root, "workspace.conf"))) throw new IOException("There is no workspace yet. Open the journal first.");
@@ -239,8 +246,33 @@ internal sealed class Workspace
             environment["CLINICAL_PORT"] = settings[1];
             environment["CLINICAL_DATA_KEY"] = settings[2];
             environment["POSTGRES_PASSWORD"] = settings[3];
-            return Run("compose -p " + settings[0] + " -f compose.yaml -f desktop.yaml " + arguments, failure);
+            return body("compose -p " + settings[0] + " -f compose.yaml -f desktop.yaml ");
         }
+    }
+
+    // ResetPassword sets a new owner password, as scripts/maintenance.py
+    // recover-owner does: every session ends, shared brief links are revoked
+    // and ChatGPT links are removed. Records are kept.
+    internal string ResetPassword(string password)
+    {
+        byte[] secret = Encoding.UTF8.GetBytes(password);
+        if (secret.Length < 12 || secret.Length > 72 || password.IndexOf('\n') >= 0 || password.IndexOf('\r') >= 0)
+            throw new IOException("Use a password of 12 to 72 characters.");
+        WithWorkspace(delegate(string compose)
+        {
+            Run(compose + "stop app", "The workspace could not be stopped. Check Docker Desktop.");
+            string failure = null;
+            try
+            {
+                using (var input = new MemoryStream(secret))
+                    Run(compose + "run --rm --no-deps -T app recover-owner", "The password could not be reset. Your records are unchanged.", false, input);
+            }
+            catch (IOException ex) { failure = ex.Message; }
+            Run(compose + "up -d --no-build --pull never --wait app", "The workspace could not be restarted. Open the journal to start it.");
+            if (failure != null) throw new IOException(failure);
+            return "";
+        });
+        return "Password reset. Sign in with the new password, and connect ChatGPT again if you used it.";
     }
 
     internal string Stop()
@@ -278,6 +310,35 @@ internal sealed class Workspace
 
 internal static class Launcher
 {
+    // AskNewPassword asks for the new owner password twice. It returns null if
+    // the owner cancels or the two entries differ.
+    private static string AskNewPassword(IWin32Window owner)
+    {
+        using (var dialog = new Form { Text = "Reset the owner password", FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent,
+            MinimizeBox = false, MaximizeBox = false, AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, Padding = new Padding(16) })
+        {
+            var layout = new FlowLayoutPanel { FlowDirection = FlowDirection.TopDown, WrapContents = false, AutoSize = true };
+            var note = new Label { AutoSize = true, MaximumSize = new Size(380, 0),
+                Text = "Choose a new password of 12 to 72 characters for this workspace. Every device is signed out, shared brief links end and ChatGPT accounts must be connected again. Your records are kept." };
+            var first = new TextBox { UseSystemPasswordChar = true, Width = 360 };
+            var second = new TextBox { UseSystemPasswordChar = true, Width = 360 };
+            var ok = new Button { Text = "Reset password", AutoSize = true, DialogResult = DialogResult.OK };
+            var cancel = new Button { Text = "Cancel", AutoSize = true, DialogResult = DialogResult.Cancel };
+            layout.Controls.AddRange(new Control[] { note, new Label { Text = "New password", AutoSize = true }, first,
+                new Label { Text = "Repeat new password", AutoSize = true }, second, ok, cancel });
+            dialog.Controls.Add(layout);
+            dialog.AcceptButton = ok;
+            dialog.CancelButton = cancel;
+            if (dialog.ShowDialog(owner) != DialogResult.OK) return null;
+            if (first.Text != second.Text)
+            {
+                MessageBox.Show(owner, "The passwords didn't match. Try again.", "Reset the owner password", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return null;
+            }
+            return first.Text;
+        }
+    }
+
     [STAThread]
     private static int Main(string[] args)
     {
@@ -297,20 +358,25 @@ internal static class Launcher
                 using (var reader = new StreamReader(Package.Open("preview.txt"))) preview = reader.ReadToEnd().Trim();
                 var note = new Label { AutoSize = true, MaximumSize = new Size(440, 0), Text = preview };
                 var open = new Button { Text = "Open journal or try the demo", AutoSize = true, Padding = new Padding(6) };
+                var reset = new Button { Text = "Reset owner password…", AutoSize = true };
                 var stop = new Button { Text = "Stop the workspace", AutoSize = true };
                 var logs = new Button { Text = "Save logs", AutoSize = true };
                 var delete = new Button { Text = "Delete this workspace…", AutoSize = true };
                 var uninstall = new Button { Text = "Remove all healthctl data…", AutoSize = true };
                 var docs = new LinkLabel { Text = "Set up Docker Desktop for Windows", AutoSize = true };
                 var status = new Label { MaximumSize = new Size(440, 0), AutoSize = true, Text = "Start Docker Desktop using Linux containers, then open the journal." };
-                panel.Controls.AddRange(new Control[] { title, note, open, stop, logs, delete, uninstall, docs, status });
-                var manage = new Button[] { open, stop, logs, delete, uninstall };
+                panel.Controls.AddRange(new Control[] { title, note, open, reset, stop, logs, delete, uninstall, docs, status });
+                var manage = new Button[] { open, reset, stop, logs, delete, uninstall };
                 Func<Func<Workspace, string>, Task> perform = async delegate(Func<Workspace, string> action) {
                     foreach (var b in manage) b.Enabled = false;
                     var report = new Progress<string>(message => status.Text = message);
                     try { status.Text = await Task.Run(() => action(new Workspace(((IProgress<string>)report).Report))); }
                     catch (Exception ex) { status.Text = ex.Message; }
                     finally { foreach (var b in manage) b.Enabled = true; }
+                };
+                reset.Click += async delegate {
+                    string password = AskNewPassword(window);
+                    if (password != null) await perform(w => w.ResetPassword(password));
                 };
                 stop.Click += async delegate { await perform(w => w.Stop()); };
                 logs.Click += async delegate { await perform(w => w.Logs()); };

@@ -69,6 +69,19 @@ case "${1:-}" in
  ln "$tmp" "$target" || fail "The backup could not be installed at that location."
  # Let the journal show when the last backup was made. A failure here never undoes the backup.
  compose exec -T db psql -U clinicalhistory -d clinicalhistory -q -c "INSERT INTO backup_status(id,last_attempt,last_success,last_error,destination_kind) VALUES(1,now(),now(),'','desktop_manual') ON CONFLICT (id) DO UPDATE SET last_attempt=now(),last_success=now(),last_error='',destination_kind='desktop_manual'" </dev/null >/dev/null 2>&1 || true;;
+ reset-password)
+ # The same reset as scripts/maintenance.py recover-owner: every session ends,
+ # shared brief links are revoked and ChatGPT links are removed. Records stay.
+ active
+ IFS= read -r password || fail "Enter a new password."
+ bytes="$(printf '%s' "$password" | LC_ALL=C wc -c | tr -d ' ')"
+ (( bytes >= 12 && bytes <= 72 )) || fail "Use a password of 12 to 72 characters."
+ compose stop app </dev/null >&2
+ reset=ok
+ printf '%s' "$password" | compose run --rm --no-deps -T app recover-owner >&2 || reset=failed
+ start </dev/null
+ [[ "$reset" == ok ]] || fail "The password could not be reset. Your records are unchanged."
+ printf 'http://127.0.0.1:%s/\n' "$port";;
  stop)
  active; compose stop >&2;;
  logs)

@@ -2,7 +2,7 @@ import AppKit
 import UniformTypeIdentifiers
 
 final class Launcher: NSObject, NSApplicationDelegate {
-    private let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 540, height: 410),
+    private let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 540, height: 450),
                                   styleMask: [.titled, .closable, .miniaturizable], backing: .buffered, defer: false)
     private let status = NSTextField(wrappingLabelWithString: "Your workspace runs on this Mac using Docker Desktop.")
     private let stack = NSStackView()
@@ -28,6 +28,7 @@ final class Launcher: NSObject, NSApplicationDelegate {
         stack.addArrangedSubview(NSTextField(wrappingLabelWithString: preview.trimmingCharacters(in: .whitespacesAndNewlines)))
         for (label, action) in [("Open journal or try the demo", #selector(openJournal)), ("Connect a model", #selector(settings)),
                                 ("Set or clear an OpenAI API key…", #selector(platformKey)), ("Back up workspace…", #selector(backup)), ("Restore a backup into a new workspace…", #selector(restore)),
+                                ("Reset owner password…", #selector(resetPassword)),
                                 ("Stop the workspace", #selector(stop)), ("Save logs…", #selector(logs)),
                                 ("Delete this workspace…", #selector(deleteWorkspace)), ("Remove all healthctl data…", #selector(uninstall)),
                                 ("Get Docker Desktop", #selector(dockerLink))] {
@@ -119,6 +120,34 @@ final class Launcher: NSObject, NSApplicationDelegate {
             run(["platform-key"], message: "Updating the local connection…", pass: field.stringValue)
         }
     }
+    // There is no email reset: whoever controls this Mac can set a new owner
+    // password for the active workspace, as scripts/maintenance.py does.
+    @objc private func resetPassword() {
+        let dialog = NSAlert()
+        dialog.messageText = "Reset the owner password"
+        dialog.informativeText = "Choose a new password of 12 to 72 characters for the active workspace. Every device is signed out, shared brief links end and ChatGPT accounts must be connected again. Your records are kept."
+        let first = NSSecureTextField(), second = NSSecureTextField()
+        first.placeholderString = "New password"
+        second.placeholderString = "Repeat new password"
+        let fields = NSStackView(views: [first, second])
+        fields.orientation = .vertical
+        fields.frame = NSRect(x: 0, y: 0, width: 340, height: 56)
+        dialog.accessoryView = fields
+        dialog.addButton(withTitle: "Reset password")
+        dialog.addButton(withTitle: "Cancel")
+        dialog.window.initialFirstResponder = first
+        guard dialog.runModal() == .alertFirstButtonReturn else { return }
+        let password = first.stringValue
+        guard (12...72).contains(password.utf8.count), !password.contains("\n") else {
+            status.stringValue = "Use a password of 12 to 72 characters, then try again."
+            return
+        }
+        guard password == second.stringValue else {
+            status.stringValue = "The passwords didn't match. Try again."
+            return
+        }
+        run(["reset-password"], message: "Resetting the owner password…", pass: password)
+    }
     @objc private func backup() {
         let panel = NSSavePanel()
         panel.nameFieldStringValue = "healthctl-\(Int(Date().timeIntervalSince1970)).healthctl"
@@ -163,6 +192,7 @@ final class Launcher: NSObject, NSApplicationDelegate {
                     case "logs": result = "Logs saved."
                     case "delete": result = "Workspace deleted. Opening the journal creates a new, empty one."
                     case "uninstall": result = "healthctl's workspaces and images were removed. You can now move the app to the Trash."
+                    case "reset-password": result = "Password reset. Sign in with the new password, and connect ChatGPT again if you used it."
                     default: result = "Local workspace ready."
                     }
                     let line = String(decoding: data, as: UTF8.self).trimmingCharacters(in: .whitespacesAndNewlines)

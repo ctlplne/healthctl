@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { api, RequestError } from './api'
+import { ForgotPassword } from './forgot'
 
 // ReauthDialog asks for the password before export, sharing, deletion or a
 // provider change when the last sign-in was more than a few minutes ago.
@@ -40,6 +41,7 @@ export function ReauthDialog({ onDone }: { onDone: (ok: boolean) => void }) {
           <button className="primary" disabled={busy}>Continue</button>
           <button type="button" className="secondary" disabled={busy} onClick={() => onDone(false)}>Cancel</button>
         </div>
+        <ForgotPassword />
       </form>
     </div>
   )
