@@ -11,6 +11,8 @@ Safety and correctness, then reliability, then polish. [HARDENING.md](HARDENING.
 - The app asks its own safety-net, red-flag and completeness questions; "don't miss" lines for dangerous causes. Answering no to a safety question during an urgent encounter keeps the review open.
 - A bare "they" in the user's own answer can mean their own symptoms when the app checks the model's findings (`validator-3`).
 - One urgent banner lists every reported wording; the assessment says whether its stability check ran.
+- Urgent signs the app records have readable titles ("Facial droop") and are marked as recognized by the app.
+- A review that stops a running interview call extracts the answers that call would have read; a model result made for an earlier input is rejected.
 
 ### Model output
 - Each item is validated on its own with reason codes; targeted repair; per-task schemas and generated prompt limits.

@@ -217,5 +217,10 @@ Full run after these fixes, at commit `5cfbbdf` (2026-11-24): `python3 scripts/c
 
 Also: several urgent phrases now share one warning banner that lists each reported wording (`warnings.test.ts`).
 
-Noted, not changed: the "Ask your clinician about" lines for a runny nose mention pneumonia and a clot in the lung, which needs clinical review. The app's own warning findings use the raw phrase as a title ("face drooped") next to the model's finding for the same event. An API client that asks for the review while a call is running gets a review without extracting the newest answers; the app itself only switches tabs there, and `main` behaves the same.
+Two problems noted in the live run were then fixed as well:
+
+- **Urgent-sign findings had raw lowercase titles** ("face drooped") next to the model's finding for the same event. They are now titled with a vocabulary term the urgent-sign rules still recognize ("Facial droop", "Slurred speech"), or the user's words with a capital, and the review says the app recognized them. Correcting one still clears its warning. Proof: `TestUrgentSignFindingTitles`, `warnings.test.ts`; live, both titles appeared with their warnings linked.
+- **A review that stopped a running call skipped extraction**, so the answers that call would have read never became findings. The review now extracts them. Proof: `TestReviewDuringCallExtracts`; live, the stopped call was cancelled after 1.6 seconds and the extraction found the finding the history had lacked. Two existing tests asserted the old behaviour, that a review leaves no model call pending, and were updated without dropping what they check. A proposal now carries the hash of the input it was made for, and `Accept` rejects one made for an earlier input; `TestFailedCancelledOrOutdatedProposalsStayIsolated` still rejects the late proposal, now by that hash. `TestSupersededCallCancelledPostgres` still requires the running call to be cancelled and unable to overwrite the review, and now also checks the extraction job.
+
+Still open: the "Ask your clinician about" lines for a runny nose mention pneumonia and a clot in the lung, which needs clinical review.
 
