@@ -68,6 +68,30 @@ func TestDemoJourneyRetainsAllOriginalEvidenceAndVersions(t *testing.T) {
 		}
 	}
 	old := e.Assessments[0]
+
+	// Answering the app's own safety questions no or not sure, as a careful
+	// demo user does, keeps the scripted example; a yes ends it.
+	safe, err := New("demo", Intake{Concern: DemoConcern, Age: 38, NoticeVersion: NoticeVersion}, ProviderRef{Kind: "demo", Model: "synthetic"}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	play(t, safe)
+	for _, s := range []string{"Yesterday", "After being outdoors"} {
+		apply(t, safe, Command{Action: "answer", Text: s})
+		play(t, safe)
+	}
+	if len(safe.RedFlagsDue) < 2 {
+		t.Fatalf("the demo concern must ask safety questions: %+v", safe.RedFlagsDue)
+	}
+	apply(t, safe, Command{Action: "red_flag", Category: safe.RedFlagsDue[0].Key, Status: "no"})
+	apply(t, safe, Command{Action: "red_flag", Category: safe.RedFlagsDue[0].Key, Status: "unsure"})
+	apply(t, safe, Command{Action: "confirm"})
+	apply(t, safe, Command{Action: "assess"})
+	play(t, safe)
+	if safe.State != "assessment_ready" || len(safe.Assessments) != 1 || len(safe.Assessments[0].Items) != 2 {
+		t.Fatalf("safety answers broke the demo: %s %+v", safe.State, safe.Assessments)
+	}
+
 	apply(t, e, Command{Action: "correct_answer", AnswerID: e.Answers[2].ID, Text: "Yesterday"})
 	play(t, e)
 	if e.ConfirmedRevision != 0 || old.HistoryRevision == e.HistoryRevision || e.Assessments[0].HistoryRevision != old.HistoryRevision {

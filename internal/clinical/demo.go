@@ -2,6 +2,13 @@ package clinical
 
 import "strings"
 
+// safetyNoAnswer reports a no or not sure to one of the app's own safety
+// questions. It leaves the scripted story unchanged; a yes raises a warning,
+// which ends the example.
+func safetyNoAnswer(a Answer) bool {
+	return a.Kind == "reply" && a.QuestionSource != nil && strings.HasPrefix(a.QuestionSource.Key, "red_flag:") && (a.Text == "No" || a.Text == "Not sure")
+}
+
 // Demo is an authored example with an exact synthetic storyline. It cannot
 // produce fixture diagnoses for arbitrary symptoms supplied by the operator.
 func Demo(in Input) Proposal {
@@ -23,7 +30,7 @@ func Demo(in Input) Proposal {
 	var first, second bool
 	var facts []FindingProposal
 	for _, a := range in.Answers {
-		if fixtureBackground(a) {
+		if fixtureBackground(a) || safetyNoAnswer(a) {
 			continue
 		}
 		switch a.Kind {
