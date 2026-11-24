@@ -16,7 +16,7 @@ out.mkdir(parents=True, exist_ok=True)
 revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip()
 sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
 inputs = ['Dockerfile', '.dockerignore', 'LICENSE', 'PRIVACY.md', 'THIRD_PARTY_NOTICES.md',
-          'go.mod', 'go.sum', 'cmd', 'internal', 'evaluation', 'web', 'docs/use-notice.md', 'docs/release.md',
+          'go.mod', 'go.sum', 'cmd', 'internal', 'evaluation', 'web', 'docs/use-notice.md', 'docs/release.md', 'docs/state-machine.md',
           'docs/licenses/whisper-model.txt', 'scripts/go-notices.sh', 'scripts/sbom-assets.mjs']
 name = 'healthctl-windows-x64'
 with tempfile.TemporaryDirectory() as temp:

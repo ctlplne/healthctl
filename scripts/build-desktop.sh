@@ -24,7 +24,7 @@ else
     # Only tracked build inputs from the release revision go into the download.
     git archive --format=tar.gz -o "$res/healthctl-source.tar.gz" "$revision" -- \
       Dockerfile .dockerignore LICENSE PRIVACY.md THIRD_PARTY_NOTICES.md go.mod go.sum \
-      cmd internal evaluation web docs/use-notice.md docs/release.md docs/licenses/whisper-model.txt \
+      cmd internal evaluation web docs/use-notice.md docs/release.md docs/state-machine.md docs/licenses/whisper-model.txt \
       scripts/go-notices.sh scripts/sbom-assets.mjs
     dbimage=$(awk '/image: postgres:/{print $2;exit}' "$res/compose.yaml")
     [[ "$dbimage" =~ @sha256:[[:xdigit:]]{64}$ ]]

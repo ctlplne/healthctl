@@ -27,6 +27,33 @@ class DockerfilePins(unittest.TestCase):
         self.assertTrue(model and re.fullmatch(r"[0-9a-f]{40}", model.group(1)), "the speech model must name a commit, not a branch")
 
 
+class PackagedSources(unittest.TestCase):
+    """The desktop packages build the app from a source archive on first use.
+    The archive must hold every file the Dockerfile copies from the repo."""
+
+    def dockerfile_sources(self):
+        sources = set()
+        for line in (ROOT / "Dockerfile").read_text().splitlines():
+            if not line.startswith("COPY ") or "--from=" in line:
+                continue
+            sources.update(p for p in line.split()[1:-1] if not p.startswith("--"))
+        return sources
+
+    def missing(self, inputs):
+        def covered(path):
+            return any(path == i or path.startswith(i.rstrip("/") + "/") for i in inputs)
+        return sorted(p for p in self.dockerfile_sources() if not covered(p))
+
+    def test_windows_source_archive_covers_the_dockerfile(self):
+        block = re.search(r"inputs = \[(.*?)\]", (ROOT / "scripts/build-windows.py").read_text(), re.S).group(1)
+        self.assertEqual(self.missing(re.findall(r"'([^']+)'", block)), [], "scripts/build-windows.py leaves these out of its source archive")
+
+    def test_mac_first_use_archive_covers_the_dockerfile(self):
+        text = (ROOT / "scripts/build-desktop.sh").read_text()
+        block = re.search(r"git archive [^\n]*-- \\\n(.*?)\n\s*dbimage=", text, re.S).group(1)
+        self.assertEqual(self.missing(block.replace("\\", " ").split()), [], "scripts/build-desktop.sh leaves these out of its source archive")
+
+
 class DesktopImages(unittest.TestCase):
     def run_check(self, ids, expected):
         with tempfile.TemporaryDirectory() as d:
