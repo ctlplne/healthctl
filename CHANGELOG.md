@@ -17,7 +17,8 @@ Safety and correctness, then reliability, then polish. [HARDENING.md](HARDENING.
 - Reasoning-aware OpenAI and Anthropic adapters, durable model jobs, cancellation of superseded calls, evidence selection near the input limit.
 
 ### Data and security
-- A recovery kit, default backups kept by age, a wrapped data key and an independent receipt key.
+- A recovery kit, default backups kept by age, a wrapped data key and an independent receipt key; key rotation issues a fresh data key and re-encrypts every record.
+- Downloads ask for the password again after ten minutes; viewing the report on screen doesn't.
 - Secrets as files, sandboxed readers with limits, per-client sign-in throttling, setup codes, idle time-outs, re-authentication for sensitive actions, Trusted Types.
 
 ### App and release

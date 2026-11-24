@@ -32,7 +32,7 @@ After you confirm, you can ask for a provisional AI assessment. It is not a diag
 
 ## Briefs, exports and your account
 
-The clinician brief lists your history, warnings, open questions and anything not yet asked. Exporting, sharing, deleting and changing where your history is sent ask for your password if you signed in more than ten minutes ago. Sessions end after an hour without activity, and **End every session** signs you out on every device at once.
+The clinician brief lists your history, warnings, open questions and anything not yet asked. Viewing the report on screen never asks for your password. Downloading it, sharing, deleting and changing where your history is sent ask for your password if you signed in more than ten minutes ago. Sessions end after an hour without activity, and **End every session** signs you out on every device at once.
 
 ## Keeping your records
 

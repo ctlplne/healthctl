@@ -8,12 +8,12 @@ Run `python3 scripts/init.py` once. It refuses to create a new installation key 
 
 ## Public addresses
 
-Setting `CLINICAL_PUBLIC_ORIGIN` requires HTTPS and secure cookies. The owner account can then be created only with the one-time setup code printed in the server log (`event=setup_code`). Sign-in attempts are counted per client; behind a reverse proxy, set `CLINICAL_TRUSTED_PROXY` to the proxy's address so each client gets its own budget. A connection from the machine itself is slowed down but never locked out.
+Setting `CLINICAL_PUBLIC_ORIGIN` requires HTTPS and secure cookies. The owner account can then be created only with the one-time setup code printed in the server log (`event=setup_code`). Sign-in attempts are counted per client; behind a reverse proxy, set `CLINICAL_TRUSTED_PROXY` to the proxy's address so each client gets its own budget. A connection from the machine itself is never locked out; after ten failures its attempts are slowed and let through one at a time. A tunnel or proxy that reaches the app over loopback (an SSH forward, a sidecar sharing the app's network) shares that one slow queue, so set `CLINICAL_TRUSTED_PROXY` for it too.
 
 ## Backups, keys and upgrades
 
 - Scheduled backups go to `CLINICAL_BACKUP_DIRECTORY`, are kept by age (`CLINICAL_BACKUP_KEEP_DAYS`, default 30) with a floor of the newest `CLINICAL_BACKUP_KEEP`, and every failure logs `backup: FAILED`. [Scheduled backups](operations.md#scheduled-backups)
-- Records are encrypted under a data key that the installation key wraps, so `scripts/maintenance.py rotate-key` re-wraps keys and never rewrites records. [Key rotation](operations.md#owner-recovery-and-key-rotation)
+- Records are encrypted under a data key that the installation key wraps. `scripts/maintenance.py rotate-key` replaces the installation key, issues a fresh data key and re-encrypts every record in one transaction, so the old key and older backups' keys no longer read current data. [Key rotation](operations.md#owner-recovery-and-key-rotation)
 - `python3 scripts/upgrade.py` snapshots before it changes anything, and `--rollback` restores the snapshot and the previous image. [Upgrades and rollback](operations.md#upgrades-and-rollback)
 
 ## Models
