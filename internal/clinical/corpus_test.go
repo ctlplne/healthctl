@@ -31,9 +31,11 @@ var corpusItem = regexp.MustCompile(`^(!)?(present|denied|uncertain|declined)(?:
 
 var corpusStatus = map[string]string{"present": "reported_present", "denied": "explicitly_denied", "uncertain": "uncertain", "declined": "declined"}
 
-func loadCorpus(t testing.TB) []corpusRow {
+func loadCorpus(t testing.TB) []corpusRow { return loadRows(t, "corpus") }
+
+func loadRows(t testing.TB, dir string) []corpusRow {
 	t.Helper()
-	files, err := filepath.Glob(filepath.Join("testdata", "corpus", "*.txt"))
+	files, err := filepath.Glob(filepath.Join("testdata", dir, "*.txt"))
 	if err != nil || len(files) == 0 {
 		t.Fatalf("corpus files are missing: %v", err)
 	}
@@ -53,7 +55,7 @@ func loadCorpus(t testing.TB) []corpusRow {
 			if len(parts) < 3 {
 				t.Fatalf("%s:%d needs expect | source | text | extractions", file, n+1)
 			}
-			r := corpusRow{file: filepath.Base(file), line: n + 1, text: strings.TrimSpace(parts[2])}
+			r := corpusRow{file: filepath.Base(file), line: n + 1, text: strings.TrimSpace(strings.TrimSuffix(strings.TrimSpace(parts[2]), "|"))}
 			switch strings.TrimSpace(parts[0]) {
 			case "warn":
 				r.expectWarn = true
@@ -115,7 +117,7 @@ func corpusWarns(t testing.TB, r corpusRow) bool {
 		if err != nil {
 			t.Fatalf("%s: %v", r, err)
 		}
-		return e.hasWarning()
+		return e.hasAnyWarning()
 	}
 	e, err := New("corpus", Intake{Concern: "Recording an account for this visit.", Age: 40, NoticeVersion: NoticeVersion}, ProviderRef{Kind: "demo", Model: "demo"}, "")
 	if err != nil || e.hasWarning() {
@@ -123,7 +125,7 @@ func corpusWarns(t testing.TB, r corpusRow) bool {
 	}
 	a := corpusAnswer(r)
 	e.appendDatedAnswer(a.Kind, a.Question, a.Text, "", "", "")
-	return e.hasWarning()
+	return e.hasAnyWarning()
 }
 
 func corpusCheck(r corpusRow, x corpusExtraction) error {
@@ -133,14 +135,16 @@ func corpusCheck(r corpusRow, x corpusExtraction) error {
 }
 
 type corpusMetrics struct {
-	rows, warnRows, noneRows, missed, falseAlarms int
+	rows, warnRows, noneRows, missed, falseAlarms            int
 	correct, correctRejected, mustReject, mustRejectAccepted int
-	missedRows, alarmRows, rejectedItems, acceptedItems []string
+	missedRows, alarmRows, rejectedItems, acceptedItems      []string
 }
 
-func measureCorpus(t testing.TB) corpusMetrics {
+func measureCorpus(t testing.TB) corpusMetrics { return measureRows(t, loadCorpus(t)) }
+
+func measureRows(t testing.TB, rows []corpusRow) corpusMetrics {
 	var m corpusMetrics
-	for _, r := range loadCorpus(t) {
+	for _, r := range rows {
 		m.rows++
 		warned := corpusWarns(t, r)
 		if r.expectWarn {
@@ -184,7 +188,7 @@ func percent(n, d int) float64 {
 }
 
 // corpusEnforced turns on the thresholds once the shared context engine lands.
-const corpusEnforced = false
+const corpusEnforced = true
 
 func TestCorpus(t *testing.T) {
 	m := measureCorpus(t)
@@ -219,5 +223,23 @@ func TestCorpus(t *testing.T) {
 	}
 	if m.mustRejectAccepted != 0 {
 		t.Errorf("%d extractions that must be rejected were accepted: %v", m.mustRejectAccepted, m.acceptedItems)
+	}
+}
+
+// TestCorpusHoldout reports results on sentences written after the engine and
+// never used for tuning. It measures how well the rules generalize.
+func TestCorpusHoldout(t *testing.T) {
+	if files, _ := filepath.Glob(filepath.Join("testdata", "holdout", "*.txt")); len(files) == 0 {
+		t.Skip("no held-out set is waiting to be measured")
+	}
+	m := measureRows(t, loadRows(t, "holdout"))
+	fmt.Printf("HOLDOUT rows=%d urgent_missed=%d/%d false_alarms=%d/%d\n", m.rows, m.missed, m.warnRows, m.falseAlarms, m.noneRows)
+	if os.Getenv("CORPUS_DETAILS") != "" {
+		for _, s := range m.missedRows {
+			fmt.Println("HOLDOUT MISSED", s)
+		}
+		for _, s := range m.alarmRows {
+			fmt.Println("HOLDOUT ALARM", s)
+		}
 	}
 }

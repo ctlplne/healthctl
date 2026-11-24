@@ -1,0 +1,41 @@
+# Lessons from held-out set 2 (40 rows). After tuning on set 1, the rules still missed 20 of its 27 urgent rows.
+warn | self | My chest feels like it's in a vice. |
+warn | self | I'm gasping and wheezing and my inhaler does nothing. |
+warn | self | I keep blacking out. |
+warn | self | Half my body feels heavy and won't work properly. |
+warn | self | I took a load of paracetamol earlier to end things. |
+warn | self | My poo is black and sticky. |
+warn | self | I can only speak a few words before I need a breath. |
+warn | self | I suddenly can't remember who anyone is. |
+warn | self | My wife says I'm not making any sense. |
+warn | self | I've been hearing voices telling me to hurt myself. |
+warn | self | There's pressure behind my breastbone going into my neck. |
+warn | self | My tongue feels thick and my lips are tingling after the shrimp. |
+warn | self | My head hurts like nothing before and I threw up. |
+warn | self | I'm throwing up and can't keep anything down, and I feel confused. |
+warn | self | One of my pupils looks much bigger than the other. |
+warn | self | I can't stop shaking and I'm burning up with fever and feel very unwell. |
+warn | self | My heart is going so fast I can't count it and I feel dizzy. |
+warn | self | I fell and hit my head and now I'm being sick. |
+warn | self | My vision is going grey at the edges and I feel faint. |
+warn | self | I've cut my wrist and it won't stop. |
+warn | self | The pain is tearing through my chest into my back. |
+warn | self | I've had diarrhoea for days and now I can barely stand and I'm not peeing. |
+warn | self | I've swallowed a fishbone and it's stuck and I can't swallow my spit. |
+warn | self | I'm having contractions and bleeding. |
+none | self | Something's wrong with my baby's breathing. |
+none | self | No, I haven't had any blackouts. |
+none | self | My chest was tight last year after covid, it's fine now. |
+none | self | Mum had a heart attack in her sixties. |
+none | self | I don't feel like I want to hurt myself. |
+none | self | If the pain moves to my arm, I know to call. |
+none | self | I'm not dizzy and my speech is normal. |
+none | self | Breathing is fine, thanks. |
+none | self | My son passed out at football. |
+none | self | I worry about strokes because of my blood pressure. |
+none | self | I've had no chest pain since my stent. |
+warn | reply: Are you short of breath right now? | Yes, really bad. |
+none | reply: Any chest pain? | None at all. |
+warn | reply: Have you vomited any blood? | A little, this morning. |
+warn | witness | He's grey and clammy and clutching his chest. |
+none | witness | She hasn't had any fits. |

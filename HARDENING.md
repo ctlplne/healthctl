@@ -19,16 +19,16 @@ Status: `[x]` done with proof · `[ ]` open · `[h]` handoff, prepared with next
 ## P0: safety and correctness
 
 - [x] **E1** Labeled corpus of 500+ sentences (urgent, negated, past, third-party, witness, hypothetical, routine) with correct and must-reject extractions; baseline recorded below. Files: `internal/clinical/testdata/corpus.json`, `internal/clinical/corpus_test.go`. Proof: `go test -run TestCorpus -v ./internal/clinical`.
-- [ ] **S3** One shared context engine: scoped negation, experiencer by source, past, hypothetical, uncertainty. Used by the safety screen, the validator and contradiction checks. Files: `internal/clinical/context.go`, `safety.go`, `model.go`, `encounter.go`. Proof: `TestContext*`, corpus.
-- [ ] **S2** Experiencer by source type: he/she/they in a witness account mean the user. Files: `context.go`, `safety.go`. Proof: `TestWitnessThirdPersonWarns`, corpus witness rows.
+- [x] **S3** One shared context engine: scoped negation, experiencer by source, past, hypothetical, uncertainty. Used by the safety screen, the validator and contradiction checks. Files: `internal/clinical/context.go`, `safety.go`, `model.go`, `encounter.go`. Proof: `TestContext*`, corpus.
+- [x] **S2** Experiencer by source type: he/she/they in a witness account mean the user. Files: `context.go`, `safety.go`. Proof: `TestWitnessThirdPersonWarns`, corpus witness rows.
 - [ ] **S1** Every input goes through the same screen: answers, corrections, diary saves, witness accounts, visual notes, report passages, dictation drafts, return-visit notes, outcomes. Files: `internal/clinical/*`, `internal/server/diary.go`, `internal/server/voice.go`. Proof: `TestEveryInputPathScreens`, `TestDiarySaveScreensPostgres`.
-- [ ] **S4** Wider urgent vocabulary, labeled development content; policy version `development-4`. Files: `safety.go`, `internal/clinical/POLICY.md`. Proof: corpus urgent rows.
-- [ ] **S5** A model urgent flag needs only an exact quote from an active, non-screen answer and never fails a turn. When app rules disagree it becomes a "check this" warning. Files: `model.go`, `safety.go`. Proof: `TestModelUrgentFlagNeverFailsTurn`.
+- [x] **S4** Wider urgent vocabulary, labeled development content; policy version `development-4`. Files: `safety.go`, `internal/clinical/POLICY.md`. Proof: corpus urgent rows.
+- [x] **S5** A model urgent flag needs only an exact quote from an active, non-screen answer and never fails a turn. When app rules disagree it becomes a "check this" warning. Files: `model.go`, `safety.go`. Proof: `TestModelUrgentFlagNeverFailsTurn`.
 - [ ] **V1** Per-item validation: invalid findings, flags, choices and items are dropped one by one, and valid items and the question are kept. Files: `internal/clinical/sanitize.go`, `internal/server/encounters.go`. Proof: `TestSanitizeKeepsValidItems`.
 - [ ] **V2** Named reason codes for every rejection, stored in `model_operations` and shown in the qualification panel. Files: `internal/clinical/reasons.go`, `internal/store/migrations/007_*.sql`, `internal/server/evidence.go`, `web/src/operator.tsx`. Proof: `TestRejectionReasonsRecordedPostgres`, `TestReasonCodes`.
 - [ ] **V3** Targeted repair: a retry carries app-authored reason codes and item indexes, never rejected text. Files: `internal/provider/client.go`. Proof: `TestRepairCarriesReasonCodes`.
-- [ ] **V4** The advice filter checks instructions only in statements, so questions such as "Did you start taking…?" pass. Files: `model.go`. Proof: `TestAdviceFilterAllowsQuestions`.
-- [ ] **V5** Digits inside names (COVID-19, B12, type 2) are not numeric claims. Files: `model.go`. Proof: `TestGroundedNumbersIgnoresNames`.
+- [x] **V4** The advice filter checks instructions only in statements, so questions such as "Did you start taking…?" pass. Files: `model.go`. Proof: `TestAdviceFilterAllowsQuestions`.
+- [x] **V5** Digits inside names (COVID-19, B12, type 2) are not numeric claims. Files: `model.go`. Proof: `TestGroundedNumbersIgnoresNames`.
 - [ ] **O1** Reasoning effort is chosen by task: medium or lower for interview turns, highest for assessment. Files: `internal/provider/chatgpt.go`. Proof: `TestEffortByTask`.
 - [ ] **D1** `init.py` refuses to create a new key when installation data already exists, and explains recovery. Files: `scripts/init.py`. Proof: `python3 -m unittest tests.test_init`.
 - [ ] **D2** Recovery kit: a script writes a private recovery sheet; the app shows a banner until the owner confirms the kit's fingerprint. Files: `scripts/recovery_kit.py`, `internal/server/recovery.go`, `web/src/*`. Proof: `TestRecoveryKitFingerprint`, `tests/test_recovery_kit.py`.
@@ -127,6 +127,18 @@ Recorded on 2026-11-24 against commit `e6ec2dd` (before any rule changed), with 
 
 Missed urgent rows by file: urgent 87, mixed 41, witness 30, uncertain 18, past 12, reply 8, third_party 4, hypothetical 4, routine 1. False alarms: past 5, hypothetical 4, negated 3, witness 2. Correct extractions rejected: routine 35, negated 28, witness 27, mixed 24, reply 8, third_party 4, past 2, urgent 1. The top rejection reasons were "Negative findings require explicit, unambiguous user evidence" (56), "Affirmative finding is unsupported by this answer" (45) and "Confirm who experienced the reported finding" (28). Must-reject extractions accepted: hypothetical 30, uncertain 2, urgent 1, routine 1, past 1, mixed 1.
 
+## Corpus after the context engine
+
+| Metric | Baseline | After development-4 |
+|---|---|---|
+| Rows | 552 | 650 (adds the two held-out sets below as lessons) |
+| Urgent sentences missed | 205 of 256 | 0 of 320 |
+| False alarms | 14 of 296 | 1 of 330 |
+| Correct extractions rejected | 129 of 595 | 0 of 595 |
+| Must-reject extractions accepted | 36 of 53 | 0 of 53 |
+
+**Held-out results (honest generalization).** Each held-out set was written after the rules and measured before any tuning on it. Set 1: 24 of 34 urgent sentences missed and 4 of 21 false alarms. Set 2, after tuning on set 1: 20 of 27 urgent sentences missed and 1 of 13 false alarms. Both sets were then added to the corpus as `lessons.txt` and `lessons-2.txt`. Keyword rules recognize only the phrasings they were shown. The model's urgent flags (S5) and the explicit emergency question carry the safety load, and clinical review (H1) is still required. A final untouched set is measured in K1.
+
 ## Label changes
 
-None yet.
+None. No corpus label was changed after the baseline.

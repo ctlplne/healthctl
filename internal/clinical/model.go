@@ -102,13 +102,20 @@ func (e *Encounter) Accept(task string, p Proposal, meta ModelMeta, emergency st
 				sourceType = "witness_observation"
 			}
 			e.recordFinding(f, sourceType, "", false)
-			source := a.Text
-			if !past && isCurrentPersonalFinding(f) && emergencySigns.MatchString(f.Concept) && contextualRisk(clauseAt(source, strings.Index(source, f.Quote))) {
-				e.addWarning(f.Evidence, "structured_finding", emergency)
+			if at := strings.Index(a.Text, f.Quote); !past && isCurrentPersonalFinding(f) && urgentSignIn(f.Concept) {
+				if c := analyzeSpan(a.Text, at, at+len(f.Quote), sourceOf(*a)); !c.blocked() {
+					e.addWarning(f.Evidence, "structured_finding", levelFor(c, warningEmergency), emergency)
+				}
 			}
 		}
+		// A model can always raise concern with an exact quote. When the app's
+		// own reading disagrees, the warning asks for a prompt check instead.
 		for _, ev := range p.UrgentEvidence {
-			e.addWarning(ev, "model_flag", emergency)
+			level := warningCheck
+			if a := e.answer(ev.AnswerID); a != nil {
+				level = flagLevel(*a, ev.Quote)
+			}
+			e.addWarning(ev, "model_flag", level, emergency)
 		}
 		e.rebuildContradictions()
 		e.Question = ""
@@ -150,6 +157,36 @@ func (e *Encounter) Accept(task string, p Proposal, meta ModelMeta, emergency st
 	}
 	e.touch()
 	return nil
+}
+
+// flagLevel decides the level of a model urgent flag. The app keeps the flag
+// either way. When its own reading of an urgent sign in the quote disagrees, or
+// the quote is negated or about the past, the warning asks for a prompt check.
+func flagLevel(a Answer, quote string) string {
+	at := strings.Index(a.Text, quote)
+	if at < 0 || pastEvent(a) {
+		return warningCheck
+	}
+	end := at + len(quote)
+	signs := false
+	for _, m := range urgentSignMatches(a.Text) {
+		if m.start < end && at < m.end {
+			signs = true
+		}
+	}
+	if signs {
+		for _, s := range screenText(a.Text, sourceOf(a)) {
+			if s.start < end && at < s.end {
+				return s.level
+			}
+		}
+		return warningCheck
+	}
+	c := analyzeSpan(a.Text, at, end, sourceOf(a))
+	if c.blocked() || negatedInside(a.Text, at, end) {
+		return warningCheck
+	}
+	return levelFor(c, warningEmergency)
 }
 
 // A new inference can change the interpreted history without a new user message.
@@ -213,15 +250,42 @@ func validSubject(s string) bool { return s == "self" || s == "family" || s == "
 var pureDenial = regexp.MustCompile(`(?i)^(nope|no|none|not at all)[.!]?$|\b(hasn['’]t|haven['’]t|didn['’]t) (?:had|have|experienced|noticed)\b`)
 var vagueOnly = regexp.MustCompile(`(?i)^(?:i(?: am|'m|’m| feel) |i am feeling )?(?:otherwise |generally |pretty )?(?:fine|good|ok|okay|well|normal|healthy)[.!]?$|^(?:nothing (?:else|much)|not really)[.!]?$`)
 var uncertaintyOnly = regexp.MustCompile(`(?i)^\s*(?:i['’]m |i am |i )?(not sure|unsure|don't know|don’t know|do not know|can't remember|cannot remember|uncertain|maybe|rather not(?: say| answer)?|prefer not to (?:say|answer)|decline(?: to answer)?|skip)[\s.!?]*$`)
-var adviceOrCertainty = regexp.MustCompile(`(?i)([0-9]\s*%|https?://|www\.|\b(?:ruled out|definitively|definitely|confirmed diagnosis|no emergency|no need (?:for|to seek) (?:medical )?care|you (?:are safe|should (?:take|start|stop|increase|decrease|double)|can safely)|take [0-9]+|(?:start|stop|change) (?:your |taking |using )|you (?:have|are suffering from) (?:a |an )?(?:diagnosis|disease)|ignore (?:all |the )?(?:previous |prior )?instructions)\b)`)
 
-var explicitFaintDenial = regexp.MustCompile(`(?i)^(?:i )?(?:(?:have not|haven['’]t|have never) fainted|(?:did not|didn['’]t) faint)[.!]?$`)
-var faintConcept = regexp.MustCompile(`(?i)^(?:syncope|faint(?:ing|ed)?)(?: \(syncope\)| \(fainting\))?$`)
+// alwaysBlocked never belongs in model text: certainty, reassurance, links,
+// percentages and attempts to change instructions.
+var alwaysBlocked = regexp.MustCompile(`(?i)([0-9]\s*%|https?://|www\.|\b(?:ruled out|definitively|definitely|confirmed diagnosis|no emergency|no need (?:for|to seek) (?:medical )?care|you (?:are safe|can safely)|you (?:have|are suffering from) (?:a |an )?(?:diagnosis|disease)|ignore (?:all |the )?(?:previous |prior )?instructions)\b)`)
+
+// instruction catches treatment directions. A question that asks whether the
+// user started or stopped something is not a direction, so questions are exempt.
+var instruction = regexp.MustCompile(`(?i)\b(?:you should (?:take|start|stop|increase|decrease|double)|take [0-9]+|(?:start|stop|change) (?:your |taking |using ))\b`)
+
+func statementSentences(s string) []string {
+	var out []string
+	for _, part := range regexp.MustCompile(`[^.!?\n]+[.!?\n]*`).FindAllString(s, -1) {
+		if !strings.HasSuffix(strings.TrimSpace(part), "?") {
+			out = append(out, part)
+		}
+	}
+	return out
+}
+
+// adviceIn reports advice or certainty in s.
+func adviceIn(s string) bool {
+	if alwaysBlocked.MatchString(s) {
+		return true
+	}
+	for _, sentence := range statementSentences(s) {
+		if instruction.MatchString(sentence) {
+			return true
+		}
+	}
+	return false
+}
 
 func denies(s string) bool {
-	return negative.MatchString(s) || pureDenial.MatchString(strings.TrimSpace(s)) || explicitFaintDenial.MatchString(strings.TrimSpace(s))
+	return len(negationCues(s)) > 0 || pureDenial.MatchString(strings.TrimSpace(s))
 }
-func badOutput(s string, limit int) bool { return len(s) > limit || adviceOrCertainty.MatchString(s) }
+func badOutput(s string, limit int) bool { return len(s) > limit || adviceIn(s) }
 func listValid(items []string, maxN, maxLen int) bool {
 	if len(items) > maxN {
 		return false
@@ -236,22 +300,57 @@ func listValid(items []string, maxN, maxLen int) bool {
 
 func verifySource(in Input, ev Evidence) (Answer, error) {
 	if !validText(ev.Quote, 4000) || ev.AnswerID == "" {
-		return Answer{}, errors.New("Finding or warning lacks original evidence")
+		return Answer{}, reasonErr(ReasonQuoteNotFound, "Finding or warning lacks original evidence")
 	}
 	for _, c := range in.CorrectedEvidence {
 		if c.AnswerID == ev.AnswerID && (strings.Contains(c.Quote, ev.Quote) || strings.Contains(ev.Quote, c.Quote)) {
-			return Answer{}, errors.New("The user superseded that interpretation")
+			return Answer{}, reasonErr(ReasonSuperseded, "The user superseded that interpretation")
 		}
 	}
 	for _, a := range in.Answers {
 		if a.ID == ev.AnswerID && a.Active && strings.Contains(a.Text, ev.Quote) {
 			if strings.Count(a.Text, ev.Quote) != 1 {
-				return Answer{}, errors.New("Quote more surrounding text to identify the exact occurrence")
+				return Answer{}, reasonErr(ReasonQuoteAmbiguous, "Quote more surrounding text to identify the exact occurrence")
 			}
 			return a, nil
 		}
 	}
-	return Answer{}, errors.New("The evidence is not an exact span of a current answer")
+	return Answer{}, reasonErr(ReasonQuoteNotFound, "The evidence is not an exact span of a current answer")
+}
+
+// quoteContext reads the concept words inside the quote in context. A present
+// finding is negated only when every mention of the concept is negated.
+func quoteContext(a Answer, f FindingProposal) (spanContext, bool) {
+	at := strings.Index(a.Text, f.Quote)
+	end := at + len(f.Quote)
+	src := sourceOf(a)
+	targets := conceptTargets(a.Text, at, end, f.Concept)
+	if len(targets) == 0 {
+		c := analyzeSpan(a.Text, at, end, src)
+		c.Negated = c.Negated || negatedInside(a.Text, at, end)
+		return c, false
+	}
+	var out spanContext
+	negated := true
+	for i, t := range targets {
+		c := analyzeSpan(a.Text, t.start, t.end, src)
+		if i == 0 {
+			out = c
+		}
+		negated = negated && c.Negated
+		out.Uncertain = out.Uncertain || c.Uncertain
+		out.Hypothetical = out.Hypothetical && c.Hypothetical
+	}
+	out.Negated = negated
+	return out, true
+}
+
+func currentTime(s string) bool {
+	switch strings.ToLower(strings.TrimSpace(s)) {
+	case "", "now", "current", "currently", "present", "today", "right now":
+		return true
+	}
+	return false
 }
 
 func validateFinding(in Input, f FindingProposal) error {
@@ -260,88 +359,132 @@ func validateFinding(in Input, f FindingProposal) error {
 		return err
 	}
 	if !validText(f.Concept, 120) || badOutput(f.Concept, 120) || !validSubject(f.Subject) || !validStatus(f.Status) || len(f.TimeContext) > 180 || len(f.Value) > 120 || len(f.Units) > 64 {
-		return errors.New("Invalid finding attributes")
+		return reasonErr(ReasonAttributes, "Invalid finding attributes")
 	}
 	disposition := evidenceDisposition(a)
 	if disposition == "not_applicable" || disposition == "skipped" && f.Status != "declined" || disposition == "unknown" && f.Status != "uncertain" {
-		return errors.New("This response cannot establish the proposed clinical finding")
+		return reasonErr(ReasonNonanswer, "This response cannot establish the proposed clinical finding")
 	}
 	if disposition == "none" {
 		if topic := backgroundFor(a.Question); topic != nil && (f.Status != "explicitly_denied" || !topic.acceptsDenial(f.Concept)) {
-			return errors.New("A background denial applies only to the question the user answered")
+			return reasonErr(ReasonBackgroundScope, "A background denial applies only to the question the user answered")
 		}
 	}
 	if a.Kind == "screen" {
-		return errors.New("The emergency screen cannot establish other clinical findings")
+		return reasonErr(ReasonScreenAnswer, "The emergency screen cannot establish other clinical findings")
 	}
 	if badOutput(f.TimeContext, 180) || badOutput(f.Value, 120) || badOutput(f.Units, 64) {
-		return errors.New("Invalid normalized finding")
+		return reasonErr(ReasonAdvice, "Invalid normalized finding")
 	}
-	for _, n := range numbers.FindAllString(f.TimeContext, -1) {
+	for _, n := range numericClaims(f.TimeContext) {
 		if !slices.Contains(numbers.FindAllString(a.Text+" "+a.EventDate, -1), n) {
-			return errors.New("Precise timing must appear in the source answer")
+			return reasonErr(ReasonUngroundedTiming, "Precise timing must appear in the source answer")
 		}
 	}
 	for _, value := range []string{f.Value, f.Units} {
 		if value != "" && !strings.Contains(strings.ToLower(f.Quote), strings.ToLower(value)) {
-			return errors.New("A value or unit is missing from the evidence")
+			return reasonErr(ReasonValueNotQuoted, "A value or unit is missing from the evidence")
 		}
 	}
-	clause := clauseAt(a.Text, strings.Index(a.Text, f.Quote))
-	if f.Subject == "self" && thirdParty.MatchString(clause) {
-		return errors.New("Confirm who experienced the reported finding")
+	c, named := quoteContext(a, f)
+	if f.Subject == "self" && c.Other {
+		return reasonErr(ReasonExperiencer, "Confirm who experienced the reported finding")
+	}
+	if f.Subject != "self" && !c.Other && (f.Status == "reported_present" || f.Status == "uncertain") {
+		return reasonErr(ReasonExperiencer, "The quote describes the user, not someone else")
 	}
 	switch f.Status {
 	case "not_asked":
-		return errors.New("An unasked concept belongs in outstanding questions")
+		return reasonErr(ReasonNotAsked, "An unasked concept belongs in outstanding questions")
 	case "explicitly_denied":
 		if !denialSupports(f.Concept, f.Quote, a) {
-			return errors.New("Negative findings require explicit, unambiguous user evidence")
+			return reasonErr(ReasonDenialUnsupported, "Negative findings require explicit, unambiguous user evidence")
 		}
 	case "reported_present":
-		if denies(clause) && !uncertain.MatchString(clause) || uncertaintyOnly.MatchString(f.Quote) || vagueOnly.MatchString(strings.TrimSpace(f.Quote)) {
-			return errors.New("Affirmative finding is unsupported by this answer")
+		switch {
+		case uncertaintyOnly.MatchString(f.Quote) || vagueOnly.MatchString(strings.TrimSpace(f.Quote)):
+			return reasonErr(ReasonVague, "Affirmative finding is unsupported by this answer")
+		case c.Negated:
+			return reasonErr(ReasonNegated, "Affirmative finding is unsupported by this answer")
+		case c.Hypothetical:
+			return reasonErr(ReasonHypothetical, "The user described this as a possibility, not an experience")
+		case c.Uncertain:
+			return reasonErr(ReasonUncertain, "The user expressed uncertainty; record the finding as uncertain")
+		case f.Subject == "self" && c.History == historyRemote && currentTime(f.TimeContext) && !pastEvent(a):
+			return reasonErr(ReasonHistoricalTime, "The user described this in the past; record its timing")
+		}
+		_ = named
+	case "uncertain":
+		if disposition != "unknown" && !c.Uncertain && !uncertaintyOnly.MatchString(f.Quote) && !uncertaintyCue.MatchString(f.Quote) {
+			return reasonErr(ReasonUncertaintyUnsupported, "The user did not express uncertainty")
+		}
+		if c.Hypothetical && disposition != "unknown" {
+			return reasonErr(ReasonHypothetical, "The user described this as a possibility, not an experience")
 		}
 	case "declined":
 		if !declined.MatchString(f.Quote) {
-			return errors.New("The user did not explicitly decline")
+			return reasonErr(ReasonDeclineUnsupported, "The user did not explicitly decline")
 		}
 	}
 	return nil
 }
 
-// Validate is called before persisting a provider result. It never touches the
-// aggregate, so an optional bounded repair cannot partially apply a bad response.
+// validateUrgent checks a model urgent flag. Raising concern needs only an
+// exact quote of a substantive user statement. The app decides the warning level.
+func validateUrgent(in Input, ev Evidence) error {
+	a, err := verifySource(in, ev)
+	if err != nil {
+		return err
+	}
+	if a.Kind == "screen" {
+		return reasonErr(ReasonScreenAnswer, "The emergency screen belongs to the application")
+	}
+	if evidenceDisposition(a) != "provided" {
+		return reasonErr(ReasonNonanswer, "The urgent flag needs a substantive user statement")
+	}
+	return nil
+}
+
+func questionIssue(in Input, p Proposal) error {
+	if !validText(p.Question, 500) || !validText(p.Reason, 700) {
+		return reasonErr(ReasonQuestion, "A question must explain which uncertainty it addresses")
+	}
+	if strings.Count(p.Question, "?") > 1 {
+		return reasonErr(ReasonMultipleQuestions, "Ask one focused question per turn")
+	}
+	topic := backgroundFor(p.Question)
+	for _, a := range in.Answers {
+		if (a.Kind == "reply" && sameQuestion(a.Question, p.Question)) || (topic != nil && topic.addressedBy(a)) {
+			return reasonErr(ReasonAlreadyAnswered, "The user already answered that question")
+		}
+	}
+	return nil
+}
+
+// Validate is the strict gate before a proposal touches the aggregate. Every
+// item must be valid. Sanitize drops invalid items first, so a valid remainder
+// can still be accepted.
 func Validate(in Input, p Proposal) error {
 	if _, err := questionSource(in, p); err != nil {
 		return err
 	}
 	if !listValid(p.Outstanding, 16, 300) || !listValid(p.Choices, 8, 160) || badOutput(p.Reason, 700) || badOutput(p.Question, 500) || len(p.Findings) > 32 || len(p.UrgentEvidence) > 8 || len(p.Items) > 8 {
-		return errors.New("Model output exceeds the permitted content or size")
+		return reasonErr(ReasonAdvice, "Model output exceeds the permitted content or size")
 	}
 	switch in.Task {
 	case "interview":
 		if p.Action != "ask" && p.Action != "review" && p.Action != "insufficient" || len(p.Items) > 0 {
-			return errors.New("Invalid interview action")
+			return reasonErr(ReasonInvalidAction, "Invalid interview action")
 		}
 		if p.Action == "ask" {
-			if !validText(p.Question, 500) || !validText(p.Reason, 700) {
-				return errors.New("A question must explain which uncertainty it addresses")
-			}
-			if strings.Count(p.Question, "?") > 1 {
-				return errors.New("Ask one focused question per turn")
-			}
-			topic := backgroundFor(p.Question)
-			for _, a := range in.Answers {
-				if (a.Kind == "reply" && sameQuestion(a.Question, p.Question)) || (topic != nil && topic.addressedBy(a)) {
-					return errors.New("The user already answered that question")
-				}
+			if err := questionIssue(in, p); err != nil {
+				return err
 			}
 		} else if p.Question != "" || len(p.Choices) > 0 {
-			return errors.New("Only an open question can include choices")
+			return reasonErr(ReasonQuestion, "Only an open question can include choices")
 		}
 		if p.Action == "insufficient" && len(p.Outstanding) == 0 {
-			return errors.New("Identify missing information")
+			return reasonErr(ReasonMissingOutstanding, "Identify missing information")
 		}
 		for _, f := range p.Findings {
 			if err := validateFinding(in, f); err != nil {
@@ -349,98 +492,138 @@ func Validate(in Input, p Proposal) error {
 			}
 		}
 		for _, ev := range p.UrgentEvidence {
-			a, err := verifySource(in, ev)
-			if err != nil {
+			if err := validateUrgent(in, ev); err != nil {
 				return err
-			}
-			if evidenceDisposition(a) != "provided" || a.Kind == "screen" || pastEvent(a) || !contextualRisk(clauseAt(a.Text, strings.Index(a.Text, ev.Quote))) {
-				return errors.New("The urgent flag needs evidence of a current, relevant user report")
 			}
 		}
 	case "assessment":
 		if len(p.Findings) > 0 || len(p.UrgentEvidence) > 0 || p.Question != "" || len(p.Choices) > 0 {
-			return errors.New("An assessment cannot alter the confirmed history")
+			return reasonErr(ReasonAlteredHistory, "An assessment cannot alter the confirmed history")
 		}
 		if p.Action == "insufficient" {
 			if len(p.Items) != 0 || len(p.Outstanding) == 0 {
-				return errors.New("An insufficient assessment must identify missing information")
+				return reasonErr(ReasonMissingOutstanding, "An insufficient assessment must identify missing information")
 			}
 			return nil
 		}
-		if p.Action != "differential" || len(p.Items) == 0 {
-			return errors.New("Invalid differential assessment")
+		if p.Action != "differential" {
+			return reasonErr(ReasonInvalidAction, "Invalid differential assessment")
 		}
-		facts := map[string]Fact{}
-		for _, f := range in.Facts {
-			if f.Active {
-				facts[f.ID] = f
-			}
+		if len(p.Items) == 0 {
+			return reasonErr(ReasonEmptyDifferential, "Invalid differential assessment")
 		}
+		facts := activeFacts(in)
 		names := map[string]bool{}
 		for _, item := range p.Items {
-			if !validText(item.Name, 120) || badOutput(item.Name, 120) || badOutput(item.ClinicalTerm, 120) || !validText(item.Explanation, 800) || badOutput(item.Explanation, 800) || len(item.Supporting) == 0 || len(item.Supporting) > 12 || len(item.Conflicting) > 12 || len(item.Limitations) == 0 || !listValid(item.Limitations, 8, 300) {
-				return errors.New("Each possibility needs an explanation, evidence and limitations")
+			if err := validateItem(item, facts); err != nil {
+				return err
 			}
 			name := strings.ToLower(strings.TrimSpace(item.Name))
 			if names[name] {
-				return errors.New("Duplicate diagnostic item")
+				return reasonErr(ReasonDuplicate, "Duplicate diagnostic item")
 			}
 			names[name] = true
-			seen := map[string]bool{}
-			for _, refs := range [][]string{item.Supporting, item.Conflicting} {
-				for _, fid := range refs {
-					f, ok := facts[fid]
-					if !ok || seen[fid] || (f.Status != "reported_present" && f.Status != "explicitly_denied" && !(f.SourceType == "report_entry" && f.Status == "documented")) {
-						return errors.New("Assessments must reference distinct, active reported, denied or reviewed document findings")
-					}
-					seen[fid] = true
-				}
-			}
-			if !groundedNumbers(item, facts) {
-				return errors.New("Numerical claims must be grounded in referenced findings")
-			}
 		}
 	default:
-		return errors.New("Unknown model task")
+		return reasonErr(ReasonUnknownTask, "Unknown model task")
+	}
+	return nil
+}
+
+func activeFacts(in Input) map[string]Fact {
+	facts := map[string]Fact{}
+	for _, f := range in.Facts {
+		if f.Active {
+			facts[f.ID] = f
+		}
+	}
+	return facts
+}
+
+func validateItem(item Item, facts map[string]Fact) error {
+	if !validText(item.Name, 120) || badOutput(item.Name, 120) || badOutput(item.ClinicalTerm, 120) || !validText(item.Explanation, 800) || badOutput(item.Explanation, 800) || len(item.Supporting) == 0 || len(item.Supporting) > 12 || len(item.Conflicting) > 12 || len(item.Limitations) == 0 || !listValid(item.Limitations, 8, 300) {
+		return reasonErr(ReasonItemContent, "Each possibility needs an explanation, evidence and limitations")
+	}
+	seen := map[string]bool{}
+	for _, refs := range [][]string{item.Supporting, item.Conflicting} {
+		for _, fid := range refs {
+			f, ok := facts[fid]
+			if !ok || seen[fid] || (f.Status != "reported_present" && f.Status != "explicitly_denied" && !(f.SourceType == "report_entry" && f.Status == "documented")) {
+				return reasonErr(ReasonFactReference, "Assessments must reference distinct, active reported, denied or reviewed document findings")
+			}
+			seen[fid] = true
+		}
+	}
+	if !groundedNumbers(item, facts) {
+		return reasonErr(ReasonUngroundedNumber, "Numerical claims must be grounded in referenced findings")
 	}
 	return nil
 }
 
 var declined = regexp.MustCompile(`(?i)\b(declin(?:e|ed)|prefer not|rather not|skip|won['’]t answer|don['’]t want|do not want)\b`)
-var binaryQuestion = regexp.MustCompile(`(?i)^(?:do|did|does|is|are|was|were|have|has|had|can|could)\b`)
-var words = regexp.MustCompile(`[[:alnum:]]+`)
+var binaryQuestion = regexp.MustCompile(`(?i)^(?:do|did|does|is|are|was|were|have|has|had|can|could|any)\b`)
+var bareDenial = regexp.MustCompile(`(?i)^\s*(?:no|nope|none|never|not at all|not really|not right now|not now|not that i['’]ve noticed)\b`)
 
-// A generic "no" can establish a focused symptom only through its originating
-// question. A denial in one clause must not turn another symptom into a negative.
+// denialSupports reports whether quote explicitly denies concept. Lowering
+// concern needs strong support: the negation must sit in the quote and apply to
+// the concept, or the quote must be a bare "no" to a question about it.
 func denialSupports(concept, quote string, a Answer) bool {
-	if !denies(quote) || uncertain.MatchString(quote) {
+	at := strings.Index(a.Text, quote)
+	if at < 0 || !denies(quote) {
 		return false
 	}
-	if faintConcept.MatchString(strings.TrimSpace(concept)) && explicitFaintDenial.MatchString(strings.TrimSpace(quote)) {
-		at := strings.Index(a.Text, quote)
-		return at >= 0 && explicitFaintDenial.MatchString(strings.TrimSpace(clauseAt(a.Text, at)))
+	end := at + len(quote)
+	if uncertainAt(a.Text, at) || analyzeSpan(a.Text, at, end, sourceOf(a)).Hypothetical {
+		return false
 	}
-	source := strings.ToLower(quote)
-	if pureDenial.MatchString(strings.TrimSpace(quote)) && len(strings.Fields(quote)) <= 4 {
-		if a.Kind != "reply" || (backgroundFor(a.Question) == nil && !binaryQuestion.MatchString(strings.TrimSpace(a.Question))) {
-			return false
+	if a.Kind == "reply" && bareDenial.MatchString(quote) && (backgroundFor(a.Question) != nil || binaryQuestion.MatchString(strings.TrimSpace(a.Question))) {
+		q := a.Question
+		if len(conceptTargets(q, 0, len(q), concept)) > 0 {
+			return true
 		}
-		source = strings.ToLower(a.Question)
 	}
-	for _, w := range words.FindAllString(strings.ToLower(concept), -1) {
-		switch w {
-		case "no", "denied", "reported", "current", "any", "symptom", "history", "of", "or", "and":
+	cues := negationCues(a.Text)
+	for _, t := range conceptTargets(a.Text, at, end, concept) {
+		if !analyzeSpan(a.Text, t.start, t.end, sourceOf(a)).Negated {
 			continue
 		}
-		at := strings.Index(source, w)
-		if at >= 0 && (source == strings.ToLower(a.Question) || denies(clauseAt(source, at))) {
+		if t.end < end && postNegation.MatchString(a.Text[t.end:end]) {
 			return true
+		}
+		for _, c := range cues {
+			if c.start >= at && c.end <= t.start {
+				return true
+			}
 		}
 	}
 	return false
 }
 
 var numbers = regexp.MustCompile(`(?:[0-9]+(?:[.][0-9]+)?)`)
+
+// standaloneNumber skips digits that are part of a name, such as COVID-19,
+// vitamin B12 or type 2 diabetes.
+var standaloneNumber = regexp.MustCompile(`(?:^|[^\p{L}\p{N}.\-])([0-9]+(?:[.][0-9]+)?)`)
+var nameBeforeNumber = regexp.MustCompile(`(?i)\b(?:type|stage|grade|class|phase|level|schedule|step|tier|omega|vitamin|covid|h\d?n)\s*$`)
+
+func numericClaims(s string) []string {
+	var out []string
+	for _, m := range standaloneNumber.FindAllStringSubmatchIndex(s, -1) {
+		start, end := m[2], m[3]
+		if end < len(s) {
+			if r := s[end]; r == '-' && end+1 < len(s) && isLetter(s[end+1]) || isLetter(r) {
+				continue
+			}
+		}
+		if nameBeforeNumber.MatchString(s[:start]) {
+			continue
+		}
+		out = append(out, s[start:end])
+	}
+	return out
+}
+
+func isLetter(b byte) bool { return b >= 'a' && b <= 'z' || b >= 'A' && b <= 'Z' }
 
 // Numeric details often change the meaning of a condition. Reject a numerical
 // claim in the explanatory text unless its exact number occurs in cited evidence.
@@ -459,7 +642,7 @@ func groundedNumbers(item Item, facts map[string]Fact) bool {
 		}
 	}
 	for _, part := range append([]string{item.Explanation}, item.Limitations...) {
-		for _, n := range numbers.FindAllString(part, -1) {
+		for _, n := range numericClaims(part) {
 			if !values[n] {
 				return false
 			}

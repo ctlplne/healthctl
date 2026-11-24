@@ -40,7 +40,7 @@ func matchPathways(answers []Answer) []Pathway {
 				continue
 			}
 			for _, span := range p.concern.FindAllStringIndex(a.Text, -1) {
-				if contextualRisk(clauseAt(a.Text, span[0])) {
+				if personalCurrent(a.Text, span[0], span[1], sourceOf(a)) {
 					found = true
 					break
 				}

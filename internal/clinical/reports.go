@@ -421,9 +421,9 @@ func documentUrgentSign(d SourceDocument, r ReportRow) bool {
 	if when, err := time.Parse(time.DateOnly, date); err == nil && time.Since(when) > 48*time.Hour {
 		return false
 	}
-	for _, span := range emergencySigns.FindAllStringIndex(r.Original, -1) {
-		clause := clauseAt(r.Original, span[0])
-		if documentCurrent.MatchString(clause) && contextualRisk(clause) && !conditionalPrinted.MatchString(clause) {
+	for _, s := range screenText(r.Original, fromUser) {
+		clause := clauseAt(r.Original, s.start)
+		if s.rule == "reported_warning" && documentCurrent.MatchString(clause) && !conditionalPrinted.MatchString(clause) {
 			return true
 		}
 	}
@@ -434,9 +434,9 @@ func documentUrgentSign(d SourceDocument, r ReportRow) bool {
 // Keep that warning distinct from a printed flag on the same row.
 func (e *Encounter) screenReviewComment(d SourceDocument, r ReportRow, emergency string) {
 	var quote string
-	for _, span := range emergencySigns.FindAllStringIndex(r.Note, -1) {
-		clause := clauseAt(r.Note, span[0])
-		if firstPerson.MatchString(clause) && contextualRisk(clause) && !conditionalPrinted.MatchString(clause) {
+	for _, s := range screenText(r.Note, fromUser) {
+		clause := clauseAt(r.Note, s.start)
+		if s.rule == "reported_warning" && firstPersonIn(clause) && !conditionalPrinted.MatchString(clause) {
 			quote = strings.TrimSpace(clause)
 			break
 		}

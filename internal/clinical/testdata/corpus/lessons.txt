@@ -1,0 +1,59 @@
+# Lessons from held-out set 1 (55 rows). Before tuning, the rules missed 24 of its 34 urgent rows.
+warn | self | Feels like someone is standing on my chest. |
+warn | self | I keep coughing and there's blood coming up. |
+warn | self | My left hand and foot have gone numb in the last hour. |
+warn | self | I can't get enough air in. |
+warn | self | My lips have gone a blue colour. |
+warn | self | I've got a horrible crushing feeling in my chest. |
+warn | self | I took all my sleeping pills an hour ago. |
+warn | self | Everything is spinning and I keep falling over to one side. |
+warn | self | I want to end it all. |
+warn | self | There's no point living anymore. |
+warn | self | I'm having a hard time breathing. |
+warn | self | I have pins and needles down my whole right side. |
+warn | self | I've been vomiting dark brown stuff that looks like coffee grounds. |
+warn | self | I passed out cold in the kitchen just now. |
+warn | self | My throat is swelling up and I'm wheezing. |
+warn | self | I'm bleeding and it's soaking through the towels. |
+warn | self | Sudden, terrible headache like I've been hit on the head. |
+warn | self | I can't keep my eyes open and my speech sounds weird. |
+warn | self | I feel like I'm dying. |
+warn | self | My heart is beating irregularly and I feel like I'll faint. |
+warn | self | The pain in my belly is unbearable. |
+warn | self | I just had a fit at work. |
+warn | self | I'm seeing double all of a sudden. |
+warn | self | I have chest pain whenever I exert myself. |
+none | self | I'm not having any trouble breathing right now. |
+none | self | My grandad had a stroke last spring. |
+none | self | There's absolutely no blood in my stool or vomit. |
+none | self | If my chest starts hurting, I'll take an aspirin and call. |
+none | self | I had a seizure when I was eight. |
+none | self | Neither chest pain nor breathlessness. |
+none | self | I've never felt suicidal. |
+none | self | My friend's dad collapsed at the gym. |
+none | self | Chest pain: none. Breathing: fine. |
+none | self | I used to pass out a lot in my teens. |
+none | self | No numbness, tingling or weakness anywhere. |
+none | self | I'm scared I'll have a heart attack like my dad. |
+none | self | Would chest pain after lifting weights be worrying? |
+none | self | She thinks she might be having a stroke. |
+none | self | My mum's lips went blue once when she was ill. |
+warn | witness | He's turned grey and is sweating buckets. |
+warn | witness | She fell and now she can't move her left side. |
+none | witness | He hasn't been sick at all. |
+warn | witness | They keep stopping breathing for a few seconds in their sleep. |
+warn | witness | Her words came out jumbled this morning. |
+warn | reply: Are you having any chest pain right now? | Yes, a lot. |
+none | reply: Have you ever fainted? | Yes, once as a teenager. |
+warn | reply: Is it hard to breathe? | Very hard, yes. |
+none | reply: Do you have thoughts of suicide? | No, never. |
+warn | reply: Did you lose consciousness? | Yeah, for about a minute. |
+warn | self | I think my face might be drooping but I can't tell. |
+warn | self | Not sure if I blacked out or just fell asleep. |
+none | self | Ten years ago I had a clot in my lung. |
+warn | self | Last Tuesday I fainted twice. |
+none | self | I had a mild stroke back in the nineties. |
+none | self | My sister's baby has trouble breathing at night. |
+warn | self | Could this be a stroke? |
+warn | self | What if this is a heart attack? |
+warn | self | Is this a heart attack? |
