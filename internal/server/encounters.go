@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"math"
 	"net/http"
 	"regexp"
 	"strings"
@@ -342,6 +343,9 @@ func (s *Server) remove(w http.ResponseWriter, r *http.Request, owner int) error
 	if err := s.Store.Delete(r.Context(), owner, r.PathValue("id"), in.Revision); err != nil {
 		return err
 	}
+	// A deleted encounter's model call can't be saved, so stop it instead of
+	// letting it spend the provider's tokens until it answers.
+	s.supersede(r.Context(), r.PathValue("id"), math.MaxInt)
 	emit(w, 200, object{"deleted": true})
 	return nil
 }

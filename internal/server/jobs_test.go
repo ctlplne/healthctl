@@ -257,3 +257,30 @@ func TestUnqueuedCallFailsRecoverablyPostgres(t *testing.T) {
 		t.Fatalf("the encounter must offer a retry, got %+v", list)
 	}
 }
+
+// Deleting an encounter stops its running model call, so the provider isn't
+// kept busy on an answer that can no longer be saved.
+func TestDeleteCancelsRunningCallPostgres(t *testing.T) {
+	db, _, _ := testStore(t)
+	var cancelled, concurrent, peak atomic.Int32
+	started, release := make(chan struct{}, 8), make(chan struct{})
+	mock := blockingModel(t, started, release, &cancelled, &concurrent, &peak)
+	defer mock.Close()
+	defer close(release)
+	base := mock.URL + "/v1"
+	t.Setenv("CLINICAL_ALLOWED_ENDPOINTS", base)
+	s := newTestServer(db, io.Discard)
+	c := caller{h: s.Handler()}
+	c.signup(t)
+	cfg := clinical.ProviderRef{Kind: "compatible", Endpoint: base, Model: "fixture", Structured: "prompt"}
+	selectProvider(t, c, cfg)
+	e := postAsync(t, c, intake(cfg, "Fictional elbow discomfort"))
+	select {
+	case <-started:
+	case <-time.After(30 * time.Second):
+		t.Fatal("the queued call did not start")
+	}
+	check(t, c.call("DELETE", "/api/encounters/"+e.ID, object{"revision": e.Revision}), 200, nil)
+	waitFor(t, "the deleted encounter's call to be cancelled", func() bool { return cancelled.Load() == 1 })
+	waitFor(t, "the job to stop", func() bool { st := jobStatus(t, s, e.ID); return len(st) == 1 && st[0] == "superseded" })
+}
