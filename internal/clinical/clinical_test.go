@@ -240,10 +240,21 @@ func TestFailedCancelledOrOutdatedProposalsStayIsolated(t *testing.T) {
 	if loaded.PendingTask() != "interview" || loaded.Provider != e.Provider {
 		t.Fatal("did not resume original provider")
 	}
+	// The retried call was sent this input. A review replaces it, so its
+	// proposal arrives late and carries the hash of the input it was made for.
+	sent, err := loaded.ModelInput("interview")
+	if err != nil {
+		t.Fatal(err)
+	}
 	apply(t, &loaded, Command{Action: "review"})
-	if loaded.Accept("interview", Proposal{Action: "review"}, ModelMeta{}, "") == nil {
+	if loaded.Accept("interview", Proposal{Action: "review"}, ModelMeta{InputHash: InputHash(sent)}, "") == nil {
 		t.Fatal("late proposal applied")
 	}
+	// The review extracts the answers the replaced call would have read.
+	if loaded.PendingTask() != "interview" || !loaded.ReviewExtraction {
+		t.Fatalf("the review must extract the waiting answers: %q", loaded.PendingTask())
+	}
+	turn(t, &loaded, Proposal{Action: "review"})
 	if loaded.Apply(Command{Action: "assess"}, "") == nil {
 		t.Fatal("unconfirmed history assessed")
 	}

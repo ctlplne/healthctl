@@ -308,7 +308,10 @@ func (e *Encounter) Apply(c Command, emergency string) error {
 			e.changed()
 		}
 		localOpening := e.QuestionSource != nil && e.QuestionSource.Key == "symptom_story"
-		extract := e.ExtractedRevision != e.HistoryRevision && (e.State == "interrupted_for_safety" || localOpening || e.Focused || e.ReturnSource != "")
+		// A review that stops a running interview call extracts the answers
+		// that call would have read; otherwise they'd never become findings.
+		stopped := e.Pending == "interview"
+		extract := e.ExtractedRevision != e.HistoryRevision && (e.State == "interrupted_for_safety" || localOpening || e.Focused || e.ReturnSource != "" || stopped)
 		e.State = "history_review"
 		e.Question = ""
 		e.QuestionSource = nil

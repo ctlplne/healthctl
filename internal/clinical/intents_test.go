@@ -288,3 +288,31 @@ func TestConceptVocabulary(t *testing.T) {
 		t.Fatalf("facts must carry the vocabulary term and code: %+v", e.Facts[0])
 	}
 }
+
+// A review that stops a running interview call still extracts the answers
+// that call would have read, so they become findings.
+func TestReviewDuringCallExtracts(t *testing.T) {
+	for _, guidedMode := range []bool{true, false} {
+		var e *Encounter
+		if guidedMode {
+			e = guided(t, "I've had headaches most afternoons for two weeks.")
+			apply(t, e, Command{Action: "answer", Text: "They have become more frequent."})
+		} else {
+			e = intake(t, "My lower back has been sore for a week.", false)
+		}
+		if e.Pending != "interview" || e.ExtractedRevision == e.HistoryRevision {
+			t.Fatalf("guided=%v: a call must be waiting on unextracted answers", guidedMode)
+		}
+		apply(t, e, Command{Action: "review"})
+		if e.State != "history_review" || e.Pending != "interview" || !e.ReviewExtraction {
+			t.Fatalf("guided=%v: the review must extract the waiting answers: state=%s pending=%q extraction=%v", guidedMode, e.State, e.Pending, e.ReviewExtraction)
+		}
+	}
+	// With nothing new since the model's last turn, the review needs no call.
+	e := intake(t, "My lower back has been sore for a week.", false)
+	turn(t, e, Proposal{Action: "ask", Question: "When did it start?", Reason: "Timing matters."})
+	apply(t, e, Command{Action: "review"})
+	if e.Pending != "" {
+		t.Fatalf("a review with nothing new must not call the model: %q", e.Pending)
+	}
+}

@@ -33,6 +33,11 @@ func (e *Encounter) Accept(task string, p Proposal, meta ModelMeta, emergency st
 	if err != nil {
 		return err
 	}
+	// A proposal made for another input is late: the history changed after
+	// its call started, for example when a review replaced a running call.
+	if meta.InputHash != "" && meta.InputHash != InputHash(in) {
+		return errors.New("This result was made for an earlier version of the history")
+	}
 	if err = Validate(in, p); err != nil {
 		return err
 	}

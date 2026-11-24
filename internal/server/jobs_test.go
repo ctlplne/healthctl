@@ -109,15 +109,33 @@ func TestSupersededCallCancelledPostgres(t *testing.T) {
 	case <-time.After(30 * time.Second):
 		t.Fatal("the queued call did not start")
 	}
-	// The user stops the interview while the call is still running.
+	// The user stops the interview while the call is still running. Like the
+	// app, the client asks for an asynchronous answer. The review extracts
+	// the answers the stopped call would have read, as a job of its own.
+	b, _ := json.Marshal(object{"action": "review", "revision": e.Revision, "requestId": token(12)})
+	req := httptest.NewRequestWithContext(t.Context(), "POST", "http://localhost/api/encounters/"+e.ID+"/actions", bytes.NewReader(b))
+	req.Header.Set("Prefer", "respond-async")
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-CSRF-Token", c.csrf)
+	req.AddCookie(c.cookie)
+	w := httptest.NewRecorder()
+	c.h.ServeHTTP(w, req)
 	var next clinical.Encounter
-	check(t, c.call("POST", "/api/encounters/"+e.ID+"/actions", object{"action": "review", "revision": e.Revision, "requestId": token(12)}), 200, &next)
+	check(t, w, 202, &next)
 	waitFor(t, "the superseded call to be cancelled", func() bool { return cancelled.Load() == 1 })
-	waitFor(t, "the job to be marked superseded", func() bool { st := jobStatus(t, s, e.ID); return len(st) == 1 && st[0] == "superseded" })
+	waitFor(t, "the job to be marked superseded", func() bool { st := jobStatus(t, s, e.ID); return len(st) == 2 && st[0] == "superseded" })
 	var now clinical.Encounter
 	check(t, c.call("GET", "/api/encounters/"+e.ID, nil), 200, &now)
 	if now.State != clinical.StateHistoryReview || now.Revision != next.Revision || now.Question != "" {
 		t.Fatalf("a superseded call overwrote the user's action: %s rev %d", now.State, now.Revision)
+	}
+	if now.Pending != "interview" || !now.ReviewExtraction {
+		t.Fatalf("the review must extract the stopped call's answers: pending=%q", now.Pending)
+	}
+	var task string
+	var revision int
+	if err := s.Store.DB.QueryRowContext(t.Context(), "SELECT task, revision FROM model_jobs WHERE encounter_id=$1 ORDER BY id DESC LIMIT 1", e.ID).Scan(&task, &revision); err != nil || task != "interview" || revision != next.Revision {
+		t.Fatalf("the extraction must be queued for the review's revision: %s %d %v", task, revision, err)
 	}
 }
 
