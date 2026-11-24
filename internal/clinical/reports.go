@@ -105,7 +105,6 @@ func (e *Encounter) AttachReport(doc SourceDocument, emergency string) error {
 
 var printedCritical = regexp.MustCompile(`(?i)^(critical(?: high| low)?|panic(?: high| low)?|hh|ll)$`)
 var explicitReportUrgency = regexp.MustCompile(`(?i)\b(critical (?:result|value|finding)|panic value|seek (?:immediate |urgent )?(?:emergency (?:care|help)|medical attention immediately)|go to (?:the |an )?emergency (?:room|department) (?:now|immediately)|call (?:emergency services|your local emergency number) (?:now|immediately))\b`)
-var conditionalPrinted = regexp.MustCompile(`(?i)\b(if|unless|when|should you|in case of|previously|resolved|no longer|not critical|no critical|noncritical|non-critical|not a critical|history of)\b`)
 
 // PrintedCriticalFlag identifies an explicit source flag in the development policy.
 // It does not derive a clinical threshold from a result value.
@@ -407,8 +406,6 @@ func (e *Encounter) HandoffWarnings() []Warning {
 	}
 	return warnings
 }
-
-var documentCurrent = regexp.MustCompile(`(?i)\b(now|currently|today|at present)\b`)
 
 func documentUrgentSign(d SourceDocument, r ReportRow) bool {
 	if r.Subject == "family" || r.Subject == "other" {

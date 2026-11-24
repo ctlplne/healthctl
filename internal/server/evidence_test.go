@@ -46,7 +46,7 @@ func TestLibraryLifecycleAndUsagePostgres(t *testing.T) {
 	if len(r.Passages) != 1 || r.Passages[0].Version != "v1" {
 		t.Fatal("rollback did not activate immutable version")
 	}
-	e := &clinical.Encounter{Assessments: []clinical.Assessment{{Items: []clinical.Item{{Name: "Training topic"}}}}}
+	e := &clinical.Encounter{AssessmentRecord: clinical.AssessmentRecord{Assessments: []clinical.Assessment{{Items: []clinical.Item{{Name: "Training topic"}}}}}}
 	s.attachAssessmentEvidence(t.Context(), 1, e)
 	activate("v1", "withdrawn")
 	s.refreshEvidence(t.Context(), 1, e)

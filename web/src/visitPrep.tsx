@@ -216,20 +216,21 @@ export function VisitPrep({
         onSubmit={async (ev) => {
           ev.preventDefault()
           setErr('')
-          const ok = await act({
-            action: mode,
-            text: text.trim(),
-            speaker,
-            reviewIds: ids,
-            prescribed: rx,
-            date,
-            category,
-            confirmedDestination: consent,
-            forRevision: e.historyRevision,
-            approximate: approx,
-            onset: onset ? new Date(onset).toISOString() : '',
-            end: end ? new Date(end).toISOString() : '',
-          })
+          // Each kind of entry sends only the fields it uses; the app
+          // refuses any other field.
+          const fields: Record<string, Fields> = {
+            episode_log: {
+              reviewIds: ids,
+              approximate: approx,
+              onset: onset ? new Date(onset).toISOString() : '',
+              end: end ? new Date(end).toISOString() : '',
+            },
+            witness: { speaker, reviewIds: ids, confirmedDestination: consent },
+            medication_use: { reviewIds: ids, prescribed: rx, date, confirmedDestination: consent },
+            resolve_sources: { reviewIds: ids, date, confirmedDestination: consent },
+            clinician_feedback: { speaker, category, confirmedDestination: consent, forRevision: e.historyRevision },
+          }
+          const ok = await act({ action: mode, text: text.trim(), ...fields[mode] })
           if (ok) {
             reset()
             setNotice('Saved to this encounter.')

@@ -552,3 +552,21 @@ func conceptTargets(text string, start, end int, concept string) []cueSpan {
 	}
 	return out
 }
+
+// Context cues used outside span analysis. They live here so every rule about
+// negation, who an experience belongs to, time and hypotheticals is in one
+// engine (TestNoSpecialCaseRegexes keeps new ones from appearing elsewhere).
+//
+//   - thirdParty: a possessive relative ("my father") in a volunteered statement.
+//   - pureDenial and bareDenial: a whole reply that is a denial.
+//   - historicalQuestion: a question about the past ("ever", "previously").
+//   - eyeDenial: a denial of a yellow colour, which the span scope can miss.
+//   - conditionalPrinted and documentCurrent: conditional, resolved or current
+//     wording in a printed report row.
+var thirdParty = regexp.MustCompile(`(?i)\b(my|our|his|her|their) (?:father|mother|dad|mom|mum|parent|family|grandmother|grandfather|brother|sister|friend|child|son|daughter|wife|husband|partner|patient)\b|\b(he|she|they) (?:has|had|is|was|could|can|feels)\b`)
+var pureDenial = regexp.MustCompile(`(?i)^(nope|no|none|not at all)[.!]?$|\b(hasn['’]t|haven['’]t|didn['’]t) (?:had|have|experienced|noticed)\b`)
+var bareDenial = regexp.MustCompile(`(?i)^\s*(?:no|nope|none|never|not at all|not really|not right now|not now|not that i['’]ve noticed)\b`)
+var historicalQuestion = regexp.MustCompile(`(?i)\b(?:ever|before|in the past|previously|history of)\b`)
+var eyeDenial = regexp.MustCompile(`(?i)\b(?:not|aren['’]t|weren['’]t|wasn['’]t|isn['’]t|never) (?:at all )?(?:look(?:ing)? )?yellow\b`)
+var conditionalPrinted = regexp.MustCompile(`(?i)\b(if|unless|when|should you|in case of|previously|resolved|no longer|not critical|no critical|noncritical|non-critical|not a critical|history of)\b`)
+var documentCurrent = regexp.MustCompile(`(?i)\b(now|currently|today|at present)\b`)

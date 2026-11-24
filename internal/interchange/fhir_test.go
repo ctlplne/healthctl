@@ -9,9 +9,12 @@ import (
 )
 
 func TestHandoffKeepsWarningButProtectsUnreviewedRowAndRelatedSubjects(t *testing.T) {
-	e := &clinical.Encounter{ID: "synthetic", ConfirmedRevision: 1, HistoryRevision: 1, Notice: "Historical notice at intake", ReviewStatus: clinical.ReviewStatus,
-		Warnings:      []clinical.Warning{{DocumentID: "d1", RowID: "r1", Message: "Printed urgent notice", Active: true, Evidence: clinical.Evidence{Quote: "MRN: PRIVATE-SYNTHETIC"}}},
-		ReportReviews: []clinical.ReportReview{{ID: "rr2", RowID: "r2", DocumentID: "d1", Active: true, Row: clinical.ReportRow{Name: "Past event", Subject: "family", Excerpt: "family note"}}}}
+	e := &clinical.Encounter{
+		EncounterIdentity: clinical.EncounterIdentity{ID: "synthetic", Notice: "Historical notice at intake", ReviewStatus: clinical.ReviewStatus},
+		HistoryRecord:     clinical.HistoryRecord{ConfirmedRevision: 1, HistoryRevision: 1},
+		SafetyRecord:      clinical.SafetyRecord{Warnings: []clinical.Warning{{DocumentID: "d1", RowID: "r1", Message: "Printed urgent notice", Active: true, Evidence: clinical.Evidence{Quote: "MRN: PRIVATE-SYNTHETIC"}}}},
+		SourceRecords:     clinical.SourceRecords{ReportReviews: []clinical.ReportReview{{ID: "rr2", RowID: "r2", DocumentID: "d1", Active: true, Row: clinical.ReportRow{Name: "Past event", Subject: "family", Excerpt: "family note"}}}},
+	}
 	b := FromEncounter(e)
 	f := FHIR(b)
 	if b.ModelGuidance != clinical.ModelGuidance() || e.Report().ModelGuidance != b.ModelGuidance {

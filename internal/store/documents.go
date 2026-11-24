@@ -65,7 +65,11 @@ func (s *Store) Timeline(ctx context.Context, owner int) ([]*clinical.Encounter,
 		}
 		// Timeline search needs document titles, dated outcomes and active facts.
 		// Keep full documents, earlier assessments and transcripts in their own encounter.
-		compact := &clinical.Encounter{ID: e.ID, Concern: e.Concern, EpisodeID: e.EpisodeID, EpisodeTitle: e.EpisodeTitle, CreatedAt: e.CreatedAt, UpdatedAt: e.UpdatedAt, Demo: e.Demo, Outcomes: e.Outcomes, Facts: []clinical.Fact{}}
+		compact := &clinical.Encounter{
+			EncounterIdentity: clinical.EncounterIdentity{ID: e.ID, Concern: e.Concern, EpisodeID: e.EpisodeID, EpisodeTitle: e.EpisodeTitle, CreatedAt: e.CreatedAt, UpdatedAt: e.UpdatedAt, Demo: e.Demo},
+			SourceRecords:     clinical.SourceRecords{Outcomes: e.Outcomes},
+			HistoryRecord:     clinical.HistoryRecord{Facts: []clinical.Fact{}},
+		}
 		for _, d := range e.Documents {
 			compact.Documents = append(compact.Documents, clinical.SourceDocument{ID: d.ID, Title: d.Title, Purpose: d.Purpose})
 		}

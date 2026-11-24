@@ -32,7 +32,6 @@ func (e *Encounter) AttachPhoto(id, area string) error {
 }
 
 var yellowEyeWords = regexp.MustCompile(`(?i)\b(?:(?:(?:whites? of (?:my |the )?eyes?)|(?:my )?eyes?|eye whites?) (?:have (?:turned|become)|(?:are|look|looks|appear|appears|seem|seems|turned|turning|became|becoming|went|get|getting))(?: (?:a (?:little|bit)|slightly|very|more|bright))? yellow(?:ish)?|yellow(?:ish)? (?:eyes?\b|eye whites?|whites? of (?:my |the )?eyes?)|jaundiced)\b`)
-var eyeDenial = regexp.MustCompile(`(?i)\b(?:not|aren['’]t|weren['’]t|wasn['’]t|isn['’]t|never) (?:at all )?(?:look(?:ing)? )?yellow\b`)
 
 func (e *Encounter) RemovePhoto(id string) error {
 	for i, photo := range e.Photos {

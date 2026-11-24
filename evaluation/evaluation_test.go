@@ -73,11 +73,11 @@ func TestHiddenDataAndUnaskedRepliesStayOutOfRequests(t *testing.T) {
 }
 
 func TestScorerReportsIndividualInvariantFailures(t *testing.T) {
-	e := clinical.Encounter{Answers: []clinical.Answer{{ID: "a1", Active: true, Text: "My father had chest pain last year."}}, Facts: []clinical.Fact{{
+	e := clinical.Encounter{HistoryRecord: clinical.HistoryRecord{Answers: []clinical.Answer{{ID: "a1", Active: true, Text: "My father had chest pain last year."}}, Facts: []clinical.Fact{{
 		ID: "f1", Active: true, FindingProposal: clinical.FindingProposal{
 			Evidence: clinical.Evidence{AnswerID: "a1", Quote: "chest pain"}, Concept: "Chest pain", Status: "reported_present", Subject: "self",
 		},
-	}}}
+	}}}}
 	c := Case{Facts: []ExpectedFact{{Label: "family history", Concept: "chest pain", Source: "father", Status: "reported_present", Subject: "family"}}}
 	r := Result{}
 	scoreFacts(&r, c, &e)

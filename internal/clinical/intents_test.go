@@ -51,8 +51,8 @@ func TestQuestionIntents(t *testing.T) {
 	}
 	// Free text is a fallback with stricter checks.
 	for q, code := range map[string]string{
-		"Tell me about the cough":                            ReasonQuestion,
-		"When did it start and how bad is it?":               ReasonMultipleQuestions,
+		"Tell me about the cough":                             ReasonQuestion,
+		"When did it start and how bad is it?":                ReasonMultipleQuestions,
 		"Is it " + strings.Repeat("really ", 50) + "a cough?": ReasonTooLong,
 	} {
 		if got := ReasonOf(Validate(in, Proposal{Action: "ask", Question: q, Reason: "Needed."})); got != code {

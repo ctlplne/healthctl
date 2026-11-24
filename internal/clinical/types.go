@@ -290,67 +290,100 @@ type IntakeRevision struct {
 	HistoryRevision  int  `json:"historyRevision"`
 }
 
+// Encounter is stored as one encrypted JSON payload. It is split into
+// sub-records by concern; their fields are promoted, so the JSON stays flat.
+// PayloadVersion lets DecodeEncounter migrate older payloads once.
 type Encounter struct {
-	AssessmentAcknowledgments []AssessmentAcknowledgment `json:"assessmentAcknowledgments,omitempty"`
-	SafetyChecks              []SafetyCheck              `json:"safetyChecks,omitempty"`
-	RedFlagsDue               []RedFlagQuestion          `json:"redFlagsDue,omitempty"`
-	Gaps                      []Gap                      `json:"gaps,omitempty"`
+	PayloadVersion int `json:"payloadVersion,omitempty"`
+	EncounterIdentity
+	InterviewState
+	HistoryRecord
+	SafetyRecord
+	SourceRecords
+	AssessmentRecord
+}
 
-	DemoPractice          bool                   `json:"demoPractice,omitempty"`
-	FocusedFrom           int                    `json:"focusedFrom,omitempty"`
-	NarrativeFirst        bool                   `json:"narrativeFirst,omitempty"`
-	ReturnSource          string                 `json:"returnSource,omitempty"`
-	Focused               bool                   `json:"focused,omitempty"`
-	Agenda                string                 `json:"agenda,omitempty"`
-	Feedback              []ClinicianFeedback    `json:"feedback,omitempty"`
-	GuidedHistory         bool                   `json:"guidedHistory,omitempty"`
-	ReportConsents        []ReportConsent        `json:"reportConsents,omitempty"`
-	ReportIdentityChanges []ReportIdentityChange `json:"reportIdentityChanges,omitempty"`
-	EpisodeID             string                 `json:"episodeId,omitempty"`
-	EpisodeTitle          string                 `json:"episodeTitle,omitempty"`
-	ReportFirst           bool                   `json:"reportFirst,omitempty"`
-	Photos                []ObservationPhoto     `json:"photos,omitempty"`
+// EncounterIdentity is who the encounter is for and how it was set up.
+type EncounterIdentity struct {
+	ID               string           `json:"id"`
+	Concern          string           `json:"concern"`
+	Age              int              `json:"age"`
+	Background       string           `json:"background"`
+	PregnancyRelated bool             `json:"pregnancyRelated"`
+	Agenda           string           `json:"agenda,omitempty"`
+	IntakeHistory    []IntakeRevision `json:"intakeHistory"`
+	Provider         ProviderRef      `json:"provider"`
+	ProviderChanges  []ProviderChange `json:"providerChanges"`
+	Demo             bool             `json:"demo"`
+	DemoPractice     bool             `json:"demoPractice,omitempty"`
+	EpisodeID        string           `json:"episodeId,omitempty"`
+	EpisodeTitle     string           `json:"episodeTitle,omitempty"`
+	Revision         int              `json:"revision"`
+	CreatedAt        time.Time        `json:"createdAt"`
+	UpdatedAt        time.Time        `json:"updatedAt"`
+	NoticeVersion    string           `json:"noticeVersion"`
+	Notice           string           `json:"notice"`
+	ReviewStatus     string           `json:"reviewStatus"`
+}
+
+// InterviewState is where the interview is and what it asks next.
+type InterviewState struct {
+	State                string          `json:"state"`
+	Pending              string          `json:"pending"`
+	Failure              string          `json:"failure"`
+	FailedTask           string          `json:"failedTask,omitempty"`
+	ScopeReason          string          `json:"scopeReason"`
+	Question             string          `json:"question"`
+	Choices              []string        `json:"choices"`
+	QuestionSource       *QuestionSource `json:"questionSource,omitempty"`
+	QuestionReviewIDs    []string        `json:"questionReviewIds,omitempty"`
+	Outstanding          []string        `json:"outstanding"`
+	OutstandingReviewIDs []string        `json:"outstandingReviewIds,omitempty"`
+	Pathways             []Pathway       `json:"pathways,omitempty"`
+	Turns                []Turn          `json:"turns"`
+	GuidedHistory        bool            `json:"guidedHistory,omitempty"`
+	NarrativeFirst       bool            `json:"narrativeFirst,omitempty"`
+	Focused              bool            `json:"focused,omitempty"`
+	FocusedFrom          int             `json:"focusedFrom,omitempty"`
+	ReportFirst          bool            `json:"reportFirst,omitempty"`
+	ReturnSource         string          `json:"returnSource,omitempty"`
+	ReviewExtraction     bool            `json:"reviewExtraction,omitempty"`
+	ExtractedRevision    int             `json:"extractedRevision,omitempty"`
+}
+
+// HistoryRecord is what the user reported and confirmed.
+type HistoryRecord struct {
+	Answers           []Answer        `json:"answers"`
+	Facts             []Fact          `json:"facts"`
+	Contradictions    []Contradiction `json:"contradictions"`
+	HistoryRevision   int             `json:"historyRevision"`
+	ConfirmedRevision int             `json:"confirmedRevision"`
+	Summaries         []Summary       `json:"summaries"`
+}
+
+// SafetyRecord holds warnings and the app's own safety questions.
+type SafetyRecord struct {
+	Warnings     []Warning         `json:"warnings"`
+	SafetyChecks []SafetyCheck     `json:"safetyChecks,omitempty"`
+	RedFlagsDue  []RedFlagQuestion `json:"redFlagsDue,omitempty"`
+	Gaps         []Gap             `json:"gaps,omitempty"`
+}
+
+// SourceRecords holds documents, photos and visit entries from outside the interview.
+type SourceRecords struct {
 	Documents             []SourceDocument       `json:"documents,omitempty"`
 	ReportReviews         []ReportReview         `json:"reportReviews,omitempty"`
+	ReportConsents        []ReportConsent        `json:"reportConsents,omitempty"`
+	ReportIdentityChanges []ReportIdentityChange `json:"reportIdentityChanges,omitempty"`
+	Photos                []ObservationPhoto     `json:"photos,omitempty"`
+	Feedback              []ClinicianFeedback    `json:"feedback,omitempty"`
 	Outcomes              []VisitOutcome         `json:"outcomes,omitempty"`
-	QuestionSource        *QuestionSource        `json:"questionSource,omitempty"`
-	QuestionReviewIDs     []string               `json:"questionReviewIds,omitempty"`
-	OutstandingReviewIDs  []string               `json:"outstandingReviewIds,omitempty"`
-	Pathways              []Pathway              `json:"pathways,omitempty"`
-	IntakeHistory         []IntakeRevision       `json:"intakeHistory"`
-	ReviewExtraction      bool                   `json:"reviewExtraction,omitempty"`
-	ExtractedRevision     int                    `json:"extractedRevision,omitempty"`
-	ID                    string                 `json:"id"`
-	Concern               string                 `json:"concern"`
-	Age                   int                    `json:"age"`
-	Background            string                 `json:"background"`
-	PregnancyRelated      bool                   `json:"pregnancyRelated"`
-	Revision              int                    `json:"revision"`
-	HistoryRevision       int                    `json:"historyRevision"`
-	ConfirmedRevision     int                    `json:"confirmedRevision"`
-	State                 string                 `json:"state"`
-	Provider              ProviderRef            `json:"provider"`
-	Demo                  bool                   `json:"demo"`
-	CreatedAt             time.Time              `json:"createdAt"`
-	UpdatedAt             time.Time              `json:"updatedAt"`
-	NoticeVersion         string                 `json:"noticeVersion"`
-	Notice                string                 `json:"notice"`
-	ReviewStatus          string                 `json:"reviewStatus"`
-	Answers               []Answer               `json:"answers"`
-	Facts                 []Fact                 `json:"facts"`
-	Warnings              []Warning              `json:"warnings"`
-	Contradictions        []Contradiction        `json:"contradictions"`
-	Outstanding           []string               `json:"outstanding"`
-	Question              string                 `json:"question"`
-	Choices               []string               `json:"choices"`
-	Assessments           []Assessment           `json:"assessments"`
-	Failure               string                 `json:"failure"`
-	ScopeReason           string                 `json:"scopeReason"`
-	Summaries             []Summary              `json:"summaries"`
-	Turns                 []Turn                 `json:"turns"`
-	ProviderChanges       []ProviderChange       `json:"providerChanges"`
-	Pending               string                 `json:"pending"`
-	FailedTask            string                 `json:"failedTask,omitempty"`
+}
+
+// AssessmentRecord holds optional assessments and their acknowledgments.
+type AssessmentRecord struct {
+	Assessments               []Assessment               `json:"assessments"`
+	AssessmentAcknowledgments []AssessmentAcknowledgment `json:"assessmentAcknowledgments,omitempty"`
 }
 
 type Report struct {

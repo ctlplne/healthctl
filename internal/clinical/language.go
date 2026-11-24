@@ -60,38 +60,37 @@ func displayItems(items []Item) []Item {
 	return result
 }
 
-// ForDisplay updates authored labels on earlier visits, without changing a
-// stored revision, verbatim evidence, report labels or the user's corrections.
-func (e Encounter) ForDisplay() Encounter {
+// migrateWording rewrites role labels in older model text once, when a
+// version 1 payload is read. It never changes verbatim evidence, report labels
+// or the user's corrections. New model text is rewritten when it is accepted.
+func migrateWording(e *Encounter) {
 	e.Question = userReference(e.Question)
 	e.QuestionSource = displaySource(e.QuestionSource)
 	e.Choices = userLabels(e.Choices)
 	e.Outstanding = userLabels(e.Outstanding)
-	e.Answers = slices.Clone(e.Answers)
 	for i := range e.Answers {
 		e.Answers[i].Question = userReference(e.Answers[i].Question)
 		e.Answers[i].QuestionSource = displaySource(e.Answers[i].QuestionSource)
 	}
-	e.Turns = slices.Clone(e.Turns)
 	for i := range e.Turns {
 		e.Turns[i].Question = userReference(e.Turns[i].Question)
 		e.Turns[i].Reason = userReference(e.Turns[i].Reason)
 		e.Turns[i].QuestionSource = displaySource(e.Turns[i].QuestionSource)
 	}
-	e.Summaries = slices.Clone(e.Summaries)
 	for i := range e.Summaries {
 		e.Summaries[i].Outstanding = userLabels(e.Summaries[i].Outstanding)
 	}
-	e.Assessments = slices.Clone(e.Assessments)
 	for i := range e.Assessments {
 		e.Assessments[i].Items = displayItems(e.Assessments[i].Items)
 		e.Assessments[i].Outstanding = userLabels(e.Assessments[i].Outstanding)
 	}
-	e.Facts = slices.Clone(e.Facts)
 	for i, f := range e.Facts {
 		if (f.SourceType == "patient_answer" || f.SourceType == "witness_observation") && !f.Corrected {
 			e.Facts[i].Concept = userReference(f.Concept)
 		}
 	}
-	return e
 }
+
+// ForDisplay returns the encounter as stored. Display never rewrites text:
+// older wording is migrated once by DecodeEncounter.
+func (e Encounter) ForDisplay() Encounter { return e }

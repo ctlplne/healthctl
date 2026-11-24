@@ -111,6 +111,9 @@ func (s *Server) action(w http.ResponseWriter, r *http.Request, owner int) error
 		if requestsAssessment && (!in.AssessmentAcknowledged || in.AssessmentNoticeVersion != clinical.AssessmentNotice.Version) {
 			return bad("Read and acknowledge the current beta assessment notice before requesting an estimate. Reload if your notice is out of date.")
 		}
+		if err := clinical.CheckCommand(in.Command); err != nil {
+			return bad(err.Error())
+		}
 		var actionErr error
 		switch {
 		case in.Action == "set_episode" && prior != nil:

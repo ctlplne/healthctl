@@ -220,7 +220,6 @@ func (e *Encounter) addWarning(ev Evidence, rule, level, emergency string) {
 
 // affirmative replies to a question that names an urgent sign report that sign.
 var affirmative = regexp.MustCompile(`(?i)^\s*(?:yes|yeah|yep|yup|i do|i have|i did|it is|it does|correct|sometimes|occasionally|a little|a bit|once|twice|definitely|absolutely)\b|^[^.?!]{0,30}\b(?:yes|yeah)\b`)
-var historicalQuestion = regexp.MustCompile(`(?i)\b(?:ever|before|in the past|previously|history of)\b`)
 var secondPerson = strings.NewReplacer("yourself", "myself", "Yourself", "Myself", "your", "my", "Your", "My", "you're", "I'm", "You're", "I'm", "you", "I", "You", "I")
 
 func (e *Encounter) screen(a Answer, emergency string) {
@@ -374,4 +373,3 @@ func personalCurrent(text string, start, end int, src textSource) bool {
 
 // thirdParty recognizes an explicit mention of someone else. It is used to decide
 // whether an opening statement fully answers a background question.
-var thirdParty = regexp.MustCompile(`(?i)\b(my|our|his|her|their) (?:father|mother|dad|mom|mum|parent|family|grandmother|grandfather|brother|sister|friend|child|son|daughter|wife|husband|partner|patient)\b|\b(he|she|they) (?:has|had|is|was|could|can|feels)\b`)

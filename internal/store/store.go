@@ -138,14 +138,15 @@ func (s *Store) decode(owner int, id string, b []byte) (*clinical.Encounter, err
 	if err != nil {
 		return nil, errors.New("record decryption failed")
 	}
-	var e clinical.Encounter
-	if err = json.Unmarshal(plain, &e); err != nil {
+	// DecodeEncounter migrates an older payload to the current version.
+	e, err := clinical.DecodeEncounter(plain)
+	if err != nil {
 		return nil, err
 	}
 	if e.ID != id {
 		return nil, errors.New("record identity mismatch")
 	}
-	return &e, nil
+	return e, nil
 }
 func (s *Store) Get(ctx context.Context, owner int, id string) (*clinical.Encounter, error) {
 	var b []byte

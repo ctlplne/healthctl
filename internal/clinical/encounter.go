@@ -30,15 +30,23 @@ func New(encounterID string, intake Intake, provider ProviderRef, emergency stri
 		return nil, errors.New("Enter an age from 1 to 125, a chief concern and acknowledge the current notice")
 	}
 	e := &Encounter{
-		DemoPractice: intake.DemoPractice && provider.Kind == "demo" && !intake.ReportFirst,
-		Agenda:       strings.TrimSpace(intake.Agenda), Focused: intake.Focused, NarrativeFirst: intake.NarrativeFirst, GuidedHistory: intake.GuidedHistory, ReportFirst: intake.ReportFirst, ID: encounterID, Concern: strings.TrimSpace(intake.Concern), Background: strings.TrimSpace(intake.Background),
-		Age: intake.Age, PregnancyRelated: intake.PregnancyRelated,
-		Provider: provider, Demo: provider.Kind == "demo", CreatedAt: time.Now().UTC(),
-		Notice: Notice, NoticeVersion: NoticeVersion, ReviewStatus: ReviewStatus, HistoryRevision: 1,
-		IntakeHistory: []IntakeRevision{{Age: intake.Age, PregnancyRelated: intake.PregnancyRelated, HistoryRevision: 1}},
-		Answers:       []Answer{}, Facts: []Fact{}, Warnings: []Warning{}, Contradictions: []Contradiction{},
-		Outstanding: []string{}, Choices: []string{}, Assessments: []Assessment{},
-		Summaries: []Summary{}, Turns: []Turn{}, ProviderChanges: []ProviderChange{},
+		PayloadVersion: PayloadVersion,
+		EncounterIdentity: EncounterIdentity{
+			DemoPractice: intake.DemoPractice && provider.Kind == "demo" && !intake.ReportFirst,
+			Agenda:       strings.TrimSpace(intake.Agenda), ID: encounterID, Concern: strings.TrimSpace(intake.Concern), Background: strings.TrimSpace(intake.Background),
+			Age: intake.Age, PregnancyRelated: intake.PregnancyRelated,
+			Provider: provider, Demo: provider.Kind == "demo", CreatedAt: time.Now().UTC(),
+			Notice: Notice, NoticeVersion: NoticeVersion, ReviewStatus: ReviewStatus,
+			IntakeHistory:   []IntakeRevision{{Age: intake.Age, PregnancyRelated: intake.PregnancyRelated, HistoryRevision: 1}},
+			ProviderChanges: []ProviderChange{},
+		},
+		InterviewState: InterviewState{
+			Focused: intake.Focused, NarrativeFirst: intake.NarrativeFirst, GuidedHistory: intake.GuidedHistory, ReportFirst: intake.ReportFirst,
+			Outstanding: []string{}, Choices: []string{}, Turns: []Turn{},
+		},
+		HistoryRecord:    HistoryRecord{HistoryRevision: 1, Answers: []Answer{}, Facts: []Fact{}, Contradictions: []Contradiction{}, Summaries: []Summary{}},
+		SafetyRecord:     SafetyRecord{Warnings: []Warning{}},
+		AssessmentRecord: AssessmentRecord{Assessments: []Assessment{}},
 	}
 	e.touch()
 	e.appendAnswer("concern", "What brings you here?", e.Concern, "", emergency)
@@ -201,6 +209,12 @@ func sameTime(a, b string) bool {
 }
 
 func (e *Encounter) Apply(c Command, emergency string) error {
+	if err := CheckCommand(c); err != nil {
+		return err
+	}
+	if err := checkFrom(c.Action, e.State); err != nil {
+		return err
+	}
 	switch c.Action {
 	case "episode_log", "witness", "medication_use", "resolve_sources", "clinician_feedback":
 		if err := e.visitEntry(c, emergency); err != nil {

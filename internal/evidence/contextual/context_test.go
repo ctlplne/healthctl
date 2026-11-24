@@ -31,7 +31,7 @@ func TestApplicabilityRequiresSupportingCurrentSelfReport(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			f := fact
 			tc.change(&f)
-			result := Explain(c, &clinical.Encounter{Age: tc.age, Facts: []clinical.Fact{f}}, 0, item)
+			result := Explain(c, &clinical.Encounter{EncounterIdentity: clinical.EncounterIdentity{Age: tc.age}, HistoryRecord: clinical.HistoryRecord{Facts: []clinical.Fact{f}}}, 0, item)
 			if (result.Relation == "supported_context") != tc.supported || (len(result.ClaimLinks) > 0) != tc.supported {
 				t.Fatalf("unexpected relation %s", result.Relation)
 			}

@@ -260,7 +260,6 @@ func validStatus(s string) bool {
 }
 func validSubject(s string) bool { return s == "self" || s == "family" || s == "other" }
 
-var pureDenial = regexp.MustCompile(`(?i)^(nope|no|none|not at all)[.!]?$|\b(hasn['’]t|haven['’]t|didn['’]t) (?:had|have|experienced|noticed)\b`)
 var vagueOnly = regexp.MustCompile(`(?i)^(?:i(?: am|'m|’m| feel) |i am feeling )?(?:otherwise |generally |pretty )?(?:fine|good|ok|okay|well|normal|healthy)[.!]?$|^(?:nothing (?:else|much)|not really)[.!]?$`)
 var uncertaintyOnly = regexp.MustCompile(`(?i)^\s*(?:i['’]m |i am |i )?(not sure|unsure|don't know|don’t know|do not know|can't remember|cannot remember|uncertain|maybe|rather not(?: say| answer)?|prefer not to (?:say|answer)|decline(?: to answer)?|skip)[\s.!?]*$`)
 
@@ -608,7 +607,6 @@ func validateItem(item Item, facts map[string]Fact) error {
 
 var declined = regexp.MustCompile(`(?i)\b(declin(?:e|ed)|prefer not|rather not|skip|won['’]t answer|don['’]t want|do not want)\b`)
 var binaryQuestion = regexp.MustCompile(`(?i)^(?:do|did|does|is|are|was|were|have|has|had|can|could|any)\b`)
-var bareDenial = regexp.MustCompile(`(?i)^\s*(?:no|nope|none|never|not at all|not really|not right now|not now|not that i['’]ve noticed)\b`)
 
 // denialSupports reports whether quote explicitly denies concept. Lowering
 // concern needs strong support: the negation must sit in the quote and apply to
