@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/ctlplne/healthctl/internal/clinical"
+
 	"github.com/ctlplne/healthctl/internal/provider"
 )
 
@@ -64,13 +66,49 @@ func (s *Server) testSettings(w http.ResponseWriter, r *http.Request, owner int)
 	if err := s.validateModelChoice(r, owner, in.Provider); err != nil {
 		return bad(err.Error())
 	}
+	probe := object{}
 	if in.Provider.Kind != "demo" {
 		if err := s.Models.Test(r.Context(), in.Provider); err != nil {
 			return problem{422, err.Error()}
 		}
+		var failed bool
+		probe, failed = s.clinicalProbe(r, in.Provider)
+		if failed {
+			return problem{422, "The model connected, but its answer to a short synthetic interview didn't pass the app's checks (" + probe["reason"].(string) + "). Choose another model or structured-output setting."}
+		}
 	}
-	emit(w, 200, object{"ok": true, "synthetic": in.Provider.Kind == "demo"})
+	emit(w, 200, object{"ok": true, "synthetic": in.Provider.Kind == "demo", "clinicalProbe": probe})
 	return nil
+}
+
+// clinicalProbe sends a tiny fictional interview through the real validator, so
+// a model that can't meet the contract fails at setup rather than mid-interview.
+// A transport or provider error leaves the probe inconclusive.
+func (s *Server) clinicalProbe(r *http.Request, cfg provider.Config) (object, bool) {
+	text := "Synthetic connection check: a mild cough for two days, no fever."
+	in := clinical.Input{Task: "interview", Age: 40, Concern: text, Answers: []clinical.Answer{{ID: "a1", Kind: "concern", Question: "What brings you here?", Text: text, Active: true}}, Facts: []clinical.Fact{}, Contradictions: []clinical.Contradiction{}, Outstanding: []string{}, ActiveWarnings: []clinical.Warning{}, HistoryRevision: 1}
+	var dropped []clinical.Rejection
+	_, m, err := s.Models.Generate(r.Context(), cfg, "interview", in, func(b []byte) error {
+		var candidate clinical.Proposal
+		if err := json.Unmarshal(b, &candidate); err != nil {
+			return err
+		}
+		_, rejected, err := clinical.Sanitize(in, candidate)
+		dropped = rejected
+		return err
+	})
+	if err == nil {
+		return object{"passed": true, "droppedItems": clinical.RejectionCounts(dropped)}, false
+	}
+	switch reason := m.FailureReason; {
+	case clinical.ReasonOf(err) != "" || reason == "schema_mismatch" || reason == "unreadable_response":
+		if reason == "" {
+			reason = clinical.ReasonOf(err)
+		}
+		return object{"passed": false, "reason": reason}, true
+	default:
+		return object{"passed": false, "inconclusive": true, "reason": reason}, false
+	}
 }
 
 func (s *Server) validateModelChoice(r *http.Request, owner int, cfg provider.Config) error {

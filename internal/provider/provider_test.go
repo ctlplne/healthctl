@@ -408,3 +408,16 @@ type hintError struct{}
 func (hintError) Error() string      { return "invalid" }
 func (hintError) RepairHint() string { return "APP-AUTHORED-HINT multiple_questions" }
 func (hintError) ReasonCode() string { return "multiple_questions" }
+
+func TestCapabilityRecorded(t *testing.T) {
+	c, cfg := newFixtureClient(t)
+	c.fixtureTransport(func(r *http.Request) (*http.Response, error) { return response(200, envelope(cfg.Kind, proposal)), nil })
+	_, meta, err := c.Generate(t.Context(), cfg, "interview", struct{}{}, func([]byte) error { return nil })
+	if err != nil {
+		t.Fatal(err)
+	}
+	capabilities, ok := meta.Settings["capabilities"].(map[string]any)
+	if !ok || capabilities["provider"] != "compatible" || capabilities["structuredOutput"] != "prompt" || capabilities["repairAvailable"] != true {
+		t.Fatalf("the result must record the capabilities it used: %v", meta.Settings["capabilities"])
+	}
+}

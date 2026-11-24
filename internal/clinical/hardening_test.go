@@ -230,3 +230,25 @@ func TestSafetyNetQuestions(t *testing.T) {
 		t.Fatal("a diary emergency answer must warn")
 	}
 }
+
+func TestPolicyReviewRecord(t *testing.T) {
+	for _, v := range []string{"development-1", "development-2", "development-3", PolicyVersion} {
+		r := PolicyReview(v)
+		if r.Version != v || r.Status == "unknown" {
+			t.Fatalf("policy %s has no review record", v)
+		}
+		if r.Status == "reviewed" && (r.Reviewer == "" || r.Date == "" || r.Scope == "") {
+			t.Fatalf("policy %s is marked reviewed without a reviewer, date and scope", v)
+		}
+		if r.Status != "reviewed" && !strings.Contains(r.Note, "not been clinically reviewed") {
+			t.Fatalf("policy %s must say it has not been clinically reviewed", v)
+		}
+	}
+	if PolicyReview("made-up").Status != "unknown" {
+		t.Fatal("an unknown policy must not look reviewed")
+	}
+	a, b := InputHash(Input{Concern: "one"}), InputHash(Input{Concern: "two"})
+	if a == b || len(a) != 24 || a != InputHash(Input{Concern: "one"}) {
+		t.Fatal("the input hash must be stable and distinguish inputs")
+	}
+}

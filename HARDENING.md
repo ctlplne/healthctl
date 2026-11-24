@@ -43,11 +43,11 @@ Status: `[x]` done with proof · `[ ]` open · `[h]` handoff, prepared with next
 
 - [x] **S6** Two warning tiers ("Seek emergency care" and "Get this checked promptly") with app-authored text, both kept until the source is corrected. Proof: `TestWarningTiers`, `TestModelUrgentFlagNeverFailsTurn`; the UI, report and brief label check warnings separately.
 - [x] **S7** App-owned safety-net questions before confirming the history, at the start of a return visit, and for a diary episode happening now. Files: `internal/clinical/safetynet.go`, `web/src/safetynet.tsx`, `web/src/history.tsx`, `web/src/encounter.tsx`, `web/src/diary.tsx`. Proof: `TestSafetyNetQuestions`, `web/src/safetynet.test.tsx`, browser journeys answer it before confirming.
-- [ ] **S8** Clinical sign-off metadata per policy version, shown in exports; a policy can't be called reviewed without a record. Proof: `TestPolicyReviewRecord`.
+- [x] **S8** Clinical sign-off metadata per policy version, shown in exports; a policy can't be called reviewed without a record. Files: `internal/clinical/policy_review.go`. Proof: `TestPolicyReviewRecord`, `TestProvenanceValidatorVersionPostgres` (exports carry `policyReview`).
 - [x] **S9** Safety metrics on the gold set run on every release; CI fails on any missed urgent case. Proof: the `safety` CI job runs `TestCorpus` (fails on any missed urgent sentence) and posts the metrics to the job summary.
 - [ ] **V6** Separate output schemas per task with enums. Proof: `TestTaskSchemas`.
 - [ ] **V7** Prompt limits generated from the validator's constants. Proof: `TestPromptMatchesValidator`.
-- [ ] **V8** `validatorVersion` and an input hash recorded in provenance. Proof: `TestProvenanceValidatorVersion`.
+- [x] **V8** `validatorVersion` and an input hash recorded in provenance. Proof: `TestProvenanceValidatorVersionPostgres`, `TestPolicyReviewRecord` (stable input hash).
 - [ ] **V9** Question intents: the model picks an intent and its slots from an app catalog and the app writes the wording; free-text questions are a fallback with stricter checks. Proof: `TestQuestionIntents`.
 - [ ] **V10** Answer choices come from intent templates. Proof: `TestIntentChoices`.
 - [ ] **C1** App-owned completeness per pathway; only the app or the user ends the interview. Proof: `TestCompletenessGate`.
@@ -59,8 +59,8 @@ Status: `[x]` done with proof · `[ ]` open · `[h]` handoff, prepared with next
 - [ ] **O2** One model call in flight per encounter; superseded calls are cancelled. Proof: `TestSupersededCallCancelled`.
 - [ ] **O3** Durable job table with bounded workers, panic recovery and resume after restart. Proof: `TestJobQueuePostgres`.
 - [ ] **O4** Reasoning-aware API adapters: effort parameter where supported, output budget, streaming, and accurate timeout messages. Proof: provider tests.
-- [ ] **O5** The connection test runs a tiny synthetic interview through the real validator. Proof: `TestClinicalConnectionProbe`.
-- [ ] **O6** A capability record per provider and model, saved with results. Proof: `TestCapabilityRecorded`.
+- [x] **O5** The connection test runs a tiny synthetic interview through the real validator. Files: `internal/server/settings.go`. Proof: `TestClinicalConnectionProbe`; transport errors leave the probe inconclusive, contract failures fail the test with a reason code.
+- [x] **O6** A capability record per provider and model, saved with results. Proof: `TestCapabilityRecorded`.
 - [ ] **A1** App-owned assessment rendering: vetted names, rationale built from fact IDs, reviewed descriptions where available. Proof: `TestAssessmentRendering`.
 - [ ] **A2** "Don't miss" lines per pathway (development content). Proof: `TestDontMissLines`.
 - [ ] **E3** Natural-language user simulator harness, scored by app invariants. Proof: `TestSimulatorHarness`.

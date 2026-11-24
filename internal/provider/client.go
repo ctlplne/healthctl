@@ -139,6 +139,8 @@ func (c *Client) run(parent context.Context, cfg Config, p call, validate func([
 			if cfg.Kind == "anthropic" {
 				settings["apiVersion"] = anthropicVersion
 			}
+			// What this configuration actually used, saved with every result.
+			settings["capabilities"] = map[string]any{"provider": cfg.Kind, "structuredOutput": format, "streaming": cfg.Kind == "chatgpt", "reasoningEffort": p.reasoningEffort, "requestedOutputTokens": p.maxTokens, "repairAvailable": validate != nil}
 			return reply, Metadata{Provider: cfg.Kind, Endpoint: cfg.Destination(), RequestedModel: cfg.Model, ReturnedModel: returned, PromptVersion: "clinical-v7", SchemaVersion: "proposal-v1", AppVersion: appVersion, Settings: settings}, nil
 		}
 		if !mayRepair || (!errors.Is(err, errInvalid) && !errors.Is(err, errEnvelope)) {

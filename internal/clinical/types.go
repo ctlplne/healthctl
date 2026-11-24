@@ -187,14 +187,16 @@ type Item struct {
 }
 
 type ModelMeta struct {
-	Endpoint       string         `json:"endpoint,omitempty"`
-	Provider       string         `json:"provider"`
-	RequestedModel string         `json:"requestedModel"`
-	ReturnedModel  string         `json:"returnedModel"`
-	PromptVersion  string         `json:"promptVersion"`
-	SchemaVersion  string         `json:"schemaVersion"`
-	AppVersion     string         `json:"appVersion"`
-	Settings       map[string]any `json:"settings"`
+	ValidatorVersion string         `json:"validatorVersion,omitempty"`
+	InputHash        string         `json:"inputHash,omitempty"`
+	Endpoint         string         `json:"endpoint,omitempty"`
+	Provider         string         `json:"provider"`
+	RequestedModel   string         `json:"requestedModel"`
+	ReturnedModel    string         `json:"returnedModel"`
+	PromptVersion    string         `json:"promptVersion"`
+	SchemaVersion    string         `json:"schemaVersion"`
+	AppVersion       string         `json:"appVersion"`
+	Settings         map[string]any `json:"settings"`
 }
 
 type Assessment struct {
@@ -342,8 +344,9 @@ type Encounter struct {
 }
 
 type Report struct {
-	OutdatedAssessmentVersions []int `json:"outdatedAssessmentVersions"`
-	CurrentAssessmentVersion   int   `json:"currentAssessmentVersion,omitempty"`
+	PolicyReview               PolicyRecord `json:"policyReview"`
+	OutdatedAssessmentVersions []int        `json:"outdatedAssessmentVersions"`
+	CurrentAssessmentVersion   int          `json:"currentAssessmentVersion,omitempty"`
 	Encounter
 	PreviewNotice string    `json:"previewNotice"`
 	ModelGuidance string    `json:"modelGuidance"`
@@ -352,7 +355,7 @@ type Report struct {
 }
 
 func (e *Encounter) Report() Report {
-	r := Report{Encounter: e.ForDisplay(), PreviewNotice: PreviewNotice(), ModelGuidance: ModelGuidance(), ExportVersion: "clinical-history/1", ExportedAt: time.Now().UTC(), OutdatedAssessmentVersions: []int{}}
+	r := Report{Encounter: e.ForDisplay(), PolicyReview: PolicyReview(PolicyVersion), PreviewNotice: PreviewNotice(), ModelGuidance: ModelGuidance(), ExportVersion: "clinical-history/1", ExportedAt: time.Now().UTC(), OutdatedAssessmentVersions: []int{}}
 	for _, a := range e.Assessments {
 		if a.HistoryRevision != e.HistoryRevision {
 			r.OutdatedAssessmentVersions = append(r.OutdatedAssessmentVersions, a.Version)

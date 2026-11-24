@@ -177,7 +177,7 @@ func (s *Server) finishModel(ctx context.Context, owner int, e *clinical.Encount
 	}
 	if err == nil {
 		if e.Demo {
-			meta = clinical.ModelMeta{Provider: "demo", RequestedModel: e.Provider.Model, ReturnedModel: "synthetic-case-v3", AppVersion: "0.2.0", SchemaVersion: "proposal-v1", PromptVersion: "demo-v3", Settings: map[string]any{"synthetic": true}}
+			meta = clinical.ModelMeta{ValidatorVersion: clinical.ValidatorVersion, InputHash: clinical.InputHash(in), Provider: "demo", RequestedModel: e.Provider.Model, ReturnedModel: "synthetic-case-v3", AppVersion: "0.2.0", SchemaVersion: "proposal-v1", PromptVersion: "demo-v3", Settings: map[string]any{"synthetic": true}}
 			if e.DemoPractice {
 				p = clinical.PracticeHistory(in)
 				meta.ReturnedModel, meta.PromptVersion = "offline-history-practice", "practice-v1"
@@ -211,7 +211,7 @@ func (s *Server) finishModel(ctx context.Context, owner int, e *clinical.Encount
 			if len(rejected) > 0 {
 				m.Settings["rejectedItems"] = clinical.RejectionCounts(rejected)
 			}
-			meta = clinical.ModelMeta{Provider: m.Provider, Endpoint: m.Endpoint, RequestedModel: m.RequestedModel, ReturnedModel: m.ReturnedModel, PromptVersion: m.PromptVersion, SchemaVersion: m.SchemaVersion, AppVersion: m.AppVersion, Settings: m.Settings}
+			meta = clinical.ModelMeta{ValidatorVersion: clinical.ValidatorVersion, InputHash: clinical.InputHash(in), Provider: m.Provider, Endpoint: m.Endpoint, RequestedModel: m.RequestedModel, ReturnedModel: m.ReturnedModel, PromptVersion: m.PromptVersion, SchemaVersion: m.SchemaVersion, AppVersion: m.AppVersion, Settings: m.Settings}
 		}
 	}
 	if err == nil {
