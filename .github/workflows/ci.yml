@@ -57,6 +57,25 @@ jobs:
           path: ${{ runner.temp }}/scorecard.json
           retention-days: 7
 
+  safety:
+    name: Safety corpus, input paths and invariants
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: docker build --target server -t healthctl-server .
+      - name: Run the corpus, every input path and the random-action invariants
+        run: docker run --rm --network none healthctl-server go test -count=1 -v -run 'TestCorpus|TestEveryInputPathScreens|TestRandomActionInvariants|TestContextEngineScopesEachCue' ./internal/clinical | tee "$RUNNER_TEMP/safety.txt"
+        shell: bash
+      - name: Report safety metrics
+        if: '!cancelled()'
+        run: grep -E '^(CORPUS|HOLDOUT|PROPERTY)' "$RUNNER_TEMP/safety.txt" | tee -a "$GITHUB_STEP_SUMMARY"
+        shell: bash
+      - name: Run the web unit tests
+        run: docker build --target ui-test .
+
   docs:
     name: Documentation and study checks
     runs-on: ubuntu-24.04
@@ -67,4 +86,4 @@ jobs:
           persist-credentials: false
       - run: python3 scripts/check_docs.py
       - run: python3 -m unittest discover -s evaluation/study -v
-      - run: python3 -m unittest discover -s tests -p test_scorecard.py -v
+      - run: python3 -m unittest discover -s tests -p 'test_*.py' -v
