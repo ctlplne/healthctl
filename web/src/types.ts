@@ -97,6 +97,9 @@ export type Fact = {
 }
 export type Warning = {
   id: string
+  // factId links the finding the warning came from; rule says how it arose.
+  factId?: string
+  rule?: string
   message: string
   quote: string
   answerId: string

@@ -22,3 +22,10 @@ export function groupWarnings(warnings: Warning[]): WarningGroup[] {
   }
   return groups
 }
+
+// appSignFacts lists the findings the app recorded itself from urgent words in
+// the user's answers, so the review can say where they came from.
+export function appSignFacts(warnings: Warning[]): Set<string> {
+  return new Set(warnings.filter((w) => w.active && w.rule === 'reported_warning' && w.factId).map((w) => w.factId as string))
+}
+

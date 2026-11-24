@@ -1,4 +1,5 @@
 import { detailLine } from './visitPrep'
+import { appSignFacts } from './warnings'
 import { SafetyNet, safetyCheckDue } from './safetynet'
 import { Gaps, RedFlags } from './redflags'
 import { useState, useEffect } from 'react'
@@ -285,6 +286,9 @@ export function History({
     return ok
   }
   const facts = e.facts.filter((f) => f.active && !f.sourceOutdated)
+  // Urgent signs the app recognized in the user's words are findings of their
+  // own, next to whatever the model made of the same answer.
+  const appSigns = appSignFacts(e.warnings)
   const earlierFacts = e.facts.filter((f) => !f.active || f.sourceOutdated)
   const earlierAnswers = e.answers.filter((a) => a.sourceOutdated)
   return (
@@ -333,6 +337,7 @@ export function History({
                   <small>
                     {factDetail(f)}
                     {f.corrected ? ' · Corrected' : ''}
+                    {appSigns.has(f.id) ? ' · Urgent sign the app recognized in your words' : ''}
                   </small>
                 </div>
                 {f.sourceType !== 'witness_observation' && (

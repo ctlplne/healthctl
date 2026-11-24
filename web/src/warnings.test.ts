@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { groupWarnings } from './warnings'
+import { appSignFacts, groupWarnings } from './warnings'
 import type { Warning } from './types'
 
 const w = (quote: string, message = 'Seek local emergency care immediately.', level?: 'check', active = true): Warning => ({
@@ -34,3 +34,15 @@ describe('groupWarnings', () => {
     expect(groupWarnings([w('face drooped', undefined, undefined, false)])).toEqual([])
   })
 })
+
+describe('appSignFacts', () => {
+  it('lists findings the app recorded from urgent words, not model-raised ones', () => {
+    const signs = appSignFacts([
+      { ...w('face drooped'), factId: 'f1', rule: 'reported_warning' },
+      { ...w('chest pain'), factId: 'f2', rule: 'structured_finding' },
+      { ...w('fainted', undefined, undefined, false), factId: 'f3', rule: 'reported_warning' },
+    ])
+    expect([...signs]).toEqual(['f1'])
+  })
+})
+

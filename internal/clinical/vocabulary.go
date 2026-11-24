@@ -9,7 +9,7 @@ import (
 // well established, an ICD-10-CM code. Contradiction checks compare terms, so
 // "breathlessness" and "shortness of breath" are the same finding. This is
 // development content that has not been clinically reviewed.
-const VocabularyVersion = "development-1"
+const VocabularyVersion = "development-2"
 
 type conceptTerm struct {
 	Term     string
@@ -52,7 +52,8 @@ var vocabulary = []conceptTerm{
 	{"Tingling", "R20.2", []string{"pins and needles", "tingly"}},
 	{"Confusion", "R41.0", []string{"confused", "disoriented"}},
 	{"Seizure", "R56.9", []string{"seizures", "convulsion", "convulsions"}},
-	{"Slurred speech", "R47.81", []string{"slurring my words", "speech is slurred"}},
+	{"Slurred speech", "R47.81", []string{"slurring my words", "speech is slurred", "speech was slurred", "speech slurred", "slurred my words", "slurring words", "words were slurred", "words slurred"}},
+	{"Facial droop", "R29.810", []string{"face drooped", "face drooping", "face droopy", "drooping face", "droopy face", "facial drooping", "mouth drooped", "mouth drooping", "drooping mouth", "smile drooped"}},
 	{"Vision change", "H53.9", []string{"blurred vision", "blurry vision", "double vision", "loss of vision"}},
 	{"Tremor", "R25.1", []string{"shaking hands", "shaky hands"}},
 	{"Joint pain", "M25.50", []string{"sore joints", "painful joints"}},

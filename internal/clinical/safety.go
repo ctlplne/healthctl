@@ -5,6 +5,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+	"unicode"
+	"unicode/utf8"
 )
 
 // Development policy v4. These rules have not been clinically reviewed. They
@@ -267,7 +269,7 @@ func (e *Encounter) screenAffirmative(a Answer, emergency string) {
 		at := strings.Index(a.Text, quote)
 		ev := Evidence{a.ID, quote}
 		sourceType := "patient_answer"
-		e.recordFindingAt(FindingProposal{Evidence: ev, Concept: strings.ToLower(question[m.start:m.end]), Status: "reported_present", Subject: "self"}, sourceType, "", false, at)
+		e.recordFindingAt(FindingProposal{Evidence: ev, Concept: urgentTitle(strings.ToLower(question[m.start:m.end])), Status: "reported_present", Subject: "self"}, sourceType, "", false, at)
 		e.addWarning(ev, "reported_warning", level, emergency)
 		return
 	}
@@ -284,8 +286,22 @@ func (e *Encounter) recordUrgentSign(a Answer, s urgentSignal, emergency string)
 	if a.Kind == "witness" {
 		sourceType = "witness_observation"
 	}
-	e.recordFindingAt(FindingProposal{Evidence: ev, Concept: quote, Status: status, Subject: "self"}, sourceType, "", false, s.start)
+	e.recordFindingAt(FindingProposal{Evidence: ev, Concept: urgentTitle(quote), Status: status, Subject: "self"}, sourceType, "", false, s.start)
 	e.addWarning(ev, "reported_warning", s.level, emergency)
+}
+
+// urgentTitle names an urgent sign the app recorded as a finding. It uses the
+// vocabulary term when the reported words have one that the urgent-sign rules
+// still recognize ("face drooped" becomes "Facial droop"), and otherwise the
+// reported words with a capital letter. The title always contains an urgent
+// sign, so correcting the finding still clears its warning.
+func urgentTitle(words string) string {
+	words = strings.TrimSpace(words)
+	if t, ok := lookupConcept(words); ok && urgentSignIn(t.Term) {
+		return t.Term
+	}
+	r, size := utf8.DecodeRuneInString(words)
+	return string(unicode.ToUpper(r)) + words[size:]
 }
 
 func firstPersonIn(text string) bool {
