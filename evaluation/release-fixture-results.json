@@ -2,8 +2,8 @@
   "evaluationVersion": "synthetic-release-2",
   "provider": "evaluation-fixture",
   "configurationFingerprint": "6ff2adab99b6ce74d280",
-  "datasetFingerprint": "bdd41d73072dde343d4b65aa4b47e14cf987edde605bc446e4960903497636c1",
-  "starterCorpusVersion": "85f71710ed48b518829c",
+  "datasetFingerprint": "b43e0ea103d9d9be3123d98af734cff8c658fc3ca799c970dd66c033a9a5970f",
+  "starterCorpusVersion": "419e2a30ed7f1e6600d1",
   "mode": "deterministic_fixture",
   "model": "scripted-v1",
   "runs": 84,
@@ -21,10 +21,10 @@
           "matched": 31,
           "total": 32
         },
-        "questions": 39,
+        "questions": 92,
         "repeatQuestions": 0,
-        "p50AutomatedRunMicroseconds": 527,
-        "p95AutomatedRunMicroseconds": 1071,
+        "p50AutomatedRunMicroseconds": 4697,
+        "p95AutomatedRunMicroseconds": 10226,
         "timedRuns": 28,
         "modelOperations": 91,
         "operationsWithoutUsage": 91,
@@ -50,8 +50,8 @@
         },
         "questions": 0,
         "repeatQuestions": 0,
-        "p50AutomatedRunMicroseconds": 213,
-        "p95AutomatedRunMicroseconds": 1144,
+        "p50AutomatedRunMicroseconds": 1576,
+        "p95AutomatedRunMicroseconds": 4519,
         "timedRuns": 28,
         "modelOperations": 52,
         "operationsWithoutUsage": 52,
@@ -77,8 +77,8 @@
         },
         "questions": 56,
         "repeatQuestions": 0,
-        "p50AutomatedRunMicroseconds": 372,
-        "p95AutomatedRunMicroseconds": 543,
+        "p50AutomatedRunMicroseconds": 2253,
+        "p95AutomatedRunMicroseconds": 5014,
         "timedRuns": 28,
         "modelOperations": 52,
         "operationsWithoutUsage": 52,
@@ -148,8 +148,8 @@
         "pricedSubtotalUSD": null
       }
     },
-    "policyVersion": "development-2",
-    "humanStudies": "No patient abandonment, independent clinician adjudication, comprehension or timed handoff study has been performed. Automated run latency measures software only.",
+    "policyVersion": "development-4",
+    "humanStudies": "No user abandonment, independent clinician adjudication, comprehension or timed handoff study has been performed. Automated run latency measures software only.",
     "costScope": "Operator-supplied flat token rates; local infrastructure, cached-token discounts, content maintenance, and cost per clinician-acceptable brief are unmeasured."
   },
   "reportComparison": [
@@ -168,7 +168,7 @@
         {
           "itemIndex": 0,
           "relation": "supported_context",
-          "corpusVersion": "85f71710ed48b518829c",
+          "corpusVersion": "419e2a30ed7f1e6600d1",
           "passageIds": [
             "nih-adult-reference/2026-11-21.2/uti-symptoms"
           ],
@@ -179,7 +179,7 @@
         {
           "itemIndex": 1,
           "relation": "unavailable",
-          "corpusVersion": "85f71710ed48b518829c",
+          "corpusVersion": "419e2a30ed7f1e6600d1",
           "passageIds": [],
           "linkedFactIds": []
         }
@@ -188,12 +188,12 @@
       "repetition": 1,
       "variant": "relevant_urine_report",
       "status": "exercised",
-      "firstQuestion": "Did your symptoms start before or after the sample for this report entry was collected?",
+      "firstQuestion": "Did you have any symptoms around the time this sample was collected? If so, when did they start?",
       "questionSource": {
         "documentId": "doc",
         "rowId": "r3",
         "reviewId": "rr1",
-        "reason": "The report gives a collection date. The timing of your symptoms relative to this sample is still unclear.",
+        "reason": "The collection date helps distinguish routine testing from testing related to symptoms.",
         "key": "sample_timing"
       },
       "disclosedEntries": 1,
@@ -239,7 +239,7 @@
       "disclosedEntries": 0,
       "failures": [],
       "observations": [
-        "Wrong-patient entry rejected; no report findings shared."
+        "Entry belonging to someone else rejected; no report findings shared."
       ]
     },
     {
@@ -258,13 +258,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/nasal-symptoms/free_text_only/01",
       "repetition": 1,
-      "elapsedMicroseconds": 3455,
+      "elapsedMicroseconds": 4519,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 3,
+      "elapsedMs": 4,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -272,7 +272,7 @@
       "pathways": [
         {
           "id": "respiratory",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Clarify onset, progression, breathlessness and relevant exposure when these could change the estimate.",
@@ -321,7 +321,7 @@
         {
           "itemIndex": 0,
           "relation": "supported_context",
-          "corpusVersion": "85f71710ed48b518829c",
+          "corpusVersion": "419e2a30ed7f1e6600d1",
           "passageIds": [
             "nih-adult-reference/2026-11-21.2/hay-fever-symptoms"
           ],
@@ -333,7 +333,7 @@
         {
           "itemIndex": 1,
           "relation": "supported_context",
-          "corpusVersion": "85f71710ed48b518829c",
+          "corpusVersion": "419e2a30ed7f1e6600d1",
           "passageIds": [
             "nih-adult-reference/2026-11-21.2/cold-definition",
             "nih-adult-reference/2026-11-21.2/cold-symptoms"
@@ -346,13 +346,13 @@
       ],
       "runId": "6ff2adab99b6ce74d280/nasal-symptoms/adaptive/01",
       "repetition": 1,
-      "elapsedMicroseconds": 1448,
+      "elapsedMicroseconds": 10226,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 1,
+      "elapsedMs": 10,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -360,7 +360,7 @@
       "pathways": [
         {
           "id": "respiratory",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Clarify onset, progression, breathlessness and relevant exposure when these could change the estimate.",
@@ -371,7 +371,7 @@
       "case": "nasal-symptoms",
       "arm": "adaptive",
       "model": "scripted-v1",
-      "interviewQuestions": 2,
+      "interviewQuestions": 5,
       "modelCalls": 4,
       "visibleTargetExtraction": {
         "matched": 4,
@@ -392,6 +392,9 @@
       "checkpointAlerts": {
         "answer_1": false,
         "answer_2": false,
+        "answer_3": false,
+        "answer_4": false,
+        "answer_5": false,
         "assessment": false,
         "intake": false,
         "review": false
@@ -399,20 +402,20 @@
       "contradictions": 0,
       "expectedContradiction": false,
       "assessmentOutcome": "differential",
-      "assessedRevision": 3,
-      "revisedHistory": 4,
+      "assessedRevision": 6,
+      "revisedHistory": 7,
       "exploratoryReferenceRank": 1
     },
     {
       "runId": "6ff2adab99b6ce74d280/nasal-symptoms/static_form/01",
       "repetition": 1,
-      "elapsedMicroseconds": 460,
+      "elapsedMicroseconds": 3201,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 3,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -420,7 +423,7 @@
       "pathways": [
         {
           "id": "respiratory",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Clarify onset, progression, breathlessness and relevant exposure when these could change the estimate.",
@@ -472,7 +475,7 @@
     {
       "runId": "6ff2adab99b6ce74d280/throat-and-cough/free_text_only/01",
       "repetition": 1,
-      "elapsedMicroseconds": 207,
+      "elapsedMicroseconds": 987,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
@@ -521,13 +524,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/throat-and-cough/adaptive/01",
       "repetition": 1,
-      "elapsedMicroseconds": 700,
+      "elapsedMicroseconds": 5344,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 5,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -535,7 +538,7 @@
       "case": "throat-and-cough",
       "arm": "adaptive",
       "model": "scripted-v1",
-      "interviewQuestions": 2,
+      "interviewQuestions": 5,
       "modelCalls": 4,
       "visibleTargetExtraction": {
         "matched": 2,
@@ -556,6 +559,9 @@
       "checkpointAlerts": {
         "answer_1": false,
         "answer_2": false,
+        "answer_3": false,
+        "answer_4": false,
+        "answer_5": false,
         "assessment": false,
         "intake": false,
         "review": false
@@ -563,20 +569,20 @@
       "contradictions": 0,
       "expectedContradiction": false,
       "assessmentOutcome": "insufficient",
-      "assessedRevision": 3,
-      "revisedHistory": 4,
+      "assessedRevision": 6,
+      "revisedHistory": 7,
       "exploratoryReferenceRank": 0
     },
     {
       "runId": "6ff2adab99b6ce74d280/throat-and-cough/static_form/01",
       "repetition": 1,
-      "elapsedMicroseconds": 543,
+      "elapsedMicroseconds": 3065,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 3,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -620,7 +626,7 @@
     {
       "runId": "6ff2adab99b6ce74d280/ankle-injury/free_text_only/01",
       "repetition": 1,
-      "elapsedMicroseconds": 213,
+      "elapsedMicroseconds": 891,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
@@ -669,13 +675,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/ankle-injury/adaptive/01",
       "repetition": 1,
-      "elapsedMicroseconds": 1071,
+      "elapsedMicroseconds": 8321,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 1,
+      "elapsedMs": 8,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -683,7 +689,7 @@
       "case": "ankle-injury",
       "arm": "adaptive",
       "model": "scripted-v1",
-      "interviewQuestions": 2,
+      "interviewQuestions": 5,
       "modelCalls": 4,
       "visibleTargetExtraction": {
         "matched": 2,
@@ -704,6 +710,9 @@
       "checkpointAlerts": {
         "answer_1": false,
         "answer_2": false,
+        "answer_3": false,
+        "answer_4": false,
+        "answer_5": false,
         "assessment": false,
         "intake": false,
         "review": false
@@ -711,20 +720,20 @@
       "contradictions": 0,
       "expectedContradiction": false,
       "assessmentOutcome": "insufficient",
-      "assessedRevision": 3,
-      "revisedHistory": 4,
+      "assessedRevision": 6,
+      "revisedHistory": 7,
       "exploratoryReferenceRank": 0
     },
     {
       "runId": "6ff2adab99b6ce74d280/ankle-injury/static_form/01",
       "repetition": 1,
-      "elapsedMicroseconds": 432,
+      "elapsedMicroseconds": 2253,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 2,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -768,13 +777,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/headache-denied-nausea/free_text_only/01",
       "repetition": 1,
-      "elapsedMicroseconds": 247,
+      "elapsedMicroseconds": 1499,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 1,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -782,7 +791,7 @@
       "pathways": [
         {
           "id": "headache",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Establish whether onset was sudden, how this differs from prior episodes and any associated changes.",
@@ -828,13 +837,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/headache-denied-nausea/adaptive/01",
       "repetition": 1,
-      "elapsedMicroseconds": 601,
+      "elapsedMicroseconds": 5391,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 5,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -842,7 +851,7 @@
       "pathways": [
         {
           "id": "headache",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Establish whether onset was sudden, how this differs from prior episodes and any associated changes.",
@@ -853,7 +862,7 @@
       "case": "headache-denied-nausea",
       "arm": "adaptive",
       "model": "scripted-v1",
-      "interviewQuestions": 2,
+      "interviewQuestions": 5,
       "modelCalls": 4,
       "visibleTargetExtraction": {
         "matched": 2,
@@ -874,6 +883,9 @@
       "checkpointAlerts": {
         "answer_1": false,
         "answer_2": false,
+        "answer_3": false,
+        "answer_4": false,
+        "answer_5": false,
         "assessment": false,
         "intake": false,
         "review": false
@@ -881,20 +893,20 @@
       "contradictions": 0,
       "expectedContradiction": false,
       "assessmentOutcome": "insufficient",
-      "assessedRevision": 3,
-      "revisedHistory": 4,
+      "assessedRevision": 6,
+      "revisedHistory": 7,
       "exploratoryReferenceRank": null
     },
     {
       "runId": "6ff2adab99b6ce74d280/headache-denied-nausea/static_form/01",
       "repetition": 1,
-      "elapsedMicroseconds": 454,
+      "elapsedMicroseconds": 4699,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 4,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -902,7 +914,7 @@
       "pathways": [
         {
           "id": "headache",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Establish whether onset was sudden, how this differs from prior episodes and any associated changes.",
@@ -949,7 +961,7 @@
     {
       "runId": "6ff2adab99b6ce74d280/vague-concern/free_text_only/01",
       "repetition": 1,
-      "elapsedMicroseconds": 125,
+      "elapsedMicroseconds": 529,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
@@ -996,13 +1008,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/vague-concern/adaptive/01",
       "repetition": 1,
-      "elapsedMicroseconds": 405,
+      "elapsedMicroseconds": 3026,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 3,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -1010,7 +1022,7 @@
       "case": "vague-concern",
       "arm": "adaptive",
       "model": "scripted-v1",
-      "interviewQuestions": 2,
+      "interviewQuestions": 5,
       "modelCalls": 4,
       "visibleTargetExtraction": {
         "matched": 0,
@@ -1031,6 +1043,9 @@
       "checkpointAlerts": {
         "answer_1": false,
         "answer_2": false,
+        "answer_3": false,
+        "answer_4": false,
+        "answer_5": false,
         "assessment": false,
         "intake": false,
         "review": false
@@ -1038,14 +1053,14 @@
       "contradictions": 0,
       "expectedContradiction": false,
       "assessmentOutcome": "insufficient",
-      "assessedRevision": 3,
-      "revisedHistory": 4,
+      "assessedRevision": 6,
+      "revisedHistory": 7,
       "exploratoryReferenceRank": null
     },
     {
       "runId": "6ff2adab99b6ce74d280/vague-concern/static_form/01",
       "repetition": 1,
-      "elapsedMicroseconds": 330,
+      "elapsedMicroseconds": 977,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
@@ -1095,7 +1110,7 @@
     {
       "runId": "6ff2adab99b6ce74d280/declined-medication/free_text_only/01",
       "repetition": 1,
-      "elapsedMicroseconds": 156,
+      "elapsedMicroseconds": 694,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
@@ -1144,13 +1159,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/declined-medication/adaptive/01",
       "repetition": 1,
-      "elapsedMicroseconds": 822,
+      "elapsedMicroseconds": 3246,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 3,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -1158,7 +1173,7 @@
       "case": "declined-medication",
       "arm": "adaptive",
       "model": "scripted-v1",
-      "interviewQuestions": 3,
+      "interviewQuestions": 5,
       "modelCalls": 5,
       "visibleTargetExtraction": {
         "matched": 2,
@@ -1180,6 +1195,8 @@
         "answer_1": false,
         "answer_2": false,
         "answer_3": false,
+        "answer_4": false,
+        "answer_5": false,
         "assessment": false,
         "intake": false,
         "review": false
@@ -1187,20 +1204,20 @@
       "contradictions": 0,
       "expectedContradiction": false,
       "assessmentOutcome": "insufficient",
-      "assessedRevision": 4,
-      "revisedHistory": 5,
+      "assessedRevision": 6,
+      "revisedHistory": 7,
       "exploratoryReferenceRank": null
     },
     {
       "runId": "6ff2adab99b6ce74d280/declined-medication/static_form/01",
       "repetition": 1,
-      "elapsedMicroseconds": 414,
+      "elapsedMicroseconds": 1638,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 1,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -1244,13 +1261,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/uncertain-medication/free_text_only/01",
       "repetition": 1,
-      "elapsedMicroseconds": 222,
+      "elapsedMicroseconds": 1563,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 1,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -1291,13 +1308,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/uncertain-medication/adaptive/01",
       "repetition": 1,
-      "elapsedMicroseconds": 676,
+      "elapsedMicroseconds": 5079,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 5,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -1305,7 +1322,7 @@
       "case": "uncertain-medication",
       "arm": "adaptive",
       "model": "scripted-v1",
-      "interviewQuestions": 2,
+      "interviewQuestions": 5,
       "modelCalls": 4,
       "visibleTargetExtraction": {
         "matched": 1,
@@ -1326,6 +1343,9 @@
       "checkpointAlerts": {
         "answer_1": false,
         "answer_2": false,
+        "answer_3": false,
+        "answer_4": false,
+        "answer_5": false,
         "assessment": false,
         "intake": false,
         "review": false
@@ -1333,20 +1353,20 @@
       "contradictions": 0,
       "expectedContradiction": false,
       "assessmentOutcome": "insufficient",
-      "assessedRevision": 3,
-      "revisedHistory": 4,
+      "assessedRevision": 6,
+      "revisedHistory": 7,
       "exploratoryReferenceRank": null
     },
     {
       "runId": "6ff2adab99b6ce74d280/uncertain-medication/static_form/01",
       "repetition": 1,
-      "elapsedMicroseconds": 417,
+      "elapsedMicroseconds": 2004,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 2,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -1390,13 +1410,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/uncertain-allergy/free_text_only/01",
       "repetition": 1,
-      "elapsedMicroseconds": 205,
+      "elapsedMicroseconds": 1594,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 1,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -1437,13 +1457,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/uncertain-allergy/adaptive/01",
       "repetition": 1,
-      "elapsedMicroseconds": 557,
+      "elapsedMicroseconds": 6819,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 6,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -1451,7 +1471,7 @@
       "case": "uncertain-allergy",
       "arm": "adaptive",
       "model": "scripted-v1",
-      "interviewQuestions": 2,
+      "interviewQuestions": 5,
       "modelCalls": 4,
       "visibleTargetExtraction": {
         "matched": 1,
@@ -1472,6 +1492,9 @@
       "checkpointAlerts": {
         "answer_1": false,
         "answer_2": false,
+        "answer_3": false,
+        "answer_4": false,
+        "answer_5": false,
         "assessment": false,
         "intake": false,
         "review": false
@@ -1479,20 +1502,20 @@
       "contradictions": 0,
       "expectedContradiction": false,
       "assessmentOutcome": "insufficient",
-      "assessedRevision": 3,
-      "revisedHistory": 4,
+      "assessedRevision": 6,
+      "revisedHistory": 7,
       "exploratoryReferenceRank": null
     },
     {
       "runId": "6ff2adab99b6ce74d280/uncertain-allergy/static_form/01",
       "repetition": 1,
-      "elapsedMicroseconds": 381,
+      "elapsedMicroseconds": 2140,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 2,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -1536,13 +1559,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/contradictory-cough/free_text_only/01",
       "repetition": 1,
-      "elapsedMicroseconds": 215,
+      "elapsedMicroseconds": 1410,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 1,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -1550,7 +1573,7 @@
       "pathways": [
         {
           "id": "respiratory",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Clarify onset, progression, breathlessness and relevant exposure when these could change the estimate.",
@@ -1596,13 +1619,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/contradictory-cough/adaptive/01",
       "repetition": 1,
-      "elapsedMicroseconds": 565,
+      "elapsedMicroseconds": 5116,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 5,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -1610,7 +1633,7 @@
       "pathways": [
         {
           "id": "respiratory",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Clarify onset, progression, breathlessness and relevant exposure when these could change the estimate.",
@@ -1621,7 +1644,7 @@
       "case": "contradictory-cough",
       "arm": "adaptive",
       "model": "scripted-v1",
-      "interviewQuestions": 2,
+      "interviewQuestions": 5,
       "modelCalls": 4,
       "visibleTargetExtraction": {
         "matched": 2,
@@ -1642,6 +1665,9 @@
       "checkpointAlerts": {
         "answer_1": false,
         "answer_2": false,
+        "answer_3": false,
+        "answer_4": false,
+        "answer_5": false,
         "assessment": false,
         "intake": false,
         "review": false
@@ -1649,20 +1675,20 @@
       "contradictions": 1,
       "expectedContradiction": true,
       "assessmentOutcome": "insufficient",
-      "assessedRevision": 3,
-      "revisedHistory": 4,
+      "assessedRevision": 6,
+      "revisedHistory": 7,
       "exploratoryReferenceRank": null
     },
     {
       "runId": "6ff2adab99b6ce74d280/contradictory-cough/static_form/01",
       "repetition": 1,
-      "elapsedMicroseconds": 381,
+      "elapsedMicroseconds": 3154,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 3,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -1670,7 +1696,7 @@
       "pathways": [
         {
           "id": "respiratory",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Clarify onset, progression, breathlessness and relevant exposure when these could change the estimate.",
@@ -1717,13 +1743,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/family-history/free_text_only/01",
       "repetition": 1,
-      "elapsedMicroseconds": 204,
+      "elapsedMicroseconds": 1594,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 1,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -1764,13 +1790,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/family-history/adaptive/01",
       "repetition": 1,
-      "elapsedMicroseconds": 527,
+      "elapsedMicroseconds": 4697,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 4,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -1778,7 +1804,7 @@
       "case": "family-history",
       "arm": "adaptive",
       "model": "scripted-v1",
-      "interviewQuestions": 2,
+      "interviewQuestions": 5,
       "modelCalls": 4,
       "visibleTargetExtraction": {
         "matched": 1,
@@ -1799,6 +1825,9 @@
       "checkpointAlerts": {
         "answer_1": false,
         "answer_2": false,
+        "answer_3": false,
+        "answer_4": false,
+        "answer_5": false,
         "assessment": false,
         "intake": false,
         "review": false
@@ -1806,20 +1835,20 @@
       "contradictions": 0,
       "expectedContradiction": false,
       "assessmentOutcome": "insufficient",
-      "assessedRevision": 3,
-      "revisedHistory": 4,
+      "assessedRevision": 6,
+      "revisedHistory": 7,
       "exploratoryReferenceRank": null
     },
     {
       "runId": "6ff2adab99b6ce74d280/family-history/static_form/01",
       "repetition": 1,
-      "elapsedMicroseconds": 363,
+      "elapsedMicroseconds": 1996,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 1,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -1863,13 +1892,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/current-chest-pain/free_text_only/01",
       "repetition": 1,
-      "elapsedMicroseconds": 267,
+      "elapsedMicroseconds": 1768,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 1,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -1910,13 +1939,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/current-chest-pain/adaptive/01",
       "repetition": 1,
-      "elapsedMicroseconds": 261,
+      "elapsedMicroseconds": 1825,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 1,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -1957,13 +1986,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/current-chest-pain/static_form/01",
       "repetition": 1,
-      "elapsedMicroseconds": 252,
+      "elapsedMicroseconds": 1740,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 1,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -2004,13 +2033,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/denied-chest-pain/free_text_only/01",
       "repetition": 1,
-      "elapsedMicroseconds": 181,
+      "elapsedMicroseconds": 2184,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 2,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -2051,13 +2080,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/denied-chest-pain/adaptive/01",
       "repetition": 1,
-      "elapsedMicroseconds": 483,
+      "elapsedMicroseconds": 6188,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 6,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -2065,7 +2094,7 @@
       "case": "denied-chest-pain",
       "arm": "adaptive",
       "model": "scripted-v1",
-      "interviewQuestions": 2,
+      "interviewQuestions": 5,
       "modelCalls": 4,
       "visibleTargetExtraction": {
         "matched": 1,
@@ -2086,6 +2115,9 @@
       "checkpointAlerts": {
         "answer_1": false,
         "answer_2": false,
+        "answer_3": false,
+        "answer_4": false,
+        "answer_5": false,
         "assessment": false,
         "intake": false,
         "review": false
@@ -2093,20 +2125,20 @@
       "contradictions": 0,
       "expectedContradiction": false,
       "assessmentOutcome": "insufficient",
-      "assessedRevision": 3,
-      "revisedHistory": 4,
+      "assessedRevision": 6,
+      "revisedHistory": 7,
       "exploratoryReferenceRank": null
     },
     {
       "runId": "6ff2adab99b6ce74d280/denied-chest-pain/static_form/01",
       "repetition": 1,
-      "elapsedMicroseconds": 331,
+      "elapsedMicroseconds": 2508,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 2,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -2150,13 +2182,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/historical-chest-pain/free_text_only/01",
       "repetition": 1,
-      "elapsedMicroseconds": 191,
+      "elapsedMicroseconds": 1443,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 1,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -2197,13 +2229,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/historical-chest-pain/adaptive/01",
       "repetition": 1,
-      "elapsedMicroseconds": 506,
+      "elapsedMicroseconds": 5591,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 5,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -2211,7 +2243,7 @@
       "case": "historical-chest-pain",
       "arm": "adaptive",
       "model": "scripted-v1",
-      "interviewQuestions": 2,
+      "interviewQuestions": 5,
       "modelCalls": 4,
       "visibleTargetExtraction": {
         "matched": 1,
@@ -2232,6 +2264,9 @@
       "checkpointAlerts": {
         "answer_1": false,
         "answer_2": false,
+        "answer_3": false,
+        "answer_4": false,
+        "answer_5": false,
         "assessment": false,
         "intake": false,
         "review": false
@@ -2239,20 +2274,20 @@
       "contradictions": 0,
       "expectedContradiction": false,
       "assessmentOutcome": "insufficient",
-      "assessedRevision": 3,
-      "revisedHistory": 4,
+      "assessedRevision": 6,
+      "revisedHistory": 7,
       "exploratoryReferenceRank": null
     },
     {
       "runId": "6ff2adab99b6ce74d280/historical-chest-pain/static_form/01",
       "repetition": 1,
-      "elapsedMicroseconds": 351,
+      "elapsedMicroseconds": 2339,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 2,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -2296,13 +2331,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/third-person-chest-pain/free_text_only/01",
       "repetition": 1,
-      "elapsedMicroseconds": 197,
+      "elapsedMicroseconds": 1576,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 1,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -2343,13 +2378,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/third-person-chest-pain/adaptive/01",
       "repetition": 1,
-      "elapsedMicroseconds": 518,
+      "elapsedMicroseconds": 4325,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 4,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -2357,7 +2392,7 @@
       "case": "third-person-chest-pain",
       "arm": "adaptive",
       "model": "scripted-v1",
-      "interviewQuestions": 2,
+      "interviewQuestions": 5,
       "modelCalls": 4,
       "visibleTargetExtraction": {
         "matched": 1,
@@ -2378,6 +2413,9 @@
       "checkpointAlerts": {
         "answer_1": false,
         "answer_2": false,
+        "answer_3": false,
+        "answer_4": false,
+        "answer_5": false,
         "assessment": false,
         "intake": false,
         "review": false
@@ -2385,20 +2423,20 @@
       "contradictions": 0,
       "expectedContradiction": false,
       "assessmentOutcome": "insufficient",
-      "assessedRevision": 3,
-      "revisedHistory": 4,
+      "assessedRevision": 6,
+      "revisedHistory": 7,
       "exploratoryReferenceRank": null
     },
     {
       "runId": "6ff2adab99b6ce74d280/third-person-chest-pain/static_form/01",
       "repetition": 1,
-      "elapsedMicroseconds": 359,
+      "elapsedMicroseconds": 2165,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 2,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -2442,13 +2480,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/breathing-difficulty/free_text_only/01",
       "repetition": 1,
-      "elapsedMicroseconds": 207,
+      "elapsedMicroseconds": 1246,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 1,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -2489,13 +2527,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/breathing-difficulty/adaptive/01",
       "repetition": 1,
-      "elapsedMicroseconds": 212,
+      "elapsedMicroseconds": 1500,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 1,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -2536,13 +2574,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/breathing-difficulty/static_form/01",
       "repetition": 1,
-      "elapsedMicroseconds": 203,
+      "elapsedMicroseconds": 1202,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 1,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -2583,7 +2621,7 @@
     {
       "runId": "6ff2adab99b6ce74d280/explicit-warning/free_text_only/01",
       "repetition": 1,
-      "elapsedMicroseconds": 140,
+      "elapsedMicroseconds": 544,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
@@ -2630,7 +2668,7 @@
     {
       "runId": "6ff2adab99b6ce74d280/explicit-warning/adaptive/01",
       "repetition": 1,
-      "elapsedMicroseconds": 141,
+      "elapsedMicroseconds": 707,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
@@ -2677,7 +2715,7 @@
     {
       "runId": "6ff2adab99b6ce74d280/explicit-warning/static_form/01",
       "repetition": 1,
-      "elapsedMicroseconds": 139,
+      "elapsedMicroseconds": 553,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
@@ -2724,13 +2762,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/corrected-warning/free_text_only/01",
       "repetition": 1,
-      "elapsedMicroseconds": 317,
+      "elapsedMicroseconds": 2009,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 2,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -2772,13 +2810,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/corrected-warning/adaptive/01",
       "repetition": 1,
-      "elapsedMicroseconds": 564,
+      "elapsedMicroseconds": 4621,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 4,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -2786,7 +2824,7 @@
       "case": "corrected-warning",
       "arm": "adaptive",
       "model": "scripted-v1",
-      "interviewQuestions": 2,
+      "interviewQuestions": 5,
       "modelCalls": 4,
       "visibleTargetExtraction": {
         "matched": 1,
@@ -2808,6 +2846,9 @@
         "after_patient_correction": false,
         "answer_1": false,
         "answer_2": false,
+        "answer_3": false,
+        "answer_4": false,
+        "answer_5": false,
         "assessment": false,
         "intake": true,
         "review": false
@@ -2815,20 +2856,20 @@
       "contradictions": 0,
       "expectedContradiction": false,
       "assessmentOutcome": "insufficient",
-      "assessedRevision": 4,
-      "revisedHistory": 5,
+      "assessedRevision": 7,
+      "revisedHistory": 8,
       "exploratoryReferenceRank": null
     },
     {
       "runId": "6ff2adab99b6ce74d280/corrected-warning/static_form/01",
       "repetition": 1,
-      "elapsedMicroseconds": 397,
+      "elapsedMicroseconds": 2483,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 2,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -2873,13 +2914,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/uncertain-current-warning/free_text_only/01",
       "repetition": 1,
-      "elapsedMicroseconds": 234,
+      "elapsedMicroseconds": 1791,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 1,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -2920,13 +2961,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/uncertain-current-warning/adaptive/01",
       "repetition": 1,
-      "elapsedMicroseconds": 229,
+      "elapsedMicroseconds": 1749,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 1,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -2967,13 +3008,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/uncertain-current-warning/static_form/01",
       "repetition": 1,
-      "elapsedMicroseconds": 229,
+      "elapsedMicroseconds": 1699,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 1,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -3014,13 +3055,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/warning-on-followup/free_text_only/01",
       "repetition": 1,
-      "elapsedMicroseconds": 160,
+      "elapsedMicroseconds": 1004,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 1,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -3063,13 +3104,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/warning-on-followup/adaptive/01",
       "repetition": 1,
-      "elapsedMicroseconds": 555,
+      "elapsedMicroseconds": 3649,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 3,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -3112,13 +3153,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/warning-on-followup/static_form/01",
       "repetition": 1,
-      "elapsedMicroseconds": 372,
+      "elapsedMicroseconds": 2320,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 2,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -3161,13 +3202,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/respiratory-medication-change/free_text_only/01",
       "repetition": 1,
-      "elapsedMicroseconds": 353,
+      "elapsedMicroseconds": 3505,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 3,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -3175,7 +3216,7 @@
       "pathways": [
         {
           "id": "respiratory",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Clarify onset, progression, breathlessness and relevant exposure when these could change the estimate.",
@@ -3219,13 +3260,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/respiratory-medication-change/adaptive/01",
       "repetition": 1,
-      "elapsedMicroseconds": 724,
+      "elapsedMicroseconds": 9739,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 9,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -3233,7 +3274,7 @@
       "pathways": [
         {
           "id": "respiratory",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Clarify onset, progression, breathlessness and relevant exposure when these could change the estimate.",
@@ -3244,7 +3285,7 @@
       "case": "respiratory-medication-change",
       "arm": "adaptive",
       "model": "scripted-v1",
-      "interviewQuestions": 2,
+      "interviewQuestions": 5,
       "modelCalls": 4,
       "visibleTargetExtraction": {
         "matched": 1,
@@ -3265,6 +3306,9 @@
       "checkpointAlerts": {
         "answer_1": false,
         "answer_2": false,
+        "answer_3": false,
+        "answer_4": false,
+        "answer_5": false,
         "assessment": false,
         "intake": false,
         "review": false
@@ -3272,20 +3316,20 @@
       "contradictions": 0,
       "expectedContradiction": false,
       "assessmentOutcome": "insufficient",
-      "assessedRevision": 3,
-      "revisedHistory": 4,
+      "assessedRevision": 6,
+      "revisedHistory": 7,
       "exploratoryReferenceRank": null
     },
     {
       "runId": "6ff2adab99b6ce74d280/respiratory-medication-change/static_form/01",
       "repetition": 1,
-      "elapsedMicroseconds": 494,
+      "elapsedMicroseconds": 5014,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 5,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -3293,7 +3337,7 @@
       "pathways": [
         {
           "id": "respiratory",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Clarify onset, progression, breathlessness and relevant exposure when these could change the estimate.",
@@ -3340,13 +3384,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/headache-with-warning/free_text_only/01",
       "repetition": 1,
-      "elapsedMicroseconds": 393,
+      "elapsedMicroseconds": 3123,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 3,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -3354,7 +3398,7 @@
       "pathways": [
         {
           "id": "headache",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Establish whether onset was sudden, how this differs from prior episodes and any associated changes.",
@@ -3398,13 +3442,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/headache-with-warning/adaptive/01",
       "repetition": 1,
-      "elapsedMicroseconds": 393,
+      "elapsedMicroseconds": 3216,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 3,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -3412,7 +3456,7 @@
       "pathways": [
         {
           "id": "headache",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Establish whether onset was sudden, how this differs from prior episodes and any associated changes.",
@@ -3456,13 +3500,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/headache-with-warning/static_form/01",
       "repetition": 1,
-      "elapsedMicroseconds": 394,
+      "elapsedMicroseconds": 3109,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 3,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -3470,7 +3514,7 @@
       "pathways": [
         {
           "id": "headache",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Establish whether onset was sudden, how this differs from prior episodes and any associated changes.",
@@ -3514,13 +3558,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/abdominal-urgent/free_text_only/01",
       "repetition": 1,
-      "elapsedMicroseconds": 274,
+      "elapsedMicroseconds": 2247,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 2,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -3528,7 +3572,7 @@
       "pathways": [
         {
           "id": "abdominal",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Clarify location, onset, progression and associated digestive or urinary changes.",
@@ -3572,13 +3616,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/abdominal-urgent/adaptive/01",
       "repetition": 1,
-      "elapsedMicroseconds": 267,
+      "elapsedMicroseconds": 4403,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 4,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -3586,7 +3630,7 @@
       "pathways": [
         {
           "id": "abdominal",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Clarify location, onset, progression and associated digestive or urinary changes.",
@@ -3630,13 +3674,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/abdominal-urgent/static_form/01",
       "repetition": 1,
-      "elapsedMicroseconds": 266,
+      "elapsedMicroseconds": 1940,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 1,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -3644,7 +3688,7 @@
       "pathways": [
         {
           "id": "abdominal",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Clarify location, onset, progression and associated digestive or urinary changes.",
@@ -3688,13 +3732,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/abdominal-vague/free_text_only/01",
       "repetition": 1,
-      "elapsedMicroseconds": 235,
+      "elapsedMicroseconds": 3380,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 3,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -3702,7 +3746,7 @@
       "pathways": [
         {
           "id": "abdominal",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Clarify location, onset, progression and associated digestive or urinary changes.",
@@ -3746,13 +3790,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/abdominal-vague/adaptive/01",
       "repetition": 1,
-      "elapsedMicroseconds": 617,
+      "elapsedMicroseconds": 8718,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 8,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -3760,7 +3804,7 @@
       "pathways": [
         {
           "id": "abdominal",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Clarify location, onset, progression and associated digestive or urinary changes.",
@@ -3771,7 +3815,7 @@
       "case": "abdominal-vague",
       "arm": "adaptive",
       "model": "scripted-v1",
-      "interviewQuestions": 2,
+      "interviewQuestions": 5,
       "modelCalls": 4,
       "visibleTargetExtraction": {
         "matched": 0,
@@ -3792,6 +3836,9 @@
       "checkpointAlerts": {
         "answer_1": false,
         "answer_2": false,
+        "answer_3": false,
+        "answer_4": false,
+        "answer_5": false,
         "assessment": false,
         "intake": false,
         "review": false
@@ -3799,20 +3846,20 @@
       "contradictions": 0,
       "expectedContradiction": false,
       "assessmentOutcome": "insufficient",
-      "assessedRevision": 3,
-      "revisedHistory": 4,
+      "assessedRevision": 6,
+      "revisedHistory": 7,
       "exploratoryReferenceRank": null
     },
     {
       "runId": "6ff2adab99b6ce74d280/abdominal-vague/static_form/01",
       "repetition": 1,
-      "elapsedMicroseconds": 408,
+      "elapsedMicroseconds": 3302,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 3,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -3820,7 +3867,7 @@
       "pathways": [
         {
           "id": "abdominal",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Clarify location, onset, progression and associated digestive or urinary changes.",
@@ -3867,13 +3914,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/dizziness-medication-change/free_text_only/01",
       "repetition": 1,
-      "elapsedMicroseconds": 1144,
+      "elapsedMicroseconds": 2390,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 1,
+      "elapsedMs": 2,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -3881,7 +3928,7 @@
       "pathways": [
         {
           "id": "dizziness",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Clarify what dizziness feels like, its timing, triggers, fainting or any new neurological change.",
@@ -3927,13 +3974,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/dizziness-medication-change/adaptive/01",
       "repetition": 1,
-      "elapsedMicroseconds": 787,
+      "elapsedMicroseconds": 6223,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 6,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -3941,7 +3988,7 @@
       "pathways": [
         {
           "id": "dizziness",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Clarify what dizziness feels like, its timing, triggers, fainting or any new neurological change.",
@@ -3952,7 +3999,7 @@
       "case": "dizziness-medication-change",
       "arm": "adaptive",
       "model": "scripted-v1",
-      "interviewQuestions": 2,
+      "interviewQuestions": 5,
       "modelCalls": 4,
       "visibleTargetExtraction": {
         "matched": 0,
@@ -3975,6 +4022,9 @@
       "checkpointAlerts": {
         "answer_1": false,
         "answer_2": false,
+        "answer_3": false,
+        "answer_4": false,
+        "answer_5": false,
         "assessment": false,
         "intake": false,
         "review": false
@@ -3982,20 +4032,20 @@
       "contradictions": 0,
       "expectedContradiction": false,
       "assessmentOutcome": "insufficient",
-      "assessedRevision": 3,
-      "revisedHistory": 4,
+      "assessedRevision": 6,
+      "revisedHistory": 7,
       "exploratoryReferenceRank": null
     },
     {
       "runId": "6ff2adab99b6ce74d280/dizziness-medication-change/static_form/01",
       "repetition": 1,
-      "elapsedMicroseconds": 602,
+      "elapsedMicroseconds": 4038,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 4,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -4003,7 +4053,7 @@
       "pathways": [
         {
           "id": "dizziness",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Clarify what dizziness feels like, its timing, triggers, fainting or any new neurological change.",
@@ -4052,13 +4102,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/dizziness-with-warning/free_text_only/01",
       "repetition": 1,
-      "elapsedMicroseconds": 284,
+      "elapsedMicroseconds": 4107,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 4,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -4066,7 +4116,7 @@
       "pathways": [
         {
           "id": "dizziness",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Clarify what dizziness feels like, its timing, triggers, fainting or any new neurological change.",
@@ -4110,13 +4160,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/dizziness-with-warning/adaptive/01",
       "repetition": 1,
-      "elapsedMicroseconds": 322,
+      "elapsedMicroseconds": 8128,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 8,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -4124,7 +4174,7 @@
       "pathways": [
         {
           "id": "dizziness",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Clarify what dizziness feels like, its timing, triggers, fainting or any new neurological change.",
@@ -4168,13 +4218,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/dizziness-with-warning/static_form/01",
       "repetition": 1,
-      "elapsedMicroseconds": 314,
+      "elapsedMicroseconds": 3838,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 3,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -4182,7 +4232,7 @@
       "pathways": [
         {
           "id": "dizziness",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Clarify what dizziness feels like, its timing, triggers, fainting or any new neurological change.",
@@ -4226,13 +4276,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/headache-denies-sudden-onset/free_text_only/01",
       "repetition": 1,
-      "elapsedMicroseconds": 318,
+      "elapsedMicroseconds": 4901,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 4,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -4240,7 +4290,7 @@
       "pathways": [
         {
           "id": "headache",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Establish whether onset was sudden, how this differs from prior episodes and any associated changes.",
@@ -4284,13 +4334,13 @@
     {
       "runId": "6ff2adab99b6ce74d280/headache-denies-sudden-onset/adaptive/01",
       "repetition": 1,
-      "elapsedMicroseconds": 776,
+      "elapsedMicroseconds": 16049,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 16,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -4298,7 +4348,7 @@
       "pathways": [
         {
           "id": "headache",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Establish whether onset was sudden, how this differs from prior episodes and any associated changes.",
@@ -4309,7 +4359,7 @@
       "case": "headache-denies-sudden-onset",
       "arm": "adaptive",
       "model": "scripted-v1",
-      "interviewQuestions": 2,
+      "interviewQuestions": 5,
       "modelCalls": 4,
       "visibleTargetExtraction": {
         "matched": 1,
@@ -4330,6 +4380,9 @@
       "checkpointAlerts": {
         "answer_1": false,
         "answer_2": false,
+        "answer_3": false,
+        "answer_4": false,
+        "answer_5": false,
         "assessment": false,
         "intake": false,
         "review": false
@@ -4337,20 +4390,20 @@
       "contradictions": 0,
       "expectedContradiction": false,
       "assessmentOutcome": "insufficient",
-      "assessedRevision": 3,
-      "revisedHistory": 4,
+      "assessedRevision": 6,
+      "revisedHistory": 7,
       "exploratoryReferenceRank": null
     },
     {
       "runId": "6ff2adab99b6ce74d280/headache-denies-sudden-onset/static_form/01",
       "repetition": 1,
-      "elapsedMicroseconds": 537,
+      "elapsedMicroseconds": 7783,
       "promptVersion": "evaluation-fixture-v1",
       "schemaVersion": "proposal-v1",
       "appVersion": "0.2.0",
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
-      "elapsedMs": 0,
+      "elapsedMs": 7,
       "repeatedQuestions": 0,
       "returnedModels": [
         "scripted-v1"
@@ -4358,7 +4411,7 @@
       "pathways": [
         {
           "id": "headache",
-          "version": "adult-development-v2",
+          "version": "adult-development-v3",
           "reviewStatus": "unvalidated_development",
           "context": [
             "Establish whether onset was sudden, how this differs from prior episodes and any associated changes.",
@@ -4405,7 +4458,7 @@
     {
       "runId": "6ff2adab99b6ce74d280/age-outside-scope/free_text_only/01",
       "repetition": 1,
-      "elapsedMicroseconds": 5,
+      "elapsedMicroseconds": 87,
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
       "elapsedMs": 0,
@@ -4442,7 +4495,7 @@
     {
       "runId": "6ff2adab99b6ce74d280/age-outside-scope/adaptive/01",
       "repetition": 1,
-      "elapsedMicroseconds": 4,
+      "elapsedMicroseconds": 81,
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
       "elapsedMs": 0,
@@ -4479,7 +4532,7 @@
     {
       "runId": "6ff2adab99b6ce74d280/age-outside-scope/static_form/01",
       "repetition": 1,
-      "elapsedMicroseconds": 4,
+      "elapsedMicroseconds": 80,
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
       "elapsedMs": 0,
@@ -4516,7 +4569,7 @@
     {
       "runId": "6ff2adab99b6ce74d280/pregnancy-specific/free_text_only/01",
       "repetition": 1,
-      "elapsedMicroseconds": 5,
+      "elapsedMicroseconds": 133,
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
       "elapsedMs": 0,
@@ -4553,7 +4606,7 @@
     {
       "runId": "6ff2adab99b6ce74d280/pregnancy-specific/adaptive/01",
       "repetition": 1,
-      "elapsedMicroseconds": 5,
+      "elapsedMicroseconds": 129,
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
       "elapsedMs": 0,
@@ -4590,7 +4643,7 @@
     {
       "runId": "6ff2adab99b6ce74d280/pregnancy-specific/static_form/01",
       "repetition": 1,
-      "elapsedMicroseconds": 5,
+      "elapsedMicroseconds": 126,
       "missedAlertCheckpoints": 0,
       "excessiveAlertCheckpoints": 0,
       "elapsedMs": 0,

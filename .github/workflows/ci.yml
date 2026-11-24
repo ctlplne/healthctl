@@ -47,7 +47,7 @@ jobs:
         run: docker run --rm --network none --read-only --tmpfs /tmp healthctl-evaluator -release > "$RUNNER_TEMP/scorecard.json"
       - name: Report individual cases and compare history capture
         if: '!cancelled()'
-        run: python3 scripts/check_scorecard.py "$RUNNER_TEMP/scorecard.json" | tee -a "$GITHUB_STEP_SUMMARY"
+        run: python3 scripts/check_scorecard.py --drift "$RUNNER_TEMP/scorecard.json" | tee -a "$GITHUB_STEP_SUMMARY"
         shell: bash
       - name: Save the per-case scorecard
         if: '!cancelled()'

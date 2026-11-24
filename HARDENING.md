@@ -64,7 +64,7 @@ Status: `[x]` done with proof · `[ ]` open · `[h]` handoff, prepared with next
 - [ ] **A1** App-owned assessment rendering: vetted names, rationale built from fact IDs, reviewed descriptions where available. Proof: `TestAssessmentRendering`.
 - [ ] **A2** "Don't miss" lines per pathway (development content). Proof: `TestDontMissLines`.
 - [ ] **E3** Natural-language user simulator harness, scored by app invariants. Proof: `TestSimulatorHarness`.
-- [ ] **E4** Committed scorecards regenerated; CI fails on drift. Proof: `scripts/check_scorecard.py --drift`.
+- [x] **E4** Committed scorecards regenerated; CI fails on drift. Proof: `scripts/check_scorecard.py --drift` in CI; the baseline was regenerated in the evaluator image (adaptive questions 39 → 92 since guided background questions).
 - [ ] **F4** URL routing for deep links, Back and reload. Proof: unit test + Playwright.
 - [ ] **F5** No tab switch when a turn finishes; a "next question ready" notice; in-progress corrections kept. Proof: unit test.
 - [ ] **F6** Accessibility: focus moves to the new question and it is announced, radio groups are named, axe runs in Playwright. Proof: Playwright.
