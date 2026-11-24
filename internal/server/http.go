@@ -16,6 +16,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -171,6 +172,12 @@ func (s *Server) Handler() http.Handler {
 		}
 		info, err := os.Stat(path)
 		if err != nil || info.IsDir() {
+			// A page route such as /encounters/<id> is the app itself, so a
+			// link or a reload opens the same screen. Files and the API still 404.
+			if !strings.HasPrefix(r.URL.Path, "/api/") && !strings.Contains(r.URL.Path[strings.LastIndex(r.URL.Path, "/")+1:], ".") && appRoute(r.URL.Path) {
+				http.ServeFile(w, r, filepath.Join(s.Assets, "index.html"))
+				return
+			}
 			http.NotFound(w, r)
 			return
 		}
@@ -205,3 +212,15 @@ func (s *Server) Handler() http.Handler {
 }
 
 const SessionLife = 12 * time.Hour
+
+// appRoute reports whether a path is one of the app's own screens.
+func appRoute(p string) bool {
+	switch p {
+	case "/settings", "/new", "/timeline", "/library":
+		return true
+	}
+	parts := strings.Split(strings.Trim(p, "/"), "/")
+	return parts[0] == "encounters" && (len(parts) == 2 || len(parts) == 3) && encounterRouteID.MatchString(parts[1])
+}
+
+var encounterRouteID = regexp.MustCompile(`^[A-Za-z0-9_-]{1,128}$`)

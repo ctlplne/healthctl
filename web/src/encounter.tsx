@@ -1,6 +1,7 @@
 import { ObservationPhotos } from './observationPhotos'
 import { SafetyNet, safetyCheckDue } from './safetynet'
 import { EncounterUsage } from './usage'
+import { defaultTab, readyNotice, type Tab } from './turn'
 import { useQuestionDraft } from './draft'
 import { VisitPrep } from './visitPrep'
 import { ReadBack, VoiceInput } from './voice'
@@ -45,22 +46,6 @@ const isStandardOption = (s: string) =>
     s.trim(),
   )
 
-type Tab =
-  | 'interview'
-  | 'history'
-  | 'estimate'
-  | 'report'
-  | 'sources'
-  | 'followup'
-  | 'prep'
-const defaultTab = (e: Encounter): Tab =>
-  e.state === 'history_review'
-    ? 'history'
-    : e.state === 'assessing' ||
-        e.state === 'assessment_ready' ||
-        e.state === 'needs_clarification'
-      ? 'estimate'
-      : 'interview'
 
 function ElapsedWait({ since }: { since: string }) {
   const [now, setNow] = useState(Date.now)
@@ -92,6 +77,9 @@ type Props = {
   careDestination: string
   pollError: string
   startAtSources?: boolean
+  // initialTab opens a tab named in the URL; onTab reports tab changes to it.
+  initialTab?: string
+  onTab?: (tab: Tab) => void
 }
 export function EncounterPage({
   e,
@@ -108,9 +96,13 @@ export function EncounterPage({
   careDestination,
   pollError,
   startAtSources = false,
+  initialTab,
+  onTab,
 }: Props) {
   const [tab, setTab] = useState<Tab>(() =>
-      startAtSources ||
+      initialTab && ['interview', 'history', 'estimate', 'report', 'sources', 'followup', 'prep'].includes(initialTab)
+        ? (initialTab as Tab)
+        : startAtSources ||
       (e.reportFirst &&
         !e.documents?.length &&
         !e.warnings.some((w) => w.active))
@@ -179,11 +171,10 @@ export function EncounterPage({
   const [readyRevision, setReadyRevision] = useState<number>()
   const statusPanel = useRef<HTMLDivElement>(null)
   useEffect(() => {
+    // A finished turn never moves the user: the notice offers the way to the
+    // result, and corrections in progress on this tab stay as they were.
     if (wasPending.current && !e.pending) {
       if (turnCount > previousTurns.current) setReadyRevision(e.revision)
-      setTab((t) =>
-        ['interview', 'history', 'estimate'].includes(t) ? defaultTab(e) : t,
-      )
     }
     if (e.pending && !wasPending.current && !activeWarnings.length) {
       statusPanel.current?.scrollIntoView({ block: 'nearest' })
@@ -191,11 +182,16 @@ export function EncounterPage({
     wasPending.current = e.pending
     previousTurns.current = turnCount
   }, [e.pending, e.state, e.revision, turnCount, activeWarnings.length])
-  const readyMessage = readyRevision !== e.revision ? '' :
-    e.state === 'interviewing' && e.question ? 'Your next question is ready.' :
-    e.state === 'history_review' ? 'Your history is ready to review.' :
-    e.state === 'needs_clarification' ? 'The model needs more information.' :
-    e.state === 'assessment_ready' ? 'Your estimate is ready to review.' : ''
+  const ready = readyRevision === e.revision ? readyNotice(e, tab) : { message: '' }
+  const readyMessage = ready.message
+  useEffect(() => onTab?.(tab), [tab])
+  // Move focus to a new question so it is announced and ready to answer.
+  const questionHeading = useRef<HTMLHeadingElement>(null)
+  const shownQuestion = useRef(e.question)
+  useEffect(() => {
+    if (e.question && e.question !== shownQuestion.current && tab === 'interview') questionHeading.current?.focus()
+    shownQuestion.current = e.question
+  }, [e.question, tab])
   // A draft belongs to the question it answers. See useQuestionDraft.
   const draft = useQuestionDraft(e.question, () => {
       setEventDate('')
@@ -331,7 +327,16 @@ export function EncounterPage({
                     {' '}The model can take a few minutes to reason through your history.
                     Your history is saved, so you can return to the journal while you wait.</>}</p>
               </>
-            ) : readyMessage && <p className="model-ready">{readyMessage}</p>}
+            ) : readyMessage && (
+              <p className="model-ready" role="status">
+                {readyMessage}{' '}
+                {ready.goTo && (
+                  <button type="button" className="text-button" onClick={() => setTab(ready.goTo!)}>
+                    {ready.goTo === 'interview' ? 'Go to the question' : ready.goTo === 'history' ? 'Review my history' : 'Open the estimate'}
+                  </button>
+                )}
+              </p>
+            )}
           </div>
           {e.pending && !pollError && <ElapsedWait key={e.updatedAt} since={e.updatedAt} />}
         </div>
@@ -533,7 +538,7 @@ export function EncounterPage({
                         onAnswer={(answer) => void act({ action: 'safety_check', category: 'return', status: answer })}
                       />
                     )}
-                    <h2 aria-live="polite" aria-atomic="true">
+                    <h2 aria-live="polite" aria-atomic="true" id="current-question" tabIndex={-1} ref={questionHeading}>
                       {e.question || 'Add to your history'}
                     </h2>
                     {e.question && (
@@ -618,7 +623,7 @@ export function EncounterPage({
                       <div
                         className="choices"
                         role="group"
-                        aria-label="Answer options"
+                        aria-labelledby="current-question"
                       >
                         {storyFirst && choices.length > 0 && (
                           <button

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import AxeBuilder from '@axe-core/playwright'
 import { readFile, writeFile } from 'node:fs/promises'
 import { readFileSync } from 'node:fs'
 import { regionalMeasurement } from '../src/region'
@@ -1470,5 +1471,48 @@ test('Open-ended fictional practice preserves an unexpected answer and offers a 
   const report = await grabReport(page)
   expect(report.answers).toContainEqual(expect.objectContaining({ text: reply, disposition: 'provided' }))
   expect(report.assessments).toHaveLength(0)
+  await remove(page)
+})
+
+test('Links, Back and reload keep the user on the same screen', async ({ page }) => {
+  await enter(page)
+  await configure(page, 'demo')
+  const id = await start(page)
+  await expect(page).toHaveURL(new RegExp('/encounters/' + id + '$'))
+  await page.getByRole('button', { name: 'History review', exact: true }).click()
+  await expect(page).toHaveURL(new RegExp('/encounters/' + id + '/history$'))
+  await page.reload()
+  await expect(page.getByRole('heading', { name: 'Encounter record' })).toBeVisible()
+  await expect(page).toHaveURL(new RegExp('/encounters/' + id + '/history$'))
+  await page.goBack()
+  await expect(page).not.toHaveURL(new RegExp('/encounters/' + id))
+  await page.goto('/settings')
+  await expect(page.getByRole('combobox', { name: 'Provider', exact: true })).toBeVisible()
+  await page.goto('/encounters/' + id)
+  await expect(page.getByRole('heading', { name: 'Encounter record' })).toBeVisible()
+  await remove(page)
+})
+
+// Automated accessibility checks on the main screens. Serious and critical
+// problems fail the run.
+async function accessible(page: Page, screen: string) {
+  const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze()
+  const serious = result.violations
+    .filter((v) => v.impact === 'serious' || v.impact === 'critical')
+    .map((v) => screen + ': ' + v.id + ' (' + v.nodes.length + ')')
+  expect(serious).toEqual([])
+}
+test('Main screens pass automated accessibility checks', async ({ page }) => {
+  await enter(page)
+  await accessible(page, 'journal')
+  await configure(page, 'demo')
+  await page.getByRole('button', { name: 'New encounter', exact: true }).click()
+  await accessible(page, 'intake')
+  await page.goto('/')
+  const id = await start(page)
+  await accessible(page, 'interview')
+  await page.getByRole('button', { name: 'History review', exact: true }).click()
+  await expect(page).toHaveURL(new RegExp('/encounters/' + id + '/history$'))
+  await accessible(page, 'history review')
   await remove(page)
 })

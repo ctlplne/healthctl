@@ -805,13 +805,15 @@ export function Radios({
   name,
   value,
   change,
+  label = name,
 }: {
   name: string
   value: string
   change: (v: string) => void
+  label?: string
 }) {
   return (
-    <div className="radios">
+    <div className="radios" role="radiogroup" aria-label={label}>
       {['yes', 'no'].map((v) => (
         <label key={v}>
           <input

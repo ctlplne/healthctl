@@ -158,3 +158,29 @@ func sameConcept(a, b string) bool {
 	tb, okB := lookupConcept(b)
 	return okA && okB && ta.Term == tb.Term
 }
+
+var medicineConcept = regexp.MustCompile(`(?i)\b(medicines?|medications?|tablets?|pills?|capsules?|supplements?|inhalers?|doses?|prescri\w*|drugs?|antibiotics?)\b`)
+var allergyConcept = regexp.MustCompile(`(?i)\ballerg(?:y|ies|ic)\b`)
+
+// factCategory places a finding in the brief's medicines and allergies
+// section from where it was recorded: the question it answered, a medicine
+// entry, or a concept that names a medicine or an allergy.
+func (e *Encounter) factCategory(f FindingProposal) string {
+	if a := e.answer(f.AnswerID); a != nil {
+		switch {
+		case a.Kind == "medication_use" || a.QuestionSource != nil && a.QuestionSource.Key == "medication_start":
+			return "medication"
+		case a.Kind == "reply" && backgroundTopics[0].matches(a.Question):
+			return "medication"
+		case a.Kind == "reply" && backgroundTopics[1].matches(a.Question):
+			return "allergy"
+		}
+	}
+	switch {
+	case allergyConcept.MatchString(f.Concept):
+		return "allergy"
+	case medicineConcept.MatchString(f.Concept):
+		return "medication"
+	}
+	return ""
+}

@@ -32,7 +32,9 @@ import { EvidenceLookup } from './evidence'
 import { Operator } from './operator'
 import { setLocale } from './types'
 import type { Region } from './records'
-import { api, RequestError, updateToken } from './api'
+import { api, RequestError, SIGNED_OUT, updateToken } from './api'
+import { parseRoute, routePath, type Page } from './route'
+import { schedule } from './poll'
 import { Auth, IntakeForm, Journal, ProviderEditor } from './forms'
 import { EncounterPage } from './encounter'
 import { Brand, Notice } from './shared'
@@ -51,8 +53,8 @@ import '@fontsource/instrument-serif/latin-400.css'
 import '@fontsource/instrument-serif/latin-400-italic.css'
 import './styles.css'
 
-type Page =
-  'journal' | 'settings' | 'intake' | 'record' | 'timeline' | 'evidence'
+// The route the app was opened at. An encounter link opens once signed in.
+const startRoute = parseRoute(location.pathname)
 function App() {
   const [session, setSession] = useState<Session | null>(null),
     [settings, setSettings] = useState<Settings | null>(null),
@@ -61,7 +63,9 @@ function App() {
   const [page, setPage] = useState<Page>(() =>
       new URLSearchParams(location.search).get('desktop') === 'settings'
         ? 'settings'
-        : 'journal',
+        : startRoute.page === 'record'
+          ? 'journal'
+          : startRoute.page,
     ),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(''),
@@ -182,14 +186,50 @@ function App() {
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [page])
+  // Keep the URL in step with the screen, so links, Back and reload work.
+  useEffect(() => {
+    if (page === 'record' && !e) return
+    const path = routePath({ page, encounterId: e?.id })
+    if (!location.hash && location.pathname !== path && !location.pathname.startsWith(path + '/')) {
+      window.history.pushState(null, '', path + location.search)
+    }
+  }, [page, e?.id])
+  useEffect(() => {
+    const follow = () => {
+      const r = parseRoute(location.pathname)
+      if (r.page === 'record' && r.encounterId) {
+        if (r.encounterId !== e?.id) open(r.encounterId)
+      } else if (r.page !== page) move(r.page)
+    }
+    window.addEventListener('popstate', follow)
+    return () => window.removeEventListener('popstate', follow)
+  })
+  const startOpened = useRef(false)
+  useEffect(() => {
+    if (session?.authenticated && startRoute.page === 'record' && startRoute.encounterId && !startOpened.current) {
+      startOpened.current = true
+      open(startRoute.encounterId)
+    }
+  }, [session?.authenticated])
+  // An ended session asks the user to sign in again; saved history is safe.
+  useEffect(() => {
+    const signedOut = () => {
+      setSession((s) => (s ? { ...s, authenticated: false } : s))
+      setEncounter(null)
+      setError('Your session ended. Sign in again; your saved history is safe.')
+    }
+    window.addEventListener(SIGNED_OUT, signedOut)
+    return () => window.removeEventListener(SIGNED_OUT, signedOut)
+  }, [])
   useEffect(() => {
     setPollError('')
     if (page !== 'record' || !session?.authenticated || !e?.pending) return
     const { id, revision } = e
     const controller = new AbortController()
-    let timer: number
+    let stop = () => {}
+    let attempt = 0
     const check = async () => {
-      let delay = 1200
+      let failed = false
       try {
         const next = await api<Encounter>(
           '/encounters/' + id,
@@ -233,21 +273,24 @@ function App() {
         setPollError(
           'Your history is saved. Checking the request status again automatically.',
         )
-        delay = 3500
+        failed = true
       }
-      if (!controller.signal.aborted) timer = window.setTimeout(check, delay)
+      // Wait longer the longer the request runs, and pause while hidden.
+      attempt += failed ? 2 : 1
+      if (!controller.signal.aborted) stop = schedule(controller.signal, attempt, () => void check())
     }
-    timer = window.setTimeout(check, 300)
+    stop = schedule(controller.signal, -3, () => void check())
     return () => {
       controller.abort()
-      clearTimeout(timer)
+      stop()
     }
   }, [page, session?.authenticated, e?.id, e?.revision, e?.pending])
   const waitingInJournal = page === 'journal' && session?.authenticated && records.some(row => row.pending)
   useEffect(() => {
     if (!waitingInJournal) return
     const controller = new AbortController()
-    let timer: number
+    let stop = () => {}
+    let attempt = 0
     const refresh = async () => {
       try {
         const list = await api<{ encounters: EncounterRow[] }>('/encounters', 'GET', undefined, { signal: controller.signal })
@@ -255,13 +298,13 @@ function App() {
       } catch {
         // A temporary connection failure leaves the saved journal in view.
       } finally {
-        if (!controller.signal.aborted) timer = window.setTimeout(refresh, 4000)
+        if (!controller.signal.aborted) stop = schedule(controller.signal, ++attempt, () => void refresh(), 2500)
       }
     }
-    timer = window.setTimeout(refresh, 2500)
+    stop = schedule(controller.signal, 0, () => void refresh(), 2500)
     return () => {
       controller.abort()
-      clearTimeout(timer)
+      stop()
     }
   }, [waitingInJournal])
   const leaveSources = () => {
@@ -584,6 +627,10 @@ function App() {
                   e={e}
                   pollError={pollError}
                   startAtSources={sourceEncounter === e.id}
+                  initialTab={startRoute.encounterId === e.id ? startRoute.tab : undefined}
+                  onTab={(tab) => {
+                    if (!location.hash) window.history.replaceState(null, '', routePath({ page: 'record', encounterId: e.id, tab }) + location.search)
+                  }}
                   name={session.displayName}
                   emergency={session.emergency}
                   assessmentNotice={session.assessmentNotice}

@@ -79,6 +79,8 @@ export type Fact = {
   historyRevision?: number
   id: string
   concept: string
+  // category is set by the app from where the finding was recorded.
+  category?: 'medication' | 'allergy'
   term?: string
   code?: string
   quote: string

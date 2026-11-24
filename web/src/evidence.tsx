@@ -161,6 +161,7 @@ export function EvidenceLookup({
               <label>
                 <input
                   type="radio"
+                  name="search-mode"
                   checked={mode === 'question'}
                   onChange={() => {
                     setMode('question')
@@ -173,6 +174,7 @@ export function EvidenceLookup({
               <label>
                 <input
                   type="radio"
+                  name="search-mode"
                   checked={mode === 'browse'}
                   onChange={() => {
                     setMode('browse')

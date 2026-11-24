@@ -49,6 +49,18 @@ export type Brief = {
   priorities: string[]
   scopeReason: string
 }
+// medicineFindings lists the findings the app recorded as medicines or
+// allergies, from the question they answered or their concept. Free text in
+// a quote never decides it.
+export const medicineFindings = (facts: Fact[]) =>
+  facts.filter(
+    (f) =>
+      f.category === 'medication' ||
+      f.category === 'allergy' ||
+      f.origin?.category === 'medication' ||
+      f.origin?.category === 'allergy',
+  )
+
 // notYetAsked lists the app's own safety questions and completeness gaps.
 export function notYetAsked(e: Encounter) {
   return [
@@ -133,15 +145,7 @@ export function BriefBody({
     ],
     [
       'Medication and allergy mentions',
-      reported
-        .filter(
-          (f) =>
-            f.origin?.category === 'medication' ||
-            f.origin?.category === 'allergy' ||
-            /medication|medicine|allerg|dose|drug/i.test(
-              f.concept + ' ' + f.quote,
-            ),
-        )
+      medicineFindings(reported)
         .map((f) =>
           f.origin
             ? [

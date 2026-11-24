@@ -1,7 +1,7 @@
 import { regionalMeasurement, RegionContext } from './region'
 import { useContext, useEffect, useRef, useState } from 'react'
 import { FilePlus2, FileSearch, FileText, Send } from 'lucide-react'
-import { api } from './api'
+import { api, upload as sendUpload } from './api'
 import { EhrConnect } from './ehr'
 import { Destination } from './chatgpt'
 import { Callout } from './shared'
@@ -58,6 +58,8 @@ export function SourceReview({
     highlight?.documentId || docs.at(-1)?.id || '',
   )
   const [submission, setSubmission] = useState(() => crypto.randomUUID())
+  const [progress, setProgress] = useState<number>()
+  const uploading = useRef<AbortController | null>(null)
 
   const doc = docs.find((d) => d.id === selectedDoc) || docs.at(-1)
   const upload = async () => {
@@ -75,11 +77,18 @@ export function SourceReview({
     data.append('purpose', purpose)
     data.append('priority', priority)
     data.append('issueDate', issue)
-    const updated = await api<Encounter>(
-      '/encounters/' + e.id + '/documents',
-      'POST',
-      data,
-    )
+    uploading.current = new AbortController()
+    setProgress(0)
+    let updated: Encounter
+    try {
+      updated = await sendUpload<Encounter>('/encounters/' + e.id + '/documents', data, {
+        onProgress: setProgress,
+        signal: uploading.current.signal,
+      })
+    } finally {
+      uploading.current = null
+      setProgress(undefined)
+    }
     refresh(updated)
     setSelectedDoc(updated.documents?.at(-1)?.id || '')
     setShowUpload(false)
@@ -113,6 +122,14 @@ export function SourceReview({
             </button>
           )}
         </div>
+        {progress !== undefined && (
+          <div className="upload-progress" role="status">
+            <progress value={progress} max={1} aria-label="Upload progress" /> {Math.round(progress * 100)}%{' '}
+            <button type="button" className="secondary" onClick={() => uploading.current?.abort()}>
+              Cancel upload
+            </button>
+          </div>
+        )}
         {showUpload && (
           <form
             onChange={() => setSubmission(crypto.randomUUID())}
@@ -132,6 +149,7 @@ export function SourceReview({
                 <label>
                   <input
                     type="radio"
+                    name="report-input"
                     checked={inputMode === 'file'}
                     onChange={() => setInputMode('file')}
                   />
@@ -140,6 +158,7 @@ export function SourceReview({
                 <label>
                   <input
                     type="radio"
+                    name="report-input"
                     checked={inputMode === 'paste'}
                     onChange={() => setInputMode('paste')}
                   />

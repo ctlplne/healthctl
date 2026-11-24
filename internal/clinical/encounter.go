@@ -171,6 +171,7 @@ func (e *Encounter) recordFindingAt(f FindingProposal, source, supersedes string
 	if t, ok := lookupConcept(f.Concept); ok {
 		fact.Term, fact.Code = t.Term, t.Code
 	}
+	fact.Category = e.factCategory(f)
 	e.Facts = append(e.Facts, fact)
 }
 

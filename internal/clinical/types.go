@@ -159,6 +159,9 @@ type Fact struct {
 	Confirmed       bool   `json:"confirmed"`
 	Corrected       bool   `json:"corrected"`
 	Supersedes      string `json:"supersedes,omitempty"`
+	// Category is "medication" or "allergy", set by the app from the question
+	// the answer came from or the finding's concept.
+	Category string `json:"category,omitempty"`
 	// Term and Code map the concept to the app vocabulary when it names one.
 	Term string `json:"term,omitempty"`
 	Code string `json:"code,omitempty"`
