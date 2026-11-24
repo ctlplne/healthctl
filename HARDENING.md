@@ -45,8 +45,8 @@ Status: `[x]` done with proof · `[ ]` open · `[h]` handoff, prepared with next
 - [x] **S7** App-owned safety-net questions before confirming the history, at the start of a return visit, and for a diary episode happening now. Files: `internal/clinical/safetynet.go`, `web/src/safetynet.tsx`, `web/src/history.tsx`, `web/src/encounter.tsx`, `web/src/diary.tsx`. Proof: `TestSafetyNetQuestions`, `web/src/safetynet.test.tsx`, browser journeys answer it before confirming.
 - [x] **S8** Clinical sign-off metadata per policy version, shown in exports; a policy can't be called reviewed without a record. Files: `internal/clinical/policy_review.go`. Proof: `TestPolicyReviewRecord`, `TestProvenanceValidatorVersionPostgres` (exports carry `policyReview`).
 - [x] **S9** Safety metrics on the gold set run on every release; CI fails on any missed urgent case. Proof: the `safety` CI job runs `TestCorpus` (fails on any missed urgent sentence) and posts the metrics to the job summary.
-- [ ] **V6** Separate output schemas per task with enums. Proof: `TestTaskSchemas`.
-- [ ] **V7** Prompt limits generated from the validator's constants. Proof: `TestPromptMatchesValidator`.
+- [x] **V6** Separate output schemas per task with enums. Files: `internal/provider/schema.go`. Proof: `TestTaskSchemas`.
+- [x] **V7** Prompt limits generated from the validator's constants. Files: `internal/contract/contract.go`, `internal/provider/contracts/clinical-v8.txt`. Proof: `TestPromptMatchesValidator`.
 - [x] **V8** `validatorVersion` and an input hash recorded in provenance. Proof: `TestProvenanceValidatorVersionPostgres`, `TestPolicyReviewRecord` (stable input hash).
 - [ ] **V9** Question intents: the model picks an intent and its slots from an app catalog and the app writes the wording; free-text questions are a fallback with stricter checks. Proof: `TestQuestionIntents`.
 - [ ] **V10** Answer choices come from intent templates. Proof: `TestIntentChoices`.

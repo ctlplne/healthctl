@@ -3,6 +3,8 @@ package clinical
 import (
 	"errors"
 	"strings"
+
+	"github.com/ctlplne/healthctl/internal/contract"
 )
 
 // Sanitize validates each item of a model proposal on its own. Invalid
@@ -34,8 +36,8 @@ func Sanitize(in Input, p Proposal) (Proposal, []Rejection, error) {
 		return kept
 	}
 	out := p
-	out.Outstanding = strs("outstanding", p.Outstanding, 16, 300)
-	out.Choices = strs("choices", p.Choices, 8, 160)
+	out.Outstanding = strs("outstanding", p.Outstanding, contract.MaxOutstanding, contract.MaxOutstandingBytes)
+	out.Choices = strs("choices", p.Choices, contract.MaxChoices, contract.MaxChoiceBytes)
 	out.Findings = []FindingProposal{}
 	out.UrgentEvidence = []Evidence{}
 	out.Items = []Item{}
@@ -48,7 +50,7 @@ func Sanitize(in Input, p Proposal) (Proposal, []Rejection, error) {
 			out.Choices = []string{}
 		}
 		for i, f := range p.Findings {
-			if len(out.Findings) >= 32 {
+			if len(out.Findings) >= contract.MaxFindings {
 				drop("findings", i, ReasonTooMany)
 				continue
 			}
@@ -59,7 +61,7 @@ func Sanitize(in Input, p Proposal) (Proposal, []Rejection, error) {
 			out.Findings = append(out.Findings, f)
 		}
 		for i, ev := range p.UrgentEvidence {
-			if len(out.UrgentEvidence) >= 8 {
+			if len(out.UrgentEvidence) >= contract.MaxUrgent {
 				drop("urgentEvidence", i, ReasonTooMany)
 				continue
 			}
@@ -92,7 +94,7 @@ func Sanitize(in Input, p Proposal) (Proposal, []Rejection, error) {
 			facts := activeFacts(in)
 			names := map[string]bool{}
 			for i, item := range p.Items {
-				if len(out.Items) >= 8 {
+				if len(out.Items) >= contract.MaxItems {
 					drop("items", i, ReasonTooMany)
 					continue
 				}

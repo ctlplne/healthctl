@@ -87,6 +87,9 @@ func TestChatGPTPlanSocketModelCatalogAndInference(t *testing.T) {
 				return
 			}
 			output := proposal
+			if strings.Contains(string(req["instructions"]), "Application-selected task: assessment.") {
+				output = assessmentProposal
+			}
 			if strings.Contains(input[0].Content, "connect") {
 				output = `{"status":"ready"}`
 			} else if !strings.Contains(input[0].Content, "synthetic disclosed history") {
@@ -136,7 +139,7 @@ func TestChatGPTPlanSocketModelCatalogAndInference(t *testing.T) {
 		t.Fatalf("invalid validated result or provenance %v", err)
 	}
 	result, meta, err = c.Generate(t.Context(), cfg, "assessment", map[string]string{"concern": "synthetic disclosed history"}, func([]byte) error { return nil })
-	if err != nil || string(result) != proposal || meta.Settings["reasoningEffort"] != "high" {
+	if err != nil || string(result) != assessmentProposal || meta.Settings["reasoningEffort"] != "high" {
 		t.Fatalf("an assessment must use the highest advertised effort %v %v", err, meta.Settings["reasoningEffort"])
 	}
 	cfg.Endpoint = accountTwo
@@ -394,7 +397,11 @@ func TestChatGPTUsesOnlyAdvertisedResponsesReasoningEffort(t *testing.T) {
 				if tc.declined {
 					return &http.Response{StatusCode: 400, Body: io.NopCloser(strings.NewReader(`{"error":{"code":"subscription_sharing_unsupported_capability","param":"reasoning.effort"}}`))}, nil
 				}
-				return planResponse(planCompletion(proposal, 5)), nil
+				reply := proposal
+				if tc.task == "assessment" {
+					reply = assessmentProposal
+				}
+				return planResponse(planCompletion(reply, 5)), nil
 			})
 			_, meta, err := c.Generate(t.Context(), planCfg(), tc.task, struct{}{}, func([]byte) error { return nil })
 			if posts != 1 {

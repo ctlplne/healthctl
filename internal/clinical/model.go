@@ -7,6 +7,8 @@ import (
 	"slices"
 	"strings"
 	"time"
+
+	"github.com/ctlplne/healthctl/internal/contract"
 )
 
 var errContextBudget = errors.New("Evidence exceeds the model context budget. Review or export the saved history")
@@ -358,7 +360,7 @@ func validateFinding(in Input, f FindingProposal) error {
 	if err != nil {
 		return err
 	}
-	if !validText(f.Concept, 120) || badOutput(f.Concept, 120) || !validSubject(f.Subject) || !validStatus(f.Status) || len(f.TimeContext) > 180 || len(f.Value) > 120 || len(f.Units) > 64 {
+	if !validText(f.Concept, contract.MaxConceptBytes) || badOutput(f.Concept, contract.MaxConceptBytes) || !validSubject(f.Subject) || !validStatus(f.Status) || len(f.TimeContext) > contract.MaxTimeBytes || len(f.Value) > contract.MaxValueBytes || len(f.Units) > contract.MaxUnitsBytes {
 		return reasonErr(ReasonAttributes, "Invalid finding attributes")
 	}
 	disposition := evidenceDisposition(a)
@@ -373,7 +375,7 @@ func validateFinding(in Input, f FindingProposal) error {
 	if a.Kind == "screen" {
 		return reasonErr(ReasonScreenAnswer, "The emergency screen cannot establish other clinical findings")
 	}
-	if badOutput(f.TimeContext, 180) || badOutput(f.Value, 120) || badOutput(f.Units, 64) {
+	if badOutput(f.TimeContext, contract.MaxTimeBytes) || badOutput(f.Value, contract.MaxValueBytes) || badOutput(f.Units, contract.MaxUnitsBytes) {
 		return reasonErr(ReasonAdvice, "Invalid normalized finding")
 	}
 	for _, n := range numericClaims(f.TimeContext) {
@@ -446,7 +448,7 @@ func validateUrgent(in Input, ev Evidence) error {
 }
 
 func questionIssue(in Input, p Proposal) error {
-	if !validText(p.Question, 500) || !validText(p.Reason, 700) {
+	if !validText(p.Question, contract.MaxQuestionBytes) || !validText(p.Reason, contract.MaxReasonBytes) {
 		return reasonErr(ReasonQuestion, "A question must explain which uncertainty it addresses")
 	}
 	if strings.Count(p.Question, "?") > 1 {
@@ -468,7 +470,7 @@ func Validate(in Input, p Proposal) error {
 	if _, err := questionSource(in, p); err != nil {
 		return err
 	}
-	if !listValid(p.Outstanding, 16, 300) || !listValid(p.Choices, 8, 160) || badOutput(p.Reason, 700) || badOutput(p.Question, 500) || len(p.Findings) > 32 || len(p.UrgentEvidence) > 8 || len(p.Items) > 8 {
+	if !listValid(p.Outstanding, contract.MaxOutstanding, contract.MaxOutstandingBytes) || !listValid(p.Choices, contract.MaxChoices, contract.MaxChoiceBytes) || badOutput(p.Reason, contract.MaxReasonBytes) || badOutput(p.Question, contract.MaxQuestionBytes) || len(p.Findings) > contract.MaxFindings || len(p.UrgentEvidence) > contract.MaxUrgent || len(p.Items) > contract.MaxItems {
 		return reasonErr(ReasonAdvice, "Model output exceeds the permitted content or size")
 	}
 	switch in.Task {
@@ -541,7 +543,7 @@ func activeFacts(in Input) map[string]Fact {
 }
 
 func validateItem(item Item, facts map[string]Fact) error {
-	if !validText(item.Name, 120) || badOutput(item.Name, 120) || badOutput(item.ClinicalTerm, 120) || !validText(item.Explanation, 800) || badOutput(item.Explanation, 800) || len(item.Supporting) == 0 || len(item.Supporting) > 12 || len(item.Conflicting) > 12 || len(item.Limitations) == 0 || !listValid(item.Limitations, 8, 300) {
+	if !validText(item.Name, contract.MaxItemNameBytes) || badOutput(item.Name, contract.MaxItemNameBytes) || badOutput(item.ClinicalTerm, contract.MaxItemNameBytes) || !validText(item.Explanation, contract.MaxExplanationBytes) || badOutput(item.Explanation, contract.MaxExplanationBytes) || len(item.Supporting) == 0 || len(item.Supporting) > contract.MaxReferences || len(item.Conflicting) > contract.MaxReferences || len(item.Limitations) == 0 || !listValid(item.Limitations, contract.MaxLimitations, contract.MaxLimitationBytes) {
 		return reasonErr(ReasonItemContent, "Each possibility needs an explanation, evidence and limitations")
 	}
 	seen := map[string]bool{}

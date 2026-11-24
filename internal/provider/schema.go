@@ -8,13 +8,18 @@ import (
 	"io"
 	"slices"
 	"unicode/utf8"
+
+	"github.com/ctlplne/healthctl/internal/contract"
 )
 
 //go:embed contracts/proposal-v1.schema.json
 var proposalSchema json.RawMessage
 
-//go:embed contracts/clinical-v7.txt
-var instructions string
+//go:embed contracts/clinical-v8.txt
+var promptText string
+
+// instructions states the contract limits from the same constants the validator uses.
+var instructions = promptText + "\n" + contract.LimitsText()
 
 //go:embed contracts/repair-v1.txt
 var repairInstructions string
@@ -101,4 +106,27 @@ func (s *schemaNode) consume(d *json.Decoder) error {
 		return errInvalid
 	}
 	return nil
+}
+
+// taskSchema narrows the shared proposal schema to the actions a task allows,
+// so an interview can't express a differential and an assessment can't ask.
+// Unasked concepts belong in outstanding, so not_asked is not a finding status.
+func taskSchema(mode string) json.RawMessage {
+	var schema map[string]any
+	if json.Unmarshal(proposalSchema, &schema) != nil {
+		return proposalSchema
+	}
+	props := schema["properties"].(map[string]any)
+	actions := []string{"ask", "review", "insufficient"}
+	if mode == "assessment" {
+		actions = []string{"differential", "insufficient"}
+	}
+	props["action"].(map[string]any)["enum"] = actions
+	finding := props["findings"].(map[string]any)["items"].(map[string]any)["properties"].(map[string]any)
+	finding["status"].(map[string]any)["enum"] = []string{"reported_present", "explicitly_denied", "unknown", "uncertain", "declined"}
+	out, err := json.Marshal(schema)
+	if err != nil {
+		return proposalSchema
+	}
+	return out
 }

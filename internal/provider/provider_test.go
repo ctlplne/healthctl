@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/ctlplne/healthctl/internal/contract"
 	"io"
 	"net/http"
 	"net/netip"
@@ -20,6 +21,9 @@ func (f transportFunc) RoundTrip(r *http.Request) (*http.Response, error) { retu
 
 const fixtureBase = "http://127.0.0.1:18031/v1"
 const proposal = `{"action":"review","question":"","choices":[],"reason":"The history can be checked.","findings":[],"urgentEvidence":[],"outstanding":[],"items":[]}`
+
+// Each task has its own schema, so an assessment reply uses an assessment action.
+const assessmentProposal = `{"action":"insufficient","question":"","choices":[],"reason":"More history is needed.","findings":[],"urgentEvidence":[],"outstanding":["When did it start?"],"items":[]}`
 
 func newFixtureClient(t *testing.T) (*Client, Config) {
 	t.Helper()
@@ -419,5 +423,39 @@ func TestCapabilityRecorded(t *testing.T) {
 	capabilities, ok := meta.Settings["capabilities"].(map[string]any)
 	if !ok || capabilities["provider"] != "compatible" || capabilities["structuredOutput"] != "prompt" || capabilities["repairAvailable"] != true {
 		t.Fatalf("the result must record the capabilities it used: %v", meta.Settings["capabilities"])
+	}
+}
+
+func TestTaskSchemas(t *testing.T) {
+	var interview, assessment schemaNode
+	if json.Unmarshal(taskSchema("interview"), &interview) != nil || json.Unmarshal(taskSchema("assessment"), &assessment) != nil {
+		t.Fatal("task schemas must parse")
+	}
+	differential := strings.Replace(assessmentProposal, `"insufficient"`, `"differential"`, 1)
+	ask := strings.Replace(proposal, `"review"`, `"ask"`, 1)
+	for _, tc := range []struct {
+		schema *schemaNode
+		reply  string
+		ok     bool
+	}{
+		{&interview, proposal, true}, {&interview, ask, true}, {&interview, differential, false},
+		{&assessment, assessmentProposal, true}, {&assessment, differential, true}, {&assessment, ask, false}, {&assessment, proposal, false},
+	} {
+		if err := validateJSON([]byte(tc.reply), tc.schema); (err == nil) != tc.ok {
+			t.Errorf("schema accepted=%t for %s, want %t", err == nil, tc.reply, tc.ok)
+		}
+	}
+	notAsked := `{"action":"review","question":"","choices":[],"reason":"x","findings":[{"concept":"cough","status":"not_asked","subject":"self","timeContext":"","value":"","units":"","answerId":"a1","quote":"cough"}],"urgentEvidence":[],"outstanding":[],"items":[]}`
+	if validateJSON([]byte(notAsked), &interview) == nil {
+		t.Fatal("not_asked must not be a finding status")
+	}
+}
+
+func TestPromptMatchesValidator(t *testing.T) {
+	if !strings.Contains(instructions, contract.LimitsText()) {
+		t.Fatal("the prompt must state the validator's limits")
+	}
+	if strings.Contains(promptText, "Keep up to 8 choices") {
+		t.Fatal("hand-written limits would drift from the validator")
 	}
 }

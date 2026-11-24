@@ -60,7 +60,7 @@ func (c *Client) Generate(ctx context.Context, cfg Config, mode string, input an
 	if len(data) > maxInputBytes {
 		return nil, zero, errors.New("history exceeds the model input budget; the saved history can still be exported")
 	}
-	p := call{task: mode, system: instructions + "\nApplication-selected task: " + mode + ".", input: string(data), schema: proposalSchema, maxTokens: maxOutputTokens}
+	p := call{task: mode, system: instructions + "\nApplication-selected task: " + mode + ".", input: string(data), schema: taskSchema(mode), maxTokens: maxOutputTokens}
 	return c.run(ctx, cfg, p, validate, true)
 }
 
@@ -141,7 +141,7 @@ func (c *Client) run(parent context.Context, cfg Config, p call, validate func([
 			}
 			// What this configuration actually used, saved with every result.
 			settings["capabilities"] = map[string]any{"provider": cfg.Kind, "structuredOutput": format, "streaming": cfg.Kind == "chatgpt", "reasoningEffort": p.reasoningEffort, "requestedOutputTokens": p.maxTokens, "repairAvailable": validate != nil}
-			return reply, Metadata{Provider: cfg.Kind, Endpoint: cfg.Destination(), RequestedModel: cfg.Model, ReturnedModel: returned, PromptVersion: "clinical-v7", SchemaVersion: "proposal-v1", AppVersion: appVersion, Settings: settings}, nil
+			return reply, Metadata{Provider: cfg.Kind, Endpoint: cfg.Destination(), RequestedModel: cfg.Model, ReturnedModel: returned, PromptVersion: "clinical-v8", SchemaVersion: "proposal-v2-" + p.task, AppVersion: appVersion, Settings: settings}, nil
 		}
 		if !mayRepair || (!errors.Is(err, errInvalid) && !errors.Is(err, errEnvelope)) {
 			return nil, zero, err
