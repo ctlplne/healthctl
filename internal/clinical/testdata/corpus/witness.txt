@@ -1,0 +1,51 @@
+# A witness describing the user. He, she and they mean the user; I and me mean the witness.
+warn | witness | She was struggling to breathe and her lips turned blue. | present "She was struggling to breathe" breathing difficulty; present "her lips turned blue" blue lips
+warn | witness | He has chest pain right now and is sweating. | present "He has chest pain right now" chest pain; present "is sweating" sweating
+warn | witness | I watched her collapse; she is struggling to breathe. | present "she is struggling to breathe" breathing difficulty; present "I watched her collapse" collapse
+warn | witness | He suddenly started slurring his words. | present "He suddenly started slurring his words" slurred speech
+warn | witness | Her face is drooping on the left side. | present "Her face is drooping on the left side" facial droop
+warn | witness | He passed out and wasn't responding for a minute. | present "He passed out" fainting; present "wasn't responding for a minute" unresponsive
+warn | witness | She had a seizure in front of me a few minutes ago. | present "She had a seizure in front of me a few minutes ago" seizure
+warn | witness | He's coughing up blood. | present "He's coughing up blood" coughing blood
+warn | witness | She said she wants to kill herself. | present "she wants to kill herself" suicidal thoughts
+warn | witness | He keeps saying he wants to die. | present "he wants to die" suicidal thoughts
+warn | witness | She can't lift her right arm. | present "She can't lift her right arm" right arm weakness
+warn | witness | He's confused and doesn't know where he is. | present "He's confused" confusion
+warn | witness | She vomited blood twice this evening. | present "She vomited blood twice this evening" vomiting blood
+warn | witness | His lips and tongue are swelling after the bee sting. | present "His lips and tongue are swelling" lip and tongue swelling
+warn | witness | She fainted at the dinner table tonight. | present "She fainted at the dinner table tonight" fainting
+warn | witness | He told me his chest feels crushed. | present "his chest feels crushed" chest pressure
+warn | witness | My wife is breathing very fast and can't speak in full sentences. | present "can't speak in full sentences" severe breathlessness
+warn | witness | My husband collapsed in the garden. | present "My husband collapsed in the garden" collapse
+warn | witness | She grabbed her chest and said it hurt. | present "She grabbed her chest" chest pain
+warn | witness | He won't wake up properly. | present "He won't wake up properly" unresponsive
+warn | witness | She has the worst headache she's ever had. | present "the worst headache she's ever had" severe headache
+warn | witness | His speech became slurred after dinner. | present "His speech became slurred after dinner" slurred speech
+warn | witness | My mother's lips look blue and she's gasping. | present "My mother's lips look blue" blue lips; present "she's gasping" gasping
+warn | witness | She is bleeding heavily from a cut on her arm. | present "She is bleeding heavily from a cut on her arm" heavy bleeding
+warn | witness | He took a whole bottle of pills an hour ago. | present "He took a whole bottle of pills an hour ago" overdose
+warn | witness | Her stools have been black and tarry since yesterday. | present "Her stools have been black and tarry" black stools
+warn | witness | He is very drowsy and I can't keep him awake. | present "He is very drowsy" drowsiness
+warn | witness | She had a fit and now she's very confused. | present "She had a fit" seizure
+warn | witness | He said his throat is closing. | present "his throat is closing" throat closing
+warn | witness | She hasn't been able to breathe properly for an hour. | present "She hasn't been able to breathe properly for an hour" breathing difficulty
+warn | witness | I think he is having a stroke; his face looks droopy. | present "his face looks droopy" facial droop; present "he is having a stroke" stroke concern
+warn | witness | She suddenly couldn't see out of her left eye. | present "She suddenly couldn't see out of her left eye" vision loss
+none | witness | She wasn't short of breath at all. | denied "She wasn't short of breath" breathlessness
+none | witness | He had a seizure years ago but none since. | present "He had a seizure years ago" seizure @ years ago
+none | witness | Her mother had a stroke. | present/family "Her mother had a stroke" stroke; !present "Her mother had a stroke" stroke
+none | witness | He didn't pass out. | denied "He didn't pass out" fainting
+none | witness | I had chest pain myself last year, but she seems fine. |
+none | witness | She doesn't have any chest pain. | denied "She doesn't have any chest pain" chest pain
+none | witness | His lips weren't blue. | denied "His lips weren't blue" blue lips
+none | witness | She never lost consciousness. | denied "She never lost consciousness" loss of consciousness
+none | witness | He isn't confused and knows where he is. | denied "He isn't confused" confusion
+none | witness | If she gets chest pain again, I'll call an ambulance. |
+none | witness | Her speech wasn't slurred. | denied "Her speech wasn't slurred" slurred speech
+none | witness | He used to faint as a teenager. | present "He used to faint as a teenager" fainting @ as a teenager
+none | witness | She's not bleeding anymore. | denied "She's not bleeding anymore" bleeding
+none | witness | His father died of a heart attack. | present/family "His father died of a heart attack" heart attack
+none | witness | I was so worried I couldn't breathe, but he was calm. |
+none | witness | She has no trouble breathing now. | denied "She has no trouble breathing now" breathing difficulty
+none | witness | He hasn't had any seizures since starting treatment. | denied "He hasn't had any seizures" seizures
+none | witness | She didn't hit her head and wasn't unconscious. | denied "wasn't unconscious" unconsciousness

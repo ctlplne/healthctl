@@ -1,0 +1,21 @@
+# Uncertain urgent reports. Uncertainty keeps the warning visible, and a present status needs certainty.
+warn | self | I might have chest pain, I'm not sure. | uncertain "I might have chest pain" chest pain; !present "I might have chest pain" chest pain
+warn | self | Maybe my face is drooping a little. | uncertain "Maybe my face is drooping a little" facial droop; !present "my face is drooping a little" facial droop
+warn | self | I'm not sure, but I think I passed out briefly. | uncertain "I think I passed out briefly" fainting
+warn | self | I don't know if I'm having a stroke. | uncertain "I'm having a stroke" possible stroke
+warn | self | Possibly coughing up a little blood. | uncertain "Possibly coughing up a little blood" coughing blood
+warn | self | I can't tell if my lips are turning blue. | uncertain "my lips are turning blue" blue lips
+warn | self | Perhaps I blacked out for a second. | uncertain "Perhaps I blacked out for a second" loss of consciousness
+warn | self | I'm unsure whether my speech is slurred. | uncertain "my speech is slurred" slurred speech
+warn | self | It might be chest pain or just a pulled muscle. | uncertain "It might be chest pain" chest pain
+warn | self | Maybe I'm having trouble breathing, it's hard to say. | uncertain "Maybe I'm having trouble breathing" breathing difficulty
+warn | self | I'm not certain, but my arm might be weaker suddenly. | uncertain "my arm might be weaker suddenly" sudden arm weakness
+warn | self | Possibly I fainted, I can't remember. | uncertain "Possibly I fainted" fainting
+warn | self | I think there may be blood in my vomit. | uncertain "there may be blood in my vomit" vomiting blood
+warn | self | My throat may be closing, I'm not sure. | uncertain "My throat may be closing" throat closing
+warn | self | I sort of want to die, maybe. | uncertain "I sort of want to die" suicidal thoughts
+warn | self | I'm not sure if this is the worst headache of my life. | uncertain "the worst headache of my life" severe headache
+warn | self | It's possible I had a small seizure this morning. | uncertain "I had a small seizure this morning" seizure
+warn | self | I may have taken too many pills. | uncertain "I may have taken too many pills" overdose
+warn | self | Maybe my stools are black, it's dark in here. | uncertain "Maybe my stools are black" black stools
+warn | self | I'm unsure, my chest kind of hurts. | uncertain "my chest kind of hurts" chest pain

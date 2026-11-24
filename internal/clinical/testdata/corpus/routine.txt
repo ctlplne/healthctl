@@ -1,0 +1,81 @@
+# Everyday symptoms with pertinent negatives. These test extraction, and only one row needs a warning.
+none | self | Sore throat for two days, no fever. | present "Sore throat for two days" sore throat; denied "no fever" fever; !present "fever" fever; !denied "Sore throat for two days" sore throat
+none | self | I've had a cough since Monday and I'm coughing up green phlegm. | present "I've had a cough since Monday" cough; present "coughing up green phlegm" green sputum
+none | self | My knee is swollen but it doesn't hurt much. | present "My knee is swollen" knee swelling; !present "it doesn't hurt much" knee pain
+none | self | The headache is worse in the morning and doesn't go away with paracetamol. | present "The headache is worse in the morning" headache
+none | self | I get dizzy when I stand up, never when lying down. | present "I get dizzy when I stand up" dizziness on standing; denied "never when lying down" dizziness when lying down
+none | self | Pain in my lower back, no numbness or weakness in my legs. | present "Pain in my lower back" lower back pain; denied "no numbness or weakness in my legs" leg numbness
+none | self | I have a rash on my arms that isn't itchy. | present "I have a rash on my arms" rash; denied "isn't itchy" itching
+none | self | Burning when I pee and I need to go more often. | present "Burning when I pee" painful urination; present "I need to go more often" urinary frequency
+none | self | My ankle is swollen after I twisted it yesterday. | present "My ankle is swollen" ankle swelling
+none | self | I've been feeling tired for weeks with no obvious reason. | present "I've been feeling tired for weeks" fatigue
+none | self | I have diarrhea, no blood in it. | present "I have diarrhea" diarrhea; denied "no blood in it" blood in stool
+none | self | Since the fall I can't move my wrist without pain. | present "I can't move my wrist without pain" wrist pain
+none | self | My heart races at night and I feel anxious. | present "My heart races at night" palpitations; present "I feel anxious" anxiety
+none | self | I've lost about 5 kg without trying. | present "I've lost about 5 kg without trying" unintentional weight loss
+none | self | I have a fever of 38.5 and chills. | present "I have a fever of 38.5" fever; present "chills" chills
+none | self | My periods are heavier than usual but not painful. | present "My periods are heavier than usual" heavy periods; denied "not painful" period pain
+none | self | I wake up at night needing to pee twice. | present "I wake up at night needing to pee twice" nocturia
+none | self | Swallowing hurts and I can't eat solid food. | present "Swallowing hurts" painful swallowing
+none | self | Numbness in two fingers, no weakness. | present "Numbness in two fingers" finger numbness; denied "no weakness" weakness
+none | self | I feel sick after eating, no vomiting. | present "I feel sick after eating" nausea after eating; denied "no vomiting" vomiting
+warn | self | My left calf is swollen and painful, no injury. | present "My left calf is swollen and painful" calf swelling and pain; denied "no injury" injury
+none | self | My nose is runny and I keep sneezing. | present "My nose is runny" runny nose; present "I keep sneezing" sneezing
+none | self | The cough is dry and worse at night. | present "The cough is dry" dry cough
+none | self | I have a mild headache behind my eyes. | present "a mild headache behind my eyes" mild headache
+none | self | My ear has been ringing since the concert. | present "My ear has been ringing" tinnitus
+none | self | It burns when I urinate. | present "It burns when I urinate" painful urination
+none | self | My lower back aches after work, not in the morning. | present "My lower back aches after work" back pain; denied "not in the morning" back pain in the morning
+none | self | I'm constipated and haven't gone in four days. | present "I'm constipated" constipation
+none | self | My eyes are itchy and watery, no discharge. | present "My eyes are itchy and watery" itchy eyes; denied "no discharge" eye discharge
+none | self | I've had heartburn after meals for a month. | present "I've had heartburn after meals for a month" heartburn
+none | self | There's a lump in my neck that doesn't hurt. | present "There's a lump in my neck" neck lump; denied "doesn't hurt" neck pain
+none | self | My hands are stiff in the mornings for about an hour. | present "My hands are stiff in the mornings" morning hand stiffness
+none | self | I keep waking up at 3am and can't get back to sleep. | present "I keep waking up at 3am" early waking
+none | self | My skin is dry and flaky on my elbows. | present "My skin is dry and flaky on my elbows" dry skin
+none | self | I feel bloated after dinner but no pain. | present "I feel bloated after dinner" bloating; denied "no pain" abdominal pain
+none | self | My toenail is thick and yellow. | present "My toenail is thick and yellow" thickened toenail
+none | self | I've had a blocked nose for a week without a fever. | present "I've had a blocked nose for a week" blocked nose; denied "without a fever" fever
+none | self | My shoulder clicks when I lift my arm, but there's no pain. | present "My shoulder clicks when I lift my arm" shoulder clicking; denied "there's no pain" shoulder pain
+none | self | I sometimes feel lightheaded when I skip breakfast. | present "I sometimes feel lightheaded when I skip breakfast" lightheadedness
+none | self | I have a cold sore on my lip. | present "a cold sore on my lip" cold sore
+none | self | My gums bleed when I brush my teeth. | present "My gums bleed when I brush my teeth" bleeding gums
+none | self | I've noticed more hair falling out lately. | present "more hair falling out" hair loss
+none | self | The rash is red and spreading slowly, not painful. | present "The rash is red and spreading slowly" spreading rash; denied "not painful" rash pain
+none | self | I get cramps in my legs at night. | present "I get cramps in my legs at night" night leg cramps
+none | self | No appetite since the flu. | present "No appetite since the flu" loss of appetite
+none | self | I have no energy and sleep all day. | present "I have no energy" low energy
+none | self | My urine is dark and I'm not drinking much. | present "My urine is dark" dark urine
+none | self | I've had a twitch in my left eyelid for days. | present "a twitch in my left eyelid" eyelid twitch
+none | self | I have a cough, but no shortness of breath. | present "I have a cough" cough; denied "no shortness of breath" breathlessness
+none | self | My feet feel numb after a long walk. | present "My feet feel numb after a long walk" foot numbness
+none | self | I have pain in my right ear and some muffled hearing. | present "pain in my right ear" ear pain; present "some muffled hearing" muffled hearing
+none | self | Sneezing a lot, nose blocked, no sore throat. | present "Sneezing a lot" sneezing; denied "no sore throat" sore throat
+none | self | I've had loose stools for three days without blood. | present "I've had loose stools for three days" loose stools; denied "without blood" blood in stool
+none | self | My hip hurts when I walk but not when I rest. | present "My hip hurts when I walk" hip pain; denied "not when I rest" hip pain at rest
+none | self | I'm itchy all over but there's no rash. | present "I'm itchy all over" itching; denied "there's no rash" rash
+none | self | There's ringing in both ears and no dizziness. | present "There's ringing in both ears" tinnitus; denied "no dizziness" dizziness
+none | self | I've had a runny nose for ten days. | present "I've had a runny nose for ten days" runny nose
+none | self | My stomach hurts a bit after spicy food. | present "My stomach hurts a bit after spicy food" mild stomach pain
+none | self | The pain in my wrist is not constant, it comes and goes. | present "it comes and goes" intermittent wrist pain
+none | self | I feel tired, but not short of breath. | present "I feel tired" fatigue; denied "not short of breath" breathlessness
+none | self | My nose bleeds sometimes, but it stops quickly. | present "My nose bleeds sometimes" nosebleeds
+none | self | I keep getting mouth ulcers. | present "I keep getting mouth ulcers" mouth ulcers
+none | self | My neck is stiff from sleeping badly, no fever. | present "My neck is stiff from sleeping badly" stiff neck; denied "no fever" fever
+none | self | I've noticed my ankles swell by evening. | present "my ankles swell by evening" ankle swelling
+none | self | I have an itchy scalp and some dandruff. | present "an itchy scalp" itchy scalp
+none | self | My back hurts, it doesn't spread anywhere. | present "My back hurts" back pain; denied "it doesn't spread anywhere" radiating pain
+none | self | I'm sleeping badly and waking up tired. | present "I'm sleeping badly" poor sleep
+none | self | My joints ache when it's cold, no swelling. | present "My joints ache when it's cold" joint pain; denied "no swelling" joint swelling
+none | self | I've had a sore throat and a hoarse voice since Friday. | present "a sore throat" sore throat; present "a hoarse voice" hoarse voice
+none | self | I feel a bit nauseous but haven't vomited. | present "I feel a bit nauseous" nausea; denied "haven't vomited" vomiting
+none | self | My knee gives way on stairs but doesn't swell. | present "My knee gives way on stairs" knee instability; denied "doesn't swell" knee swelling
+none | self | I've had a tension headache most afternoons this week. | present "a tension headache most afternoons this week" tension headache
+none | self | No fever, no cough, just a blocked nose. | present "just a blocked nose" blocked nose; denied "No fever" fever; denied "no cough" cough
+none | self | The itching is worse at night and there's no rash. | present "The itching is worse at night" itching; denied "there's no rash" rash
+none | self | I'm short of breath when I climb two flights of stairs. | present "I'm short of breath when I climb two flights of stairs" exertional breathlessness
+none | self | My left eye has been red and gritty since yesterday. | present "My left eye has been red and gritty" red eye
+none | self | I've had a cough for three weeks and I'm a smoker. | present "I've had a cough for three weeks" chronic cough
+none | self | I'm not sleeping well and I have no appetite. | present "I have no appetite" loss of appetite; present "I'm not sleeping well" poor sleep
+none | self | I don't feel like myself and I'm tired all the time. | present "I'm tired all the time" fatigue
+none | self | I can't sleep because of the itching. | present "I can't sleep" insomnia

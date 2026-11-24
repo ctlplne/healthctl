@@ -1,0 +1,71 @@
+# Urgent signs that the person clearly denies.
+none | self | No chest pain. | denied "No chest pain" chest pain; !present "chest pain" chest pain
+none | self | I don't have any chest pain. | denied "I don't have any chest pain" chest pain; !present "chest pain" chest pain
+none | self | I'm not short of breath. | denied "I'm not short of breath" breathlessness
+none | self | I have no trouble breathing. | denied "I have no trouble breathing" breathing difficulty; !present "trouble breathing" breathing difficulty
+none | self | Denies chest pain or shortness of breath. | denied "Denies chest pain or shortness of breath" chest pain
+none | self | I've never had a seizure. | denied "I've never had a seizure" seizure; !present "a seizure" seizure
+none | self | Chest pain? No. | denied "Chest pain? No" chest pain
+none | self | No fever, chills, or difficulty breathing. | denied "No fever, chills, or difficulty breathing" fever; !present "difficulty breathing" breathing difficulty
+none | self | I'm not suicidal. | denied "I'm not suicidal" suicidal thoughts
+none | self | I have no thoughts of hurting myself. | denied "I have no thoughts of hurting myself" self-harm thoughts
+none | self | No weakness, numbness, or trouble speaking. | denied "No weakness, numbness, or trouble speaking" weakness
+none | self | I haven't passed out at all. | denied "I haven't passed out at all" fainting
+none | self | There's no blood in my vomit. | denied "There's no blood in my vomit" vomiting blood; !present "blood in my vomit" vomiting blood
+none | self | I'm not coughing up any blood. | denied "I'm not coughing up any blood" coughing blood
+none | self | My stools are not black. | denied "My stools are not black" black stools
+none | self | My face isn't drooping. | denied "My face isn't drooping" facial droop
+none | self | My speech is fine and not slurred. | denied "not slurred" slurred speech
+none | self | I don't feel like hurting myself. | denied "I don't feel like hurting myself" self-harm thoughts
+none | self | No headache at all. | denied "No headache at all" headache
+none | self | I can breathe fine. |
+none | self | I'm not having a stroke, I just have a mild headache. | denied "I'm not having a stroke" stroke; present "I just have a mild headache" mild headache
+none | self | Nothing is swelling and I can swallow fine. |
+none | self | No vomiting or blood in my stool. | denied "No vomiting or blood in my stool" vomiting
+none | self | I have not fainted. | denied "I have not fainted" fainting
+none | self | Never had chest pain. | denied "Never had chest pain" chest pain
+none | self | I don't have chest pressure or tightness. | denied "I don't have chest pressure or tightness" chest pressure
+none | self | Not suicidal and no plans to hurt myself. | denied "Not suicidal" suicidal thoughts
+none | self | There was no loss of consciousness. | denied "There was no loss of consciousness" loss of consciousness
+none | self | My lips are not blue. | denied "My lips are not blue" blue lips
+none | self | No numbness in my face or arms. | denied "No numbness in my face or arms" numbness
+none | self | I'm not bleeding anymore. | denied "I'm not bleeding anymore" bleeding
+none | self | I don't want to die. | denied "I don't want to die" suicidal thoughts
+none | self | I'm not thinking about suicide. | denied "I'm not thinking about suicide" suicidal thoughts
+none | self | No seizures, no fainting, no confusion. | denied "No seizures" seizure; denied "no fainting" fainting; denied "no confusion" confusion
+none | self | I'm not choking. | denied "I'm not choking" choking
+none | self | The bleeding is not heavy. |
+none | self | Negative for chest pain and palpitations. | denied "Negative for chest pain and palpitations" chest pain
+none | self | Free of chest pain since the procedure. | denied "Free of chest pain" chest pain
+none | self | I didn't have any trouble breathing. | denied "I didn't have any trouble breathing" breathing difficulty
+none | self | No sudden weakness or trouble walking. | denied "No sudden weakness or trouble walking" weakness
+none | self | I haven't had any thoughts of suicide. | denied "I haven't had any thoughts of suicide" suicidal thoughts
+none | self | My throat isn't closing and my tongue isn't swollen. | denied "My throat isn't closing" throat closing
+none | self | No blood when I cough. | denied "No blood when I cough" coughing blood
+none | self | No chest pain with exercise. | denied "No chest pain with exercise" exertional chest pain
+none | self | I don't feel faint. | denied "I don't feel faint" faintness
+none | self | No shortness of breath at rest. | denied "No shortness of breath at rest" breathlessness at rest
+none | self | I'm not confused at all. | denied "I'm not confused at all" confusion
+none | self | I have no plan to overdose. | denied "I have no plan to overdose" overdose plan
+none | self | No pain spreading to my arm or jaw. | denied "No pain spreading to my arm or jaw" radiating pain
+none | self | No stiff neck and no rash. | denied "No stiff neck" stiff neck; denied "no rash" rash
+none | self | I haven't blacked out. | denied "I haven't blacked out" loss of consciousness
+none | self | My chest doesn't hurt. | denied "My chest doesn't hurt" chest pain
+none | self | There's no pressure in my chest. | denied "There's no pressure in my chest" chest pressure
+none | self | I'm not vomiting blood. | denied "I'm not vomiting blood" vomiting blood
+none | self | Not dizzy and not short of breath. | denied "Not dizzy" dizziness
+none | self | I do not have a severe headache. | denied "I do not have a severe headache" severe headache
+none | self | No difficulty swallowing. | denied "No difficulty swallowing" difficulty swallowing
+none | self | No yellowing of my eyes. | denied "No yellowing of my eyes" yellow eyes
+none | self | My eyes aren't yellow. | denied "My eyes aren't yellow" yellow eyes
+none | self | I'm not having a heart attack, it's just heartburn. | denied "I'm not having a heart attack" heart attack; present "it's just heartburn" heartburn
+none | self | No seizures since I started the medicine. | denied "No seizures" seizure
+none | self | I never wanted to hurt myself. | denied "I never wanted to hurt myself" self-harm thoughts
+none | self | Without any chest pain or breathlessness. | denied "Without any chest pain or breathlessness" chest pain
+none | self | No coughing up blood and no black stools. | denied "No coughing up blood" coughing blood; denied "no black stools" black stools
+none | self | I don't have trouble speaking. | denied "I don't have trouble speaking" speech difficulty
+none | self | No sudden vision loss. | denied "No sudden vision loss" vision loss
+none | self | I'm not passing any blood. | denied "I'm not passing any blood" rectal bleeding
+none | self | My heart isn't racing and I don't feel faint. | denied "My heart isn't racing" racing heart; denied "I don't feel faint" faintness
+none | self | Absolutely no chest pain today. | denied "Absolutely no chest pain today" chest pain
+none | self | Not choking, not wheezing. | denied "Not choking" choking; denied "not wheezing" wheezing

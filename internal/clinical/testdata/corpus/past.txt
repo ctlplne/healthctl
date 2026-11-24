@@ -1,0 +1,57 @@
+# Past events. Remote history raises no warning. A recent event raises a "check this" warning, and a past problem that is back now raises a warning.
+none | self | I had chest pain years ago. | present "I had chest pain years ago" chest pain @ years ago; !present "I had chest pain years ago" chest pain
+none | self | I used to have seizures as a child. | present "I used to have seizures as a child" seizures @ as a child
+none | self | Last year I passed out once at a concert. | present "I passed out once at a concert" fainting @ last year
+none | self | I had a stroke in 2019. | present "I had a stroke in 2019" stroke @ 2019
+none | self | I was suicidal in my twenties but I'm doing well now. | present "I was suicidal in my twenties" suicidal thoughts @ in my twenties
+none | self | Years ago I coughed up blood when I had pneumonia. | present "I coughed up blood when I had pneumonia" coughing blood @ years ago
+none | self | As a teenager I fainted a few times. | present "I fainted a few times" fainting @ as a teenager
+none | self | I used to get chest pains when I was anxious. | present "I used to get chest pains when I was anxious" chest pain @ used to
+none | self | My chest pain went away last month. | present "My chest pain went away last month" chest pain @ last month
+none | self | In the past I had trouble breathing with pneumonia. | present "I had trouble breathing with pneumonia" breathing difficulty @ in the past
+none | self | I had a seizure back in 2015. | present "I had a seizure back in 2015" seizure @ 2015
+none | self | I no longer have chest pain. | denied "I no longer have chest pain" chest pain
+none | self | The bleeding stopped two years ago. | present "The bleeding stopped two years ago" bleeding @ two years ago
+none | self | I had a heart attack ten years ago. | present "I had a heart attack ten years ago" heart attack @ ten years ago
+none | self | I tried to kill myself when I was nineteen. | present "I tried to kill myself when I was nineteen" suicide attempt @ when I was nineteen
+none | self | Previously I've had panic attacks with chest tightness. | present "I've had panic attacks with chest tightness" panic attacks @ previously
+none | self | When I was a child I had asthma attacks and couldn't breathe. | present "I had asthma attacks" asthma attacks @ when I was a child
+none | self | I had severe abdominal pain last year from my gallbladder. | present "I had severe abdominal pain last year" severe abdominal pain @ last year
+none | self | My chest pain resolved after surgery. | present "My chest pain resolved after surgery" chest pain @ after surgery
+none | self | I don't get chest pain anymore. | denied "I don't get chest pain anymore" chest pain
+none | self | I used to have suicidal thoughts. | present "I used to have suicidal thoughts" suicidal thoughts @ used to
+none | self | Back in 2020 I vomited blood from an ulcer. | present "I vomited blood from an ulcer" vomiting blood @ 2020
+none | self | I passed out once as a kid. | present "I passed out once as a kid" fainting @ as a kid
+none | self | Long ago I had a mini stroke. | present "I had a mini stroke" mini stroke @ long ago
+none | self | Years ago my face drooped for a few hours. | present "my face drooped for a few hours" facial droop @ years ago
+none | self | I've had seizures in the past but none for ten years. | present "I've had seizures in the past" seizures @ in the past
+none | self | My breathing problems went away years ago. | present "My breathing problems went away years ago" breathing problems @ years ago
+none | self | In my teens I self-harmed. | present "I self-harmed" self-harm @ in my teens
+none | self | As a baby I had a seizure with a fever. | present "I had a seizure with a fever" febrile seizure @ as a baby
+none | self | I had chest pain a long time ago, nothing since. | present "I had chest pain a long time ago" chest pain @ a long time ago
+none | self | When I was pregnant I fainted twice. | present "I fainted twice" fainting @ when I was pregnant
+none | self | I coughed up blood once in 2018. | present "I coughed up blood once in 2018" coughing blood @ 2018
+none | self | My last asthma attack was years ago. | present "My last asthma attack was years ago" asthma attack @ years ago
+none | self | I was in the ER for chest pain in 2021. | present "I was in the ER for chest pain in 2021" chest pain @ 2021
+none | self | I had trouble speaking after my accident in 2017. | present "I had trouble speaking after my accident in 2017" speech difficulty @ 2017
+none | self | My black stools stopped years ago. | present "My black stools stopped years ago" black stools @ years ago
+none | self | I've not had a seizure since childhood. | denied "I've not had a seizure since childhood" seizure
+none | self | Previously diagnosed with asthma, now well controlled. | present "Previously diagnosed with asthma" asthma @ previously
+none | self | I had a blood clot in my leg years ago. | present "I had a blood clot in my leg years ago" blood clot @ years ago
+none | self | In childhood I had a severe allergic reaction to peanuts. | present "I had a severe allergic reaction to peanuts" severe allergic reaction @ in childhood
+warn | self | I had chest pain years ago and now it's back. | present "I had chest pain years ago" chest pain @ years ago
+warn | self | I used to get seizures and I just had one again. | present "I just had one again" seizure
+warn | self | My chest pain went away last year, but it came back tonight. | present "it came back tonight" chest pain
+warn | self | I haven't fainted since I was a kid, but I fainted this morning. | present "I fainted this morning" fainting
+warn | self | I had a stroke in 2019 and today my face is drooping again. | present "today my face is drooping again" facial droop; present "I had a stroke in 2019" stroke @ 2019
+warn | self | Years ago I was suicidal, and the thoughts are back now. | present "the thoughts are back now" suicidal thoughts
+warn | self | I used to cough up blood and it's started again. | present "it's started again" coughing blood
+warn | self | The chest pain stopped last week but returned an hour ago. | present "returned an hour ago" chest pain
+warn | self | I had asthma as a kid and I'm wheezing and can't breathe now. | present "can't breathe now" breathing difficulty
+warn | self | I passed out years ago and again just now. | present "again just now" fainting
+warn | self | My old chest pain is still there today. | present "My old chest pain is still there today" chest pain
+warn | self | I fainted last week and nearly fainted again today. | present "nearly fainted again today" near fainting
+warn | self | I passed out at home last week. | present "I passed out at home last week" fainting @ last week
+warn | self | A few days ago I coughed up some blood. | present "I coughed up some blood" coughing blood @ a few days ago
+warn | self | I had crushing chest pain three days ago. | present "I had crushing chest pain three days ago" chest pain @ three days ago
+warn | self | Two weeks ago my speech was slurred for an hour. | present "my speech was slurred for an hour" slurred speech @ two weeks ago

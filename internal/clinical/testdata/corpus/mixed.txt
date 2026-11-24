@@ -1,0 +1,61 @@
+# Current urgent reports with an unrelated negation, person or past event nearby.
+warn | self | I have chest pain and no fever. | present "chest pain" chest pain; denied "no fever" fever; !present "fever" fever
+warn | self | My chest pain isn't going away. | present "My chest pain" chest pain
+warn | self | Crushing chest pressure, never had this before. | present "Crushing chest pressure" chest pressure
+warn | self | Severe chest pain without sweating. | present "Severe chest pain" chest pain; denied "without sweating" sweating
+warn | self | I can't breathe, no fever. | present "I can't breathe" breathing difficulty; denied "no fever" fever
+warn | self | No fever, but I have chest pain since this morning. | present "I have chest pain since this morning" chest pain; denied "No fever" fever
+warn | self | My chest pain started after my husband left for work. | present "My chest pain" chest pain
+warn | self | I've never had chest pain like this before. | present "chest pain like this" chest pain
+warn | self | No cough, just chest pain and sweating. | present "chest pain and sweating" chest pain; denied "No cough" cough
+warn | self | I don't have a fever but I can't breathe. | present "I can't breathe" breathing difficulty; denied "I don't have a fever" fever
+warn | self | Not a smoker, and I'm coughing up blood. | present "I'm coughing up blood" coughing blood
+warn | self | The pain in my chest is not getting better. | present "The pain in my chest" chest pain
+warn | self | My mother had heart problems, and now I have chest pain. | present "now I have chest pain" chest pain; present/family "My mother had heart problems" heart problems
+warn | self | I had asthma as a child, but now I'm struggling to breathe. | present "now I'm struggling to breathe" breathing difficulty; present "I had asthma as a child" asthma @ as a child
+warn | self | Chest pain again tonight, and nothing helps. | present "Chest pain again tonight" chest pain
+warn | self | There's no reason for it, but my face is drooping. | present "my face is drooping" facial droop
+warn | self | My left arm went numb suddenly and it isn't coming back. | present "My left arm went numb suddenly" sudden arm numbness
+warn | self | I'm not usually anxious, but I want to kill myself. | present "I want to kill myself" suicidal thoughts
+warn | self | I wasn't drinking, and I suddenly can't speak properly. | present "I suddenly can't speak properly" speech difficulty
+warn | self | Nothing like this has happened before; I'm vomiting blood. | present "I'm vomiting blood" vomiting blood
+warn | self | No injury, but my vision went black in my left eye. | present "my vision went black in my left eye" vision loss
+warn | self | My chest pain hasn't stopped for an hour. | present "My chest pain" chest pain
+warn | self | It's not indigestion, I have crushing chest pain. | present "I have crushing chest pain" chest pain; !present "indigestion" indigestion
+warn | self | My dad had a stroke at my age and my face feels droopy now. | present "my face feels droopy now" facial droop; present/family "My dad had a stroke" stroke
+warn | self | I can't breathe and nobody is home. | present "I can't breathe" breathing difficulty
+warn | self | I've stopped my inhaler and now I can't catch my breath. | present "now I can't catch my breath" breathlessness
+warn | self | There's no blood, but I passed out twice today. | present "I passed out twice today" fainting; denied "There's no blood" bleeding
+warn | self | I don't know why, but I feel like ending my life. | present "I feel like ending my life" suicidal thoughts
+warn | self | No allergies that I know of, but my throat is closing up. | present "my throat is closing up" throat closing
+warn | self | Never smoked, never drank, and now I'm coughing up blood. | present "now I'm coughing up blood" coughing blood
+warn | self | The doctor said it wasn't my heart, but the chest pain is back. | present "the chest pain is back" chest pain
+warn | self | I'm not dizzy, I just can't breathe. | present "I just can't breathe" breathing difficulty; denied "I'm not dizzy" dizziness
+warn | self | Without warning, my speech became slurred. | present "my speech became slurred" slurred speech
+warn | self | No one knows I'm here and I took an overdose. | present "I took an overdose" overdose
+warn | self | My chest pain is not like my usual heartburn. | present "My chest pain" chest pain
+warn | self | I can't remember ever feeling this bad; my chest is tight. | present "my chest is tight" chest tightness
+warn | self | It doesn't matter what I do, the bleeding won't stop. | present "the bleeding won't stop" uncontrolled bleeding
+warn | self | I'm vomiting blood and I don't have any stomach pain. | present "I'm vomiting blood" vomiting blood; denied "I don't have any stomach pain" stomach pain
+warn | self | My husband isn't home and I can't breathe. | present "I can't breathe" breathing difficulty
+warn | self | I'm not sure what's happening but I can't move my right arm. | present "I can't move my right arm" right arm weakness
+warn | self | No history of heart trouble, yet I have chest pressure right now. | present "I have chest pressure right now" chest pressure
+warn | self | It's not a migraine, it's the worst headache of my life. | present "the worst headache of my life" severe headache
+warn | self | My friend said it's nothing, but I have chest pain. | present "I have chest pain" chest pain
+warn | self | I've had no sleep and I just had a seizure. | present "I just had a seizure" seizure
+warn | self | My chest pain isn't sharp, it's crushing. | present "My chest pain" chest pain
+warn | self | I'm fine otherwise, except my lips are turning blue. | present "my lips are turning blue" blue lips
+warn | self | No warning signs at all, then I suddenly lost vision in one eye. | present "I suddenly lost vision in one eye" sudden vision loss
+warn | self | I can't breathe even though I don't have asthma. | present "I can't breathe" breathing difficulty; denied "I don't have asthma" asthma
+warn | self | My heart isn't racing, but my chest hurts badly. | present "my chest hurts badly" chest pain; denied "My heart isn't racing" racing heart
+warn | self | No fever, no cough, only chest pain. | present "only chest pain" chest pain; denied "No fever" fever; denied "no cough" cough
+warn | self | The pills aren't working and I want to die. | present "I want to die" suicidal thoughts
+warn | self | It isn't the first time, but I'm coughing up blood again. | present "I'm coughing up blood again" coughing blood
+warn | self | I can't stop shaking and my chest hurts. | present "my chest hurts" chest pain
+warn | self | No pain anywhere, but half my face is numb. | present "half my face is numb" facial numbness
+warn | self | I didn't fall or hit my head, but I just blacked out. | present "I just blacked out" loss of consciousness
+warn | self | I don't drink alcohol and my stools are black. | present "my stools are black" black stools
+warn | self | My blood pressure pills haven't helped and I lost the vision in one eye. | present "I lost the vision in one eye" vision loss
+warn | self | Nobody believes me, but I have chest pain every few minutes. | present "I have chest pain every few minutes" chest pain
+warn | self | I haven't eaten today and I fainted at the bus stop. | present "I fainted at the bus stop" fainting
+warn | self | My doctor isn't answering and my tongue is swelling. | present "my tongue is swelling" tongue swelling

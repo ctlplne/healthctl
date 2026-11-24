@@ -1,0 +1,42 @@
+# Questions, plans and worries about something that hasn't happened, and real symptoms described as a condition.
+none | self | What if I get chest pain again? | !present "chest pain" chest pain
+none | self | If I have trouble breathing, should I go in? | !present "trouble breathing" breathing difficulty
+none | self | My doctor told me to call if I get chest pain. | !present "chest pain" chest pain
+none | self | For example, sudden weakness would worry me. | !present "sudden weakness" sudden weakness
+none | self | I'm worried about having a stroke someday. | !present "having a stroke" stroke
+none | self | What are the signs of a heart attack? | !present "a heart attack" heart attack
+none | self | How would I know if I was coughing up blood? | !present "coughing up blood" coughing blood
+none | self | In case my lips turn blue, what should I do? | !present "my lips turn blue" blue lips
+none | self | If the bleeding won't stop, I'll go to the ER. | !present "the bleeding won't stop" uncontrolled bleeding
+none | self | I'm scared of passing out while driving. | !present "passing out while driving" fainting
+none | self | Should I worry if I ever feel suicidal? | !present "feel suicidal" suicidal thoughts
+none | self | They warned me to watch for slurred speech. | !present "slurred speech" slurred speech
+none | self | I want to know the warning signs of a stroke. | !present "a stroke" stroke
+none | self | If I feel faint, I sit down. | !present "feel faint" faintness
+none | self | Hypothetically, could chest pain be from stress? | !present "chest pain" chest pain
+none | self | I'd go to the hospital if I couldn't breathe. | !present "couldn't breathe" breathing difficulty
+none | self | My plan says to call 911 if I have a seizure. | !present "a seizure" seizure
+none | self | I'm afraid I might get a blood clot on the flight. | !present "a blood clot" blood clot
+none | self | If my face starts drooping I'll call for help. | !present "my face starts drooping" facial droop
+none | self | What should I do if someone is choking? |
+none | self | I read that vomiting blood can be serious. | !present "vomiting blood" vomiting blood
+none | self | Could a seizure happen if I miss my medicine? | !present "a seizure" seizure
+none | self | I'm anxious that I'll have another heart attack. | !present "another heart attack" heart attack
+none | self | Signs of a stroke include facial droop and slurred speech. | !present "facial droop" facial droop
+none | self | If you can't breathe, you should call an ambulance, right? |
+none | self | In the event of a seizure, my wife has my rescue medicine. | !present "a seizure" seizure
+none | self | I don't know what I'd do if I passed out at work. | !present "I passed out at work" fainting
+none | self | I'm worried my headache could turn into a stroke. | present "my headache" headache; !present "a stroke" stroke
+none | self | My neurologist said to go to the ER if I lose my vision. | !present "I lose my vision" vision loss
+none | self | Watch out for coughing up blood, the nurse said. | !present "coughing up blood" coughing blood
+none | self | I'm afraid of having a seizure in public. | !present "having a seizure in public" seizure
+none | self | If I ever want to hurt myself, I'll call my therapist. | !present "want to hurt myself" self-harm thoughts
+none | self | Just in case, what does a stroke look like? |
+none | self | If anyone in my family has a stroke, I'm at higher risk. |
+warn | self | Is crushing chest pain a sign of a heart attack? |
+warn | self | Unless my chest pain gets worse, I'll wait for my appointment. | present "my chest pain" chest pain
+warn | self | If I lie down I can't breathe. | present "I can't breathe" breathing difficulty
+warn | self | If I walk fast I get chest pain. | present "I get chest pain" exertional chest pain
+warn | self | Whenever I climb stairs, my chest feels tight. | present "my chest feels tight" exertional chest tightness
+warn | self | When I stand up I pass out. | present "I pass out" fainting on standing
+warn | self | Every time I lie flat I can't breathe. | present "I can't breathe" breathing difficulty when lying flat

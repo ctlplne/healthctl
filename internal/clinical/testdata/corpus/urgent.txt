@@ -1,0 +1,106 @@
+# Current, first-person urgent reports.
+warn | self | I have crushing chest pain right now. | present "crushing chest pain" chest pain; !denied "crushing chest pain" chest pain
+warn | self | I have chest pain. | present "chest pain" chest pain; !uncertain "chest pain" chest pain
+warn | self | There's a heavy pressure in my chest that started an hour ago. | present "a heavy pressure in my chest" chest pressure
+warn | self | My chest hurts and the pain is spreading to my left arm. | present "My chest hurts" chest pain; present "the pain is spreading to my left arm" pain spreading to left arm
+warn | self | I've had pain in my chest for the last twenty minutes. | present "pain in my chest" chest pain
+warn | self | My chest feels tight and I'm sweating a lot. | present "My chest feels tight" chest tightness; present "I'm sweating a lot" sweating
+warn | self | Sharp chest pain every time I breathe in. | present "Sharp chest pain every time I breathe in" pleuritic chest pain
+warn | self | I think I'm having a heart attack. | present "I think I'm having a heart attack" concern about heart attack
+warn | self | The chest pain is going into my jaw. | present "The chest pain is going into my jaw" chest pain spreading to jaw
+warn | self | Chest pressure woke me up tonight. | present "Chest pressure woke me up tonight" chest pressure
+warn | self | It feels like an elephant is sitting on my chest. | present "It feels like an elephant is sitting on my chest" chest pressure
+warn | self | Squeezing pain in the middle of my chest since this morning. | present "Squeezing pain in the middle of my chest" chest pain
+warn | self | I can't breathe. | present "I can't breathe" breathing difficulty
+warn | self | I cannot breathe properly and it's getting worse. | present "I cannot breathe properly" breathing difficulty
+warn | self | I'm struggling to breathe. | present "I'm struggling to breathe" breathing difficulty
+warn | self | It's really hard to breathe right now. | present "It's really hard to breathe right now" breathing difficulty
+warn | self | I'm having trouble breathing. | present "I'm having trouble breathing" breathing difficulty; !denied "I'm having trouble breathing" breathing difficulty
+warn | self | I have difficulty breathing even when I'm sitting still. | present "difficulty breathing even when I'm sitting still" breathlessness at rest
+warn | self | I can't catch my breath. | present "I can't catch my breath" breathlessness
+warn | self | I'm gasping for air. | present "I'm gasping for air" breathing difficulty
+warn | self | My lips are turning blue. | present "My lips are turning blue" blue lips
+warn | self | I'm so short of breath I can't finish a sentence. | present "I'm so short of breath I can't finish a sentence" severe breathlessness
+warn | self | I get short of breath just sitting here. | present "I get short of breath just sitting here" breathlessness at rest
+warn | self | I'm choking and can't get air in. | present "I'm choking" choking
+warn | self | I'm wheezing and can barely breathe. | present "I'm wheezing" wheezing; present "can barely breathe" breathing difficulty
+warn | self | One side of my face is drooping. | present "One side of my face is drooping" facial droop
+warn | self | My face is drooping and my speech is slurred. | present "My face is drooping" facial droop; present "my speech is slurred" slurred speech
+warn | self | My speech suddenly became slurred. | present "My speech suddenly became slurred" slurred speech
+warn | self | I suddenly can't lift my right arm. | present "I suddenly can't lift my right arm" right arm weakness
+warn | self | My left arm and leg went weak all of a sudden. | present "My left arm and leg went weak all of a sudden" left-sided weakness
+warn | self | I have sudden weakness on one side of my body. | present "sudden weakness on one side of my body" one-sided weakness
+warn | self | I'm numb down the whole left side. | present "I'm numb down the whole left side" left-sided numbness
+warn | self | I suddenly can't find my words. | present "I suddenly can't find my words" word-finding difficulty
+warn | self | I suddenly lost the vision in my right eye. | present "I suddenly lost the vision in my right eye" sudden vision loss
+warn | self | Everything went double and I can't walk straight. | present "Everything went double" double vision; present "I can't walk straight" trouble walking
+warn | self | I'm suddenly confused and can't think straight. | present "I'm suddenly confused" sudden confusion
+warn | self | I suddenly have trouble walking. | present "I suddenly have trouble walking" trouble walking
+warn | self | This is the worst headache of my life. | present "the worst headache of my life" severe headache
+warn | self | I have a sudden severe headache. | present "a sudden severe headache" sudden severe headache
+warn | self | A thunderclap headache hit me out of nowhere. | present "A thunderclap headache" thunderclap headache
+warn | self | My head is pounding and my neck is stiff with a fever. | present "my neck is stiff" stiff neck; present "a fever" fever
+warn | self | I have a fever and a stiff neck. | present "a fever" fever; present "a stiff neck" stiff neck
+warn | self | I just had a seizure. | present "I just had a seizure" seizure
+warn | self | I passed out at work this morning. | present "I passed out at work this morning" fainting
+warn | self | I fainted in the shower an hour ago. | present "I fainted in the shower" fainting
+warn | self | I blacked out while driving today. | present "I blacked out while driving today" loss of consciousness
+warn | self | I keep passing out. | present "I keep passing out" recurrent fainting
+warn | self | I lost consciousness for a few seconds. | present "I lost consciousness for a few seconds" loss of consciousness
+warn | self | I want to kill myself. | present "I want to kill myself" suicidal thoughts; !denied "I want to kill myself" suicidal thoughts
+warn | self | I want to die. | present "I want to die" suicidal thoughts
+warn | self | I'm going to end my life. | present "I'm going to end my life" suicidal intent
+warn | self | I've been thinking about suicide. | present "I've been thinking about suicide" suicidal thoughts
+warn | self | I feel suicidal. | present "I feel suicidal" suicidal thoughts
+warn | self | I'm thinking about taking my own life. | present "I'm thinking about taking my own life" suicidal thoughts
+warn | self | I have a plan to overdose tonight. | present "I have a plan to overdose tonight" overdose plan
+warn | self | I took an overdose of my pills. | present "I took an overdose of my pills" overdose
+warn | self | I've been hurting myself again. | present "I've been hurting myself again" self-harm
+warn | self | I don't want to be alive anymore. | present "I don't want to be alive anymore" suicidal thoughts
+warn | self | I wish I could go to sleep and never wake up. | present "I wish I could go to sleep and never wake up" passive suicidal thoughts
+warn | self | I cut myself on purpose last night. | present "I cut myself on purpose last night" self-harm
+warn | self | I'm vomiting blood. | present "I'm vomiting blood" vomiting blood
+warn | self | I threw up blood twice today. | present "I threw up blood twice today" vomiting blood
+warn | self | I'm coughing up blood. | present "I'm coughing up blood" coughing blood
+warn | self | My stools are black and tarry. | present "My stools are black and tarry" black stools
+warn | self | I'm passing a lot of blood from my bottom. | present "I'm passing a lot of blood from my bottom" rectal bleeding
+warn | self | The cut won't stop bleeding. | present "The cut won't stop bleeding" uncontrolled bleeding
+warn | self | I can't stop the bleeding from my nose. | present "I can't stop the bleeding from my nose" uncontrolled nosebleed
+warn | self | I'm bleeding heavily and feel dizzy. | present "I'm bleeding heavily" heavy bleeding; present "feel dizzy" dizziness
+warn | self | My throat feels like it's closing up. | present "My throat feels like it's closing up" throat closing
+warn | self | My tongue is swelling after I ate peanuts. | present "My tongue is swelling" tongue swelling
+warn | self | My lips and face are swelling and I'm itchy all over. | present "My lips and face are swelling" facial swelling; present "I'm itchy all over" itching
+warn | self | I can't swallow and my throat is tight after a bee sting. | present "I can't swallow" difficulty swallowing; present "my throat is tight" throat tightness
+warn | self | I'm having a severe allergic reaction. | present "I'm having a severe allergic reaction" severe allergic reaction
+warn | self | I have severe abdominal pain. | present "severe abdominal pain" severe abdominal pain
+warn | self | My stomach pain is severe and I can't stand up straight. | present "My stomach pain is severe" severe abdominal pain
+warn | self | Severe belly pain and my belly is hard to the touch. | present "Severe belly pain" severe abdominal pain
+warn | self | The whites of my eyes look yellow. | present "The whites of my eyes look yellow" yellow eyes
+warn | self | My skin has turned yellow this week. | present "My skin has turned yellow this week" yellow skin
+warn | self | I swallowed bleach by accident. | present "I swallowed bleach by accident" poisoning
+warn | self | I'm having a really bad asthma attack and my inhaler isn't helping. | present "I'm having a really bad asthma attack" severe asthma attack
+warn | self | I feel like I'm going to pass out right now. | present "I feel like I'm going to pass out right now" near fainting
+warn | self | I'm about to faint. | present "I'm about to faint" near fainting
+warn | self | My heart is racing and I feel like I'm going to collapse. | present "My heart is racing" racing heart; present "I feel like I'm going to collapse" near collapse
+warn | self | I have a high fever and a rash that doesn't fade when I press a glass on it. | present "a high fever" high fever; present "a rash that doesn't fade" non-blanching rash
+warn | self | I'm suddenly very confused and drowsy. | present "I'm suddenly very confused and drowsy" sudden confusion
+warn | self | I can't stay awake and I feel very confused. | present "I can't stay awake" drowsiness
+warn | self | I have chest pain and my heart is beating really fast. | present "chest pain" chest pain; present "my heart is beating really fast" fast heartbeat
+warn | self | My heart is pounding and I feel faint. | present "I feel faint" faintness
+warn | self | Sudden pain in my testicle that started an hour ago. | present "Sudden pain in my testicle" sudden testicular pain
+warn | self | I've got severe pain in my eye and my vision is blurry. | present "severe pain in my eye" severe eye pain
+warn | self | I can't move my legs. | present "I can't move my legs" leg weakness
+warn | self | I can't feel my legs. | present "I can't feel my legs" leg numbness
+warn | self | I'm bleeding a lot after giving birth. | present "I'm bleeding a lot after giving birth" heavy bleeding after birth
+warn | self | My chest pain is back and worse than before. | present "My chest pain is back" chest pain
+warn | self | I have stabbing chest pain when I cough. | present "stabbing chest pain when I cough" chest pain
+warn | self | Something is wrong, I have chest pain and feel dizzy. | present "I have chest pain" chest pain; present "feel dizzy" dizziness
+warn | self | I'm having a panic attack and can't breathe. | present "can't breathe" breathing difficulty
+warn | self | The room is spinning and I can't speak properly. | present "I can't speak properly" speech difficulty
+warn | self | I've been throwing up blood since last night. | present "I've been throwing up blood since last night" vomiting blood
+warn | self | Help, I think I'm having a stroke. | present "I think I'm having a stroke" concern about stroke
+warn | self | My vision went black in one eye for a few minutes. | present "My vision went black in one eye for a few minutes" transient vision loss
+warn | self | I'm having a seizure right now and my friend is typing this. | present "I'm having a seizure right now" seizure
+warn | self | My chest is killing me. | present "My chest is killing me" chest pain
+warn | self | There is blood in my vomit. | present "There is blood in my vomit" vomiting blood
+warn | self | I have pain in my chest and arm. | present "pain in my chest and arm" chest and arm pain

@@ -18,7 +18,7 @@ Status: `[x]` done with proof · `[ ]` open · `[h]` handoff, prepared with next
 
 ## P0: safety and correctness
 
-- [ ] **E1** Labeled corpus of 500+ sentences (urgent, negated, past, third-party, witness, hypothetical, routine) with correct and must-reject extractions; baseline recorded below. Files: `internal/clinical/testdata/corpus.json`, `internal/clinical/corpus_test.go`. Proof: `go test -run TestCorpus -v ./internal/clinical`.
+- [x] **E1** Labeled corpus of 500+ sentences (urgent, negated, past, third-party, witness, hypothetical, routine) with correct and must-reject extractions; baseline recorded below. Files: `internal/clinical/testdata/corpus.json`, `internal/clinical/corpus_test.go`. Proof: `go test -run TestCorpus -v ./internal/clinical`.
 - [ ] **S3** One shared context engine: scoped negation, experiencer by source, past, hypothetical, uncertainty. Used by the safety screen, the validator and contradiction checks. Files: `internal/clinical/context.go`, `safety.go`, `model.go`, `encounter.go`. Proof: `TestContext*`, corpus.
 - [ ] **S2** Experiencer by source type: he/she/they in a witness account mean the user. Files: `context.go`, `safety.go`. Proof: `TestWitnessThirdPersonWarns`, corpus witness rows.
 - [ ] **S1** Every input goes through the same screen: answers, corrections, diary saves, witness accounts, visual notes, report passages, dictation drafts, return-visit notes, outcomes. Files: `internal/clinical/*`, `internal/server/diary.go`, `internal/server/voice.go`. Proof: `TestEveryInputPathScreens`, `TestDiarySaveScreensPostgres`.
@@ -115,7 +115,17 @@ Next steps for each handoff item are filled in as the work that prepares it land
 
 ## Corpus baseline
 
-Recorded before any rule changed. Filled in by E1.
+Recorded on 2026-11-24 against commit `e6ec2dd` (before any rule changed), with `CORPUS_REPORT_ONLY=1 CORPUS_DETAILS=1 go test -run TestCorpus -v ./internal/clinical`.
+
+| Metric | Baseline | Target |
+|---|---|---|
+| Rows | 552 (256 warn, 296 none) | 500+ |
+| Urgent sentences missed | 205 of 256 (80%) | 0 |
+| False alarms | 14 of 296 (4.7%) | reported |
+| Correct extractions rejected | 129 of 595 (21.7%) | at most 5% |
+| Must-reject extractions accepted | 36 of 53 | 0 |
+
+Missed urgent rows by file: urgent 87, mixed 41, witness 30, uncertain 18, past 12, reply 8, third_party 4, hypothetical 4, routine 1. False alarms: past 5, hypothetical 4, negated 3, witness 2. Correct extractions rejected: routine 35, negated 28, witness 27, mixed 24, reply 8, third_party 4, past 2, urgent 1. The top rejection reasons were "Negative findings require explicit, unambiguous user evidence" (56), "Affirmative finding is unsupported by this answer" (45) and "Confirm who experienced the reported finding" (28). Must-reject extractions accepted: hypothetical 30, uncertain 2, urgent 1, routine 1, past 1, mixed 1.
 
 ## Label changes
 

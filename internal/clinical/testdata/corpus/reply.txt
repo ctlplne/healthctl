@@ -1,0 +1,26 @@
+# Answers to a question. A plain yes to a question about an urgent sign counts as reporting it.
+none | reply: Do you have any chest pain? | No. | denied "No." chest pain; !present "No." chest pain
+none | reply: Have you had any trouble breathing? | Not at all. | denied "Not at all." breathing difficulty
+warn | reply: How is your breathing? | I can't breathe when I lie down. | present "I can't breathe when I lie down" breathlessness when lying down
+warn | reply: When did the pain start? | An hour ago, and it's crushing chest pain. | present "it's crushing chest pain" chest pain
+none | reply: Any vomiting? | None. | denied "None." vomiting
+none | reply: Have you fainted? | No, never. | denied "No, never." fainting
+warn | reply: Have you fainted? | Yes, twice this morning. | present "Yes, twice this morning" fainting
+none | reply: Do you have any weakness in your face or arms? | No, none at all. | denied "No, none at all." facial weakness
+warn | reply: Do you have any weakness in your face or arms? | Yes, my left arm. | present "Yes, my left arm" left arm weakness
+none | reply: Are you having thoughts of harming yourself? | No. | denied "No." self-harm thoughts
+warn | reply: Are you having thoughts of harming yourself? | Yes, sometimes. | present "Yes, sometimes" self-harm thoughts
+none | reply: Any blood when you cough? | No blood. | denied "No blood." coughing blood
+warn | reply: Any blood when you cough? | Yes, a little. | present "Yes, a little" coughing blood
+none | reply: Is the pain spreading anywhere? | No, it stays in one spot. | denied "No, it stays in one spot" radiating pain
+none | reply: Is the pain spreading anywhere? | Yes, into my jaw and left arm. | present "into my jaw and left arm" pain spreading to jaw and arm
+none | reply: Have you had a seizure before? | Once, years ago. | present "Once, years ago" seizure @ years ago
+warn | reply: Do you feel like you might pass out? | Yes, right now. | present "Yes, right now" near fainting
+none | reply: Are your lips or fingers turning blue? | No. | denied "No." blue lips
+warn | reply: Are your lips or fingers turning blue? | Yeah, my lips look blue. | present "my lips look blue" blue lips
+none | reply: Is this the worst headache of your life? | No, it's like my usual migraines. | denied "No, it's like my usual migraines" worst headache
+warn | reply: Is this the worst headache of your life? | Yes, by far. | present "Yes, by far" worst headache
+none | reply: Any trouble speaking or understanding words? | Nope. | denied "Nope." speech difficulty
+none | reply: Have you vomited any blood? | No, just food. | denied "No, just food" vomiting blood
+warn | reply: Have you vomited any blood? | Yes, this morning. | present "Yes, this morning" vomiting blood
+none | reply: Do you have any chest pain? | Not right now. | denied "Not right now" chest pain

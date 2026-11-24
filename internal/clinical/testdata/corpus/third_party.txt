@@ -1,0 +1,46 @@
+# Statements about someone other than the user, and user reports that mention another person.
+none | self | My father has chest pain. | present/family "My father has chest pain" chest pain; !present "My father has chest pain" chest pain
+none | self | My mother had a stroke. | present/family "My mother had a stroke" stroke; !present "My mother had a stroke" stroke
+none | self | My brother can't breathe when he has asthma attacks. | present/family "My brother can't breathe when he has asthma attacks" asthma
+none | self | My friend was coughing up blood last year. | present/other "My friend was coughing up blood last year" coughing blood @ last year
+none | self | She has had seizures since she was a child. | present/other "She has had seizures since she was a child" seizures
+none | self | My dad had a heart attack at 50. | present/family "My dad had a heart attack at 50" heart attack
+none | self | Heart attacks run in my family. | present/family "Heart attacks run in my family" heart attacks
+none | self | My sister tried to kill herself last year. | present/family "My sister tried to kill herself last year" suicide attempt @ last year
+none | self | My grandmother is vomiting blood. | present/family "My grandmother is vomiting blood" vomiting blood; !present "My grandmother is vomiting blood" vomiting blood
+none | self | My son has a fever and a stiff neck. | present/family "My son has a fever and a stiff neck" fever
+none | self | My wife's face is drooping. | present/family "My wife's face is drooping" facial droop
+none | self | His chest hurts when he climbs stairs. | present/other "His chest hurts when he climbs stairs" chest pain
+none | self | My husband passed out yesterday. | present/family "My husband passed out yesterday" fainting
+none | self | Our daughter has trouble breathing at night. | present/family "Our daughter has trouble breathing at night" breathing difficulty
+none | self | My aunt had a blood clot in her lung. | present/family "My aunt had a blood clot in her lung" blood clot
+none | self | My coworker said she felt suicidal. | present/other "My coworker said she felt suicidal" suicidal thoughts
+none | self | My mum has a severe headache right now. | present/family "My mum has a severe headache right now" severe headache
+none | self | My neighbor's lips turned blue. | present/other "My neighbor's lips turned blue" blue lips
+none | self | They said he can't breathe. | present/other "he can't breathe" breathing difficulty
+none | self | My partner is having chest pain. | present/family "My partner is having chest pain" chest pain
+none | self | My uncle died of a heart attack. | present/family "My uncle died of a heart attack" heart attack
+none | self | Strokes run in the family. | present/family "Strokes run in the family" strokes
+none | self | My cousin overdosed last month. | present/family "My cousin overdosed last month" overdose @ last month
+none | self | My roommate fainted in the kitchen. | present/other "My roommate fainted in the kitchen" fainting
+none | self | My boyfriend had a seizure at work. | present/other "My boyfriend had a seizure at work" seizure
+none | self | My father's speech is slurred today. | present/family "My father's speech is slurred today" slurred speech
+none | self | My child is struggling to breathe. | present/family "My child is struggling to breathe" breathing difficulty
+none | self | Her stools were black. | present/other "Her stools were black" black stools
+none | self | My mother has been coughing up blood. | present/family "My mother has been coughing up blood" coughing blood
+none | self | My brother says he wants to die. | present/family "My brother says he wants to die" suicidal thoughts
+none | self | There is a history of strokes in my family. | present/family "There is a history of strokes in my family" strokes
+none | self | My grandfather had chest pain before he died. | present/family "My grandfather had chest pain before he died" chest pain
+none | self | My dad's left arm went weak suddenly. | present/family "My dad's left arm went weak suddenly" sudden arm weakness
+none | self | My niece swallowed bleach. | present/family "My niece swallowed bleach" poisoning
+none | self | My daughter's tongue swelled up after peanuts. | present/family "My daughter's tongue swelled up after peanuts" tongue swelling
+none | self | My friend took an overdose. | present/other "My friend took an overdose" overdose
+none | self | His face drooped on one side. | present/other "His face drooped on one side" facial droop
+none | self | My mother-in-law had the worst headache of her life. | present/family "My mother-in-law had the worst headache of her life" severe headache
+none | self | My sister has severe abdominal pain. | present/family "My sister has severe abdominal pain" severe abdominal pain
+none | self | My partner said I seemed confused, but I feel fine. |
+warn | self | My father had a stroke and now my own face is drooping. | present "my own face is drooping" facial droop
+warn | self | My husband says I keep passing out. | present "I keep passing out" recurrent fainting
+warn | self | My wife noticed my speech is slurred. | present "my speech is slurred" slurred speech
+warn | self | My doctor thinks it's anxiety, but I can't breathe. | present "I can't breathe" breathing difficulty
+warn | self | My sister drove me here because I have chest pain. | present "I have chest pain" chest pain
