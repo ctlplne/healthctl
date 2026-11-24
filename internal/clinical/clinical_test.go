@@ -316,7 +316,20 @@ func TestRefusesContextOverflowWithoutLosingOriginal(t *testing.T) {
 	for range 20 {
 		apply(t, e, Command{Action: "answer", Text: strings.Repeat("x", 3900)})
 	}
-	if _, err := e.ModelInput("interview"); err == nil {
+	// The model never receives unbounded context: older answers are left out
+	// by fixed rules (TestEvidenceSelection), and the app refuses when even the
+	// evidence it must keep is over the budget.
+	if in, err := e.ModelInput("interview"); err == nil {
+		if b, _ := json.Marshal(in); len(b) > modelInputBudget || len(in.OmittedAnswerIDs) == 0 {
+			t.Fatal("unbounded context")
+		}
+	}
+	urgent := intake(t, "I have a rash", false)
+	for range 20 {
+		urgent.appendAnswer("reply", "What else?", "I have chest pain right now. "+strings.Repeat("x", 3800), "", "")
+	}
+	urgent.Pending = "interview"
+	if _, err := urgent.ModelInput("interview"); err == nil {
 		t.Fatal("unbounded context")
 	}
 	e.Fail("interview")

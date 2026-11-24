@@ -161,6 +161,11 @@ func (s *Server) refreshEvidence(ctx context.Context, owner int, e *clinical.Enc
 	}
 }
 func (s *Server) recordModelUsage(parent context.Context, owner int, cfg provider.Config, m provider.Metadata, callErr error, rejected []clinical.Rejection) {
+	s.recordEncounterUsage(parent, owner, "", cfg, m, callErr, rejected)
+}
+
+// recordEncounterUsage records one model call, linked to its encounter.
+func (s *Server) recordEncounterUsage(parent context.Context, owner int, encounterID string, cfg provider.Config, m provider.Metadata, callErr error, rejected []clinical.Rejection) {
 	ctx, cancel := context.WithTimeout(context.WithoutCancel(parent), 3*time.Second)
 	defer cancel()
 	status := "returned"
@@ -175,8 +180,8 @@ func (s *Server) recordModelUsage(parent context.Context, owner int, cfg provide
 	}
 	u := m.Usage
 	counts, _ := json.Marshal(clinical.RejectionCounts(rejected))
-	_, err := s.Store.DB.ExecContext(ctx, `INSERT INTO model_operations(owner_id,provider,model,returned_model,destination_hash,status,requests,retries,input_tokens,output_tokens,usage_complete,duration_ms,estimated_usd,validator_version,rejected_items,failure_reason)
-		VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)`, owner, cfg.Kind, cfg.Model, m.ReturnedModel, evidence.Hash([]byte(cfg.Destination())), status, u.Requests, u.Retries, u.InputTokens, u.OutputTokens, u.Requests > 0 && u.Requests == u.Reported, u.DurationMS, u.EstimatedUSD, clinical.ValidatorVersion, counts, m.FailureReason)
+	_, err := s.Store.DB.ExecContext(ctx, `INSERT INTO model_operations(owner_id,provider,model,returned_model,destination_hash,status,requests,retries,input_tokens,output_tokens,usage_complete,duration_ms,estimated_usd,validator_version,rejected_items,failure_reason,encounter_id)
+		VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,NULLIF($17,''))`, owner, cfg.Kind, cfg.Model, m.ReturnedModel, evidence.Hash([]byte(cfg.Destination())), status, u.Requests, u.Retries, u.InputTokens, u.OutputTokens, u.Requests > 0 && u.Requests == u.Reported, u.DurationMS, u.EstimatedUSD, clinical.ValidatorVersion, counts, m.FailureReason, encounterID)
 	if err != nil && s.Logger != nil {
 		s.Logger.Print("event=usage_record_unavailable")
 	}

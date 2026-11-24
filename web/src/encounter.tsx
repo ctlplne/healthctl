@@ -1,5 +1,6 @@
 import { ObservationPhotos } from './observationPhotos'
 import { SafetyNet, safetyCheckDue } from './safetynet'
+import { EncounterUsage } from './usage'
 import { useQuestionDraft } from './draft'
 import { VisitPrep } from './visitPrep'
 import { ReadBack, VoiceInput } from './voice'
@@ -953,6 +954,7 @@ export function EncounterPage({
                 </dd>
                 <dt>Model</dt>
                 <dd>{e.provider.model || 'Built-in synthetic case'}</dd>
+                {!e.demo && <EncounterUsage id={e.id} revision={e.revision} />}
                 <dt>History confirmation</dt>
                 <dd>
                   {e.confirmedRevision === e.historyRevision

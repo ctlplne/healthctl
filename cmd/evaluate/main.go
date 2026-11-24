@@ -25,7 +25,12 @@ func run() int {
 	maxTurns := flag.Int("max-turns", 5, "Maximum number of answered follow-up questions per adaptive interview")
 	release := flag.Bool("release", false, "Run the expanded release benchmark with static forms and report-guided journeys")
 	repetitions := flag.Int("repeat", 1, "Repeat each model configuration 1–10 times")
+	simulate := flag.String("simulate", "", "Answer with a simulated user instead of the scripted replies: natural (offline rephrasing) or model (a separate model; needs MODEL_SIMULATOR_ENDPOINT, MODEL_SIMULATOR_MODEL and MODEL_SIMULATOR_KEY)")
 	flag.Parse()
+	if *simulate != "" && *simulate != "natural" && *simulate != "model" {
+		fmt.Fprintln(os.Stderr, "simulate must be natural or model")
+		return 2
+	}
 	if *repetitions < 1 || *repetitions > 10 {
 		fmt.Fprintln(os.Stderr, "repeat must be 1–10")
 		return 2
@@ -84,6 +89,24 @@ func run() int {
 	for trial := range *repetitions {
 		for _, c := range cases {
 			if *caseID != "" && c.ID != *caseID {
+				continue
+			}
+			if *simulate != "" {
+				// A simulated user replaces the scripted replies; the app's own
+				// invariants score the journey.
+				var sim evaluation.Answerer = evaluation.NewNatural(c, int64(trial+1))
+				if *simulate == "model" {
+					sim = evaluation.ModelSimulator{Endpoint: os.Getenv("MODEL_SIMULATOR_ENDPOINT"), Model: os.Getenv("MODEL_SIMULATOR_MODEL"), Key: os.Getenv("MODEL_SIMULATOR_KEY"), Case: c}
+				}
+				result := evaluation.RunSimulated(ctx, c, model, sim, *maxTurns)
+				result.Arm = "simulated_" + *simulate
+				result.Repetition = trial + 1
+				result.RunID = fmt.Sprintf("%s/%s/%s/%02d", report.Configuration, c.ID, result.Arm, trial+1)
+				report.Results = append(report.Results, result)
+				report.Runs++
+				if result.Failed() {
+					report.FailedRuns++
+				}
 				continue
 			}
 			for _, arm := range arms {

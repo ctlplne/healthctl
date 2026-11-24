@@ -125,6 +125,7 @@ func (s *Server) Handler() http.Handler {
 	s.route(m, "DELETE /api/encounters/{id}", true, s.remove)
 	s.route(m, "POST /api/encounters/{id}/actions", true, s.action)
 	s.route(m, "GET /api/encounters/{id}/export", true, s.export)
+	s.route(m, "GET /api/encounters/{id}/usage", true, s.usage)
 	s.route(m, "GET /api/voice", true, s.voice)
 	s.route(m, "POST /api/voice", true, s.voice)
 	s.route(m, "GET /api/diary", true, s.diary)

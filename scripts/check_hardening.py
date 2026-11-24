@@ -169,6 +169,13 @@ def scorecard():
         os.unlink(path)
 
 
+def mutation():
+    out = run([sys.executable, "scripts/mutation_check.py"], timeout=3600)
+    m = re.search(r"MUTATION mutants=(\d+) killed=(\d+) survived=(\d+) errors=(\d+)", out.stdout)
+    ok = out.returncode == 0 and bool(m)
+    return ok, f"{m.group(2)} of {m.group(1)} mutants killed" if ok else tail(out.stdout + out.stderr, 20)
+
+
 def docs():
     out = run([sys.executable, "scripts/check_docs.py"])
     return out.returncode == 0, tail(out.stdout, 3)
@@ -213,6 +220,7 @@ def main():
     check("held-out set", holdout)
     if not args.quick:
         check("fresh release scorecard without drift", scorecard)
+        check("mutation check for internal/clinical", mutation)
     check("scripts/check_docs.py", docs)
     check("Python script and study tests", python_tests)
     if not args.quick:

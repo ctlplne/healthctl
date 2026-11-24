@@ -232,6 +232,8 @@ type Assessment struct {
 }
 
 type Input struct {
+	// OmittedAnswerIDs lists older answers the app left out to fit the input budget.
+	OmittedAnswerIDs    []string        `json:"omittedAnswerIds,omitempty"`
 	ReturnVisit         bool            `json:"returnVisit,omitempty"`
 	Focused             bool            `json:"focused,omitempty"`
 	Agenda              string          `json:"agenda,omitempty"`
@@ -279,14 +281,16 @@ type Summary struct {
 }
 
 type Turn struct {
-	QuestionSource  *QuestionSource `json:"questionSource,omitempty"`
-	Task            string          `json:"task"`
-	Question        string          `json:"question,omitempty"`
-	Asked           bool            `json:"asked,omitempty"`
-	Reason          string          `json:"reason"`
-	HistoryRevision int             `json:"historyRevision"`
-	Meta            ModelMeta       `json:"meta"`
-	CreatedAt       time.Time       `json:"createdAt"`
+	QuestionSource *QuestionSource `json:"questionSource,omitempty"`
+	Task           string          `json:"task"`
+	Question       string          `json:"question,omitempty"`
+	Asked          bool            `json:"asked,omitempty"`
+	// OmittedAnswerIDs lists older answers left out to fit the input budget.
+	OmittedAnswerIDs []string  `json:"omittedAnswerIds,omitempty"`
+	Reason           string    `json:"reason"`
+	HistoryRevision  int       `json:"historyRevision"`
+	Meta             ModelMeta `json:"meta"`
+	CreatedAt        time.Time `json:"createdAt"`
 }
 
 type ProviderChange struct {

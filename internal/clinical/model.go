@@ -1,7 +1,6 @@
 package clinical
 
 import (
-	"encoding/json"
 	"errors"
 	"regexp"
 	"slices"
@@ -22,9 +21,8 @@ func (e *Encounter) ModelInput(task string) (Input, error) {
 	if e.ScopeReason != "" || task == "assessment" && e.ConfirmedRevision != e.HistoryRevision {
 		return Input{}, errors.New("This history cannot be assessed in its current state")
 	}
-	in := e.inputHistory(task)
-	data, _ := json.Marshal(in)
-	if len(data) > 64000 {
+	in, ok := fitBudget(e.inputHistory(task))
+	if !ok {
 		return Input{}, errContextBudget
 	}
 	return in, nil
@@ -69,7 +67,7 @@ func (e *Encounter) Accept(task string, p Proposal, meta ModelMeta, emergency st
 	e.Pending = ""
 	e.Failure = ""
 	e.FailedTask = ""
-	e.Turns = append(e.Turns, Turn{QuestionSource: qsource, Task: task, Question: p.Question, Reason: p.Reason, HistoryRevision: e.HistoryRevision, Meta: meta, CreatedAt: time.Now().UTC()})
+	e.Turns = append(e.Turns, Turn{QuestionSource: qsource, Task: task, Question: p.Question, Reason: p.Reason, HistoryRevision: e.HistoryRevision, Meta: meta, CreatedAt: time.Now().UTC(), OmittedAnswerIDs: in.OmittedAnswerIDs})
 	if task == "assessment" {
 		var factIDs []string
 		for _, f := range in.Facts {

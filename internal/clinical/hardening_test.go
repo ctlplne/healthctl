@@ -252,3 +252,22 @@ func TestPolicyReviewRecord(t *testing.T) {
 		t.Fatal("the input hash must be stable and distinguish inputs")
 	}
 }
+
+// TestNegationReachesOnlyAFewWords checks the engine's backstop: a negation
+// governs at most eight words, even when nothing else ends its scope. Real
+// sentences usually end the scope sooner with a clause break, "but", a comma
+// or "and" (see runon.txt in the corpus).
+func TestNegationReachesOnlyAFewWords(t *testing.T) {
+	for _, tc := range []struct {
+		text    string
+		negated bool
+	}{
+		{"No alpha beta chest pain", true},
+		{"No alpha beta gamma delta epsilon zeta eta theta iota kappa chest pain", false},
+	} {
+		at := strings.Index(tc.text, "chest pain")
+		if got := analyzeSpan(tc.text, at, at+len("chest pain"), fromUser).Negated; got != tc.negated {
+			t.Fatalf("%q: negated=%v, want %v", tc.text, got, tc.negated)
+		}
+	}
+}

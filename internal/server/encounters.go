@@ -41,6 +41,31 @@ func (s *Server) get(w http.ResponseWriter, r *http.Request, owner int) error {
 	emit(w, 200, e.ForDisplay())
 	return nil
 }
+
+// usage reports the model calls, tokens, waiting time and estimated cost of
+// one encounter. The cost is shown only when every call reported a price.
+func (s *Server) usage(w http.ResponseWriter, r *http.Request, owner int) error {
+	id := r.PathValue("id")
+	if _, err := s.Store.Get(r.Context(), owner, id); err != nil {
+		return err
+	}
+	var calls, failed, missingCost int
+	var input, output, duration int64
+	var cost float64
+	err := s.Store.DB.QueryRowContext(r.Context(), `SELECT count(*), count(*) FILTER (WHERE status='failed'), coalesce(sum(input_tokens),0), coalesce(sum(output_tokens),0),
+		coalesce(sum(duration_ms),0), coalesce(sum(estimated_usd),0), count(*) FILTER (WHERE estimated_usd IS NULL)
+		FROM model_operations WHERE owner_id=$1 AND encounter_id=$2`, owner, id).Scan(&calls, &failed, &input, &output, &duration, &cost, &missingCost)
+	if err != nil {
+		return err
+	}
+	out := object{"calls": calls, "failedCalls": failed, "inputTokens": input, "outputTokens": output, "waitSeconds": float64(duration) / 1000, "costComplete": calls > 0 && missingCost == 0}
+	if calls > 0 && missingCost == 0 {
+		out["estimatedUSD"] = cost
+	}
+	emit(w, 200, out)
+	return nil
+}
+
 func (s *Server) create(w http.ResponseWriter, r *http.Request, owner int) error {
 	var in struct {
 		clinical.Intake
@@ -206,7 +231,7 @@ func (s *Server) finishModel(ctx context.Context, owner int, e *clinical.Encount
 				p, rejected = clean, dropped
 				return nil
 			})
-			s.recordModelUsage(ctx, owner, cfg, m, err, rejected)
+			s.recordEncounterUsage(ctx, owner, e.ID, cfg, m, err, rejected)
 			if m.Settings == nil {
 				m.Settings = map[string]any{}
 			}
@@ -225,7 +250,7 @@ func (s *Server) finishModel(ctx context.Context, owner int, e *clinical.Encount
 					second, dropped = clean, d
 					return err
 				})
-				s.recordModelUsage(ctx, owner, cfg, m2, err2, dropped)
+				s.recordEncounterUsage(ctx, owner, e.ID, cfg, m2, err2, dropped)
 				if err2 == nil {
 					p.Items = clinical.MarkUnstable(p.Items, second.Items)
 					m.Settings["stabilityCheck"] = true

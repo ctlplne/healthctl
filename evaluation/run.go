@@ -93,14 +93,15 @@ func RunArm(ctx context.Context, c Case, arm string, model Model, maxTurns int) 
 		}
 		return r
 	}
-	err = runJourney(ctx, &r, c, e, model, maxTurns, arm == "adaptive")
+	p := &patient{replies: c.Replies, sent: map[int]bool{}}
+	err = runJourney(ctx, &r, c, e, model, maxTurns, arm == "adaptive", scripted{p})
 	if err != nil {
 		r.Errors = append(r.Errors, err.Error())
 	}
 	return r
 }
 
-func runJourney(ctx context.Context, r *Result, c Case, e *clinical.Encounter, model Model, maxTurns int, adaptive bool) error {
+func runJourney(ctx context.Context, r *Result, c Case, e *clinical.Encounter, model Model, maxTurns int, adaptive bool, patient Answerer) error {
 	activeWarning := func() bool {
 		for _, w := range e.Warnings {
 			if w.Active {
@@ -180,7 +181,6 @@ func runJourney(ctx context.Context, r *Result, c Case, e *clinical.Encounter, m
 		saveWarnings()
 		return nil
 	}
-	patient := patient{replies: c.Replies, sent: map[int]bool{}}
 	seenQuestions := map[string]bool{}
 	if r.Arm == "static_form" {
 		for _, q := range []string{"When did the symptoms begin?", "What other symptoms have you noticed?", "What medications do you take?"} {
@@ -190,7 +190,10 @@ func runJourney(ctx context.Context, r *Result, c Case, e *clinical.Encounter, m
 			// This benchmark arm substitutes a prespecified questionnaire for
 			// the interviewer, then uses the ordinary extraction and assessment.
 			e.Question = q
-			text := patient.answer(q)
+			text, err := patient.Answer(ctx, q)
+			if err != nil {
+				return err
+			}
 			if err := e.Apply(clinical.Command{Action: "answer", Text: text}, ""); err != nil {
 				return err
 			}
@@ -216,7 +219,10 @@ func runJourney(ctx context.Context, r *Result, c Case, e *clinical.Encounter, m
 			r.RepeatedQuestions++
 		}
 		seenQuestions[e.Question] = true
-		answer := patient.answer(e.Question)
+		answer, err := patient.Answer(ctx, e.Question)
+		if err != nil {
+			return err
+		}
 		if err := e.Apply(clinical.Command{Action: "answer", Text: answer}, ""); err != nil {
 			return err
 		}

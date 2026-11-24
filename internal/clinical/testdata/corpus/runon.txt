@@ -1,0 +1,9 @@
+# Run-on sentences typed without punctuation. A negation at the start must not
+# reach an urgent sign many words later. Added after the mutation check showed
+# that no row tested how far a negation reaches (scripts/mutation_check.py).
+warn | self | Never had anything like this happen to me in my whole entire life chest pain started an hour ago |
+warn | self | No idea what is going on with me these last couple of days or why I can't breathe properly right now |
+warn | self | Not much sleep for the past week with the new baby at home and now my face is drooping on one side |
+warn | self | I don't normally bother the doctor about anything at all but I have crushing chest pain right now |
+none | self | No chest pain or trouble breathing or weakness at all just a stuffy nose since yesterday |
+none | self | I have never had chest pain or fainted and today I just have a sore throat |
