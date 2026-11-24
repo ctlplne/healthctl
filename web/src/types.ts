@@ -96,6 +96,7 @@ export type Warning = {
   answerId: string
   active: boolean
   createdAt: string
+  level?: 'check'
 }
 export type Item = {
   name: string

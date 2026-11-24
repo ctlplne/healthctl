@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { SafetyBoundary } from './boundary'
 import { InstallationSafety } from './safety'
 import { createRoot } from 'react-dom/client'
 import {
@@ -496,6 +497,7 @@ function App() {
             </button>
           </header>
           <main id="main-content" tabIndex={-1} className="content">
+            <SafetyBoundary warnings={e?.warnings || []} resetKey={page + ':' + (e?.id || '')}>
             {notice && (
               <div className="notice-disclosure">
                 <Notice text={session.notice} />
@@ -635,6 +637,7 @@ function App() {
               />
               </>
             )}
+            </SafetyBoundary>
           </main>
           <footer className="workspace-footer">
             <span>{session.displayName}</span>

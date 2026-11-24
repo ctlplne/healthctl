@@ -1,4 +1,5 @@
 import { ObservationPhotos } from './observationPhotos'
+import { useQuestionDraft } from './draft'
 import { VisitPrep } from './visitPrep'
 import { ReadBack, VoiceInput } from './voice'
 import { useEffect, useRef, useState } from 'react'
@@ -114,7 +115,6 @@ export function EncounterPage({
         ? 'sources'
         : defaultTab(e),
     ),
-    [answer, setAnswer] = useState(''),
     [eventDate, setEventDate] = useState(''),
     [answerMode, setAnswerMode] = useState<'choice' | 'text'>(),
     [urgentNow, setUrgentNow] = useState(false),
@@ -194,6 +194,13 @@ export function EncounterPage({
     e.state === 'history_review' ? 'Your history is ready to review.' :
     e.state === 'needs_clarification' ? 'The model needs more information.' :
     e.state === 'assessment_ready' ? 'Your estimate is ready to review.' : ''
+  // A draft belongs to the question it answers. See useQuestionDraft.
+  const draft = useQuestionDraft(e.question, () => {
+      setEventDate('')
+      setAnswerMode(undefined)
+      setUrgentNow(false)
+    }),
+    { answer, setAnswer, setAside } = draft
   const act = async (cmd: Fields): Promise<boolean> => {
     const next = await onAction(cmd)
     if (!next) return false
@@ -558,6 +565,23 @@ export function EncounterPage({
                         void addAnswer(answer)
                       }}
                     >
+                      {setAside && (
+                        <div className="callout set-aside" role="status">
+                          <strong>The question changed while you were answering.</strong>
+                          <p>
+                            Your earlier words, written for “{setAside.question || 'the previous step'}”, are kept here and were not saved. Check them before you use them for this question.
+                          </p>
+                          <blockquote>{setAside.text}</blockquote>
+                          <div className="actions">
+                            <button type="button" className="secondary" onClick={() => { draft.restore(); setAnswerMode('text') }}>
+                              Use these words for this question
+                            </button>
+                            <button type="button" className="secondary" onClick={draft.discard}>
+                              Discard them
+                            </button>
+                          </div>
+                        </div>
+                      )}
                       {writeAnswer && (
                         <label>
                           Your answer

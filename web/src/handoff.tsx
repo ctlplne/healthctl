@@ -49,13 +49,23 @@ export type Brief = {
   priorities: string[]
   scopeReason: string
 }
-function CompactList({ values }: { values: string[] }) {
+// CompactList never drops items silently: a shortened list says how many more
+// there are and where to find them.
+export function CompactList({ values, limit, more = 'in the provenance appendix' }: { values: string[]; limit?: number; more?: string }) {
+  const shown = limit && values.length > limit ? values.slice(0, limit) : values
   return values.length ? (
-    <ul>
-      {values.map((v, i) => (
-        <li key={i}>{v}</li>
-      ))}
-    </ul>
+    <>
+      <ul>
+        {shown.map((v, i) => (
+          <li key={i}>{v}</li>
+        ))}
+      </ul>
+      {shown.length < values.length && (
+        <small className="list-more">
+          {values.length - shown.length} more {more}.
+        </small>
+      )}
+    </>
   ) : (
     <p className="muted">None recorded.</p>
   )
@@ -217,12 +227,7 @@ export function BriefBody({
         {lists.map(([title, values]) => (
           <section key={title}>
             <h3>{title}</h3>
-            <CompactList values={values.slice(0, 4)} />
-            {values.length > 4 && (
-              <small>
-                {values.length - 4} more in the provenance appendix.
-              </small>
-            )}
+            <CompactList values={values} limit={4} />
           </section>
         ))}
       </div>
@@ -230,8 +235,9 @@ export function BriefBody({
         <>
           <h3>Reviewed report findings</h3>
           <CompactList
+            limit={4}
+            more="reviewed entries in the provenance appendix"
             values={b.reportFindings
-              .slice(0, 4)
               .map((r) =>
                 [
                   r.subject === 'self'
@@ -254,18 +260,17 @@ export function BriefBody({
                   .join(' · '),
               )}
           />
-          {b.reportFindings.length > 4 && (
-            <small>See the provenance appendix for all reviewed entries.</small>
-          )}
+
         </>
       )}
-      <h3>Open questions and conflicts</h3>
-      <CompactList
-        values={[
-          ...(b.outstanding || []),
-          ...(b.contradictions || []).map((c) => 'Conflict · ' + c.concept),
-        ].slice(0, 5)}
-      />
+      {!!b.contradictions?.length && (
+        <>
+          <h3>Conflicts to clarify</h3>
+          <CompactList values={b.contradictions.map((c) => 'Conflict · ' + c.concept)} />
+        </>
+      )}
+      <h3>Open questions</h3>
+      <CompactList values={b.outstanding || []} limit={5} />
       <h3>Provisional AI hypotheses</h3>
       {b.assessment?.items?.length ? (
         <p>
@@ -673,6 +678,8 @@ export function Appendix({ e, name }: { e: Encounter; name: string }) {
           <p>{w.message}</p>
         </aside>
       ))}
+      <h2>Open questions and conflicts</h2>
+      <CompactList values={[...(e.contradictions || []).map((c) => 'Conflict · ' + c.concept), ...(e.outstanding || [])]} />
       <h2>Answer sources</h2>
       {e.answers.map((a) => (
         <section key={a.id}>

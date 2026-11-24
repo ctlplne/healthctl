@@ -2241,3 +2241,22 @@ pre {
 .installation-safety .inline-form label {
   flex: 1 1 14rem;
 }
+.set-aside {
+  flex-direction: column;
+  border: 1px solid #e4d3a0;
+  background: #fdf9ec;
+  color: #4a3b10;
+  margin-bottom: 0.75rem;
+}
+.set-aside blockquote {
+  margin: 0.25rem 0;
+  padding-left: 0.75rem;
+  border-left: 3px solid #e4d3a0;
+}
+.list-more {
+  display: block;
+  margin-top: 0.2rem;
+}
+.safety-fallback .callout {
+  margin-bottom: 0.75rem;
+}
