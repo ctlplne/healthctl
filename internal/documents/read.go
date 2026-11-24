@@ -269,7 +269,8 @@ func (b *bounded) Write(p []byte) (int, error) {
 func run(ctx context.Context, name string, args ...string) (string, error) {
 	// Native readers receive no environment secrets, URLs, or caller-controlled
 	// switches, and no network where the system allows that.
-	cmd := sandbox.Command(ctx, name, args...)
+	cmd, cancel := sandbox.Command(ctx, sandbox.DocumentLimits, name, args...)
+	defer cancel()
 	var out bounded
 	out.limit = 1 << 20
 	cmd.Stdout = &out

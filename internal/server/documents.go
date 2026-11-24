@@ -23,7 +23,7 @@ import (
 var readerSlots = make(chan struct{}, 2)
 
 func (s *Server) documentRoutes(m *http.ServeMux) {
-	s.route(m, "POST /api/encounters/{id}/documents", true, s.upload)
+	s.route(m, "POST /api/encounters/{id}/documents", true, limited(uploadLimit, "uploads", s.upload))
 	s.route(m, "GET /api/encounters/{id}/documents/{doc}/original", true, s.original)
 	s.route(m, "GET /api/encounters/{id}/documents/{doc}/page/{number}", true, s.documentPage)
 	s.route(m, "POST /api/encounters/{id}/documents/{doc}/preview", true, s.preview)

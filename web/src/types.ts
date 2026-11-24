@@ -29,6 +29,7 @@ export type AssessmentNotice = {
 export type Session = {
   assessmentNotice: AssessmentNotice
   setupRequired: boolean
+  setupCodeRequired?: boolean
   authenticated: boolean
   csrf: string
   displayName: string

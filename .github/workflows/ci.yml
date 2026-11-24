@@ -76,6 +76,20 @@ jobs:
       - name: Run the web unit tests
         run: docker build --target ui-test .
 
+  dependencies:
+    name: Dependency vulnerability scan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: docker build --target server -t healthctl-server .
+      - name: Scan Go modules with govulncheck
+        run: docker run --rm healthctl-server sh -c 'go run golang.org/x/vuln/cmd/govulncheck@v1.9.0 ./cmd/... ./internal/... ./evaluation/...'
+      - name: Audit web dependencies
+        run: docker run --rm --entrypoint sh "$(docker build -q --target ui .)" -c 'cd /ui && npm audit --audit-level=high'
+
   docs:
     name: Documentation and study checks
     runs-on: ubuntu-24.04

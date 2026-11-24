@@ -54,7 +54,8 @@ export function Auth({
   error,
 }: Work & { session: Session; onLogin: (s: Session) => void; error: string }) {
   const [username, setUsername] = useState(''),
-    [password, setPassword] = useState('')
+    [password, setPassword] = useState(''),
+    [setupCode, setSetupCode] = useState('')
   const setup = session.setupRequired
   const submit = (e: FormEvent) => {
     e.preventDefault()
@@ -62,6 +63,7 @@ export function Auth({
       const s = await api<Session>(setup ? '/setup' : '/login', 'POST', {
         username: username.trim(),
         password,
+        ...(setup && session.setupCodeRequired ? { setupCode } : {}),
       })
       updateToken(s.csrf)
       setPassword('')
@@ -117,6 +119,22 @@ export function Auth({
               : 'Sign in to open your encounters and model settings.'}
           </p>
           <form onSubmit={submit}>
+            {setup && session.setupCodeRequired && (
+              <label>
+                One-time setup code
+                <input
+                  required
+                  autoComplete="off"
+                  value={setupCode}
+                  onChange={(e) => setSetupCode(e.target.value)}
+                  aria-describedby="setup-code-hint"
+                />
+                <small id="setup-code-hint">
+                  This installation is reachable from the internet, so creating the owner needs the code printed in the
+                  server log (event=setup_code).
+                </small>
+              </label>
+            )}
             <label>
               Username
               <input

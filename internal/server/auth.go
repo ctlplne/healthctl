@@ -7,6 +7,7 @@ import (
 	"errors"
 	"net/http"
 	"strings"
+	"time"
 	"unicode/utf8"
 
 	"github.com/ctlplne/healthctl/internal/clinical"
@@ -16,8 +17,9 @@ import (
 const sessionCookie = "clinical_session"
 
 type credentials struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username  string `json:"username"`
+	Password  string `json:"password"`
+	SetupCode string `json:"setupCode,omitempty"`
 }
 
 func csrf(raw string) string {
@@ -25,17 +27,26 @@ func csrf(raw string) string {
 	return hex.EncodeToString(h[:])
 }
 func (s *Server) identity(r *http.Request) (int, string, error) {
+	owner, raw, _, err := s.identityAt(r)
+	return owner, raw, err
+}
+
+// identityAt also returns when the password was last entered. A session idle
+// for longer than the idle limit has ended.
+func (s *Server) identityAt(r *http.Request) (int, string, time.Time, error) {
 	c, err := r.Cookie(sessionCookie)
 	if err != nil || len(c.Value) != 64 {
-		return 0, "", nil
+		return 0, "", time.Time{}, nil
 	}
 	digest := sha256.Sum256([]byte(c.Value))
 	var owner int
-	err = s.Store.DB.QueryRowContext(r.Context(), "SELECT owner_id FROM sessions WHERE digest=$1 AND expires_at>now()", digest[:]).Scan(&owner)
+	var authenticated time.Time
+	err = s.Store.DB.QueryRowContext(r.Context(), `UPDATE sessions SET last_seen=now() WHERE digest=$1 AND expires_at>now() AND last_seen>now()-make_interval(secs => $2)
+		RETURNING owner_id, authenticated_at`, digest[:], idleLimit().Seconds()).Scan(&owner, &authenticated)
 	if errors.Is(err, sql.ErrNoRows) {
-		return 0, "", nil
+		return 0, "", time.Time{}, nil
 	}
-	return owner, c.Value, err
+	return owner, c.Value, authenticated, err
 }
 func (s *Server) session(w http.ResponseWriter, r *http.Request, _ int) error {
 	owner, raw, err := s.identity(r)
@@ -54,7 +65,7 @@ func (s *Server) emitSession(w http.ResponseWriter, setup bool, owner int, raw s
 	if owner != 0 {
 		t = csrf(raw)
 	}
-	emit(w, 200, object{"setupRequired": setup, "authenticated": owner != 0, "csrf": t, "displayName": s.Name, "notice": clinical.Notice, "noticeVersion": clinical.NoticeVersion, "assessmentNotice": clinical.AssessmentNotice, "modelGuidance": clinical.ModelGuidance(), "emergency": s.Emergency})
+	emit(w, 200, object{"setupRequired": setup, "setupCodeRequired": setup && s.setupCodeRequired(), "authenticated": owner != 0, "csrf": t, "displayName": s.Name, "notice": clinical.Notice, "noticeVersion": clinical.NoticeVersion, "assessmentNotice": clinical.AssessmentNotice, "modelGuidance": clinical.ModelGuidance(), "emergency": s.Emergency})
 }
 func (s *Server) setCookie(w http.ResponseWriter, raw string, maxAge int) {
 	http.SetCookie(w, &http.Cookie{Name: sessionCookie, Value: raw, Path: "/", MaxAge: maxAge, HttpOnly: true, SameSite: http.SameSiteStrictMode, Secure: s.Secure})
@@ -67,6 +78,12 @@ func (s *Server) setup(w http.ResponseWriter, r *http.Request, _ int) error {
 	in.Username = strings.TrimSpace(in.Username)
 	if utf8.RuneCountInString(in.Username) < 2 || len(in.Username) > 80 || utf8.RuneCountInString(in.Password) < 12 || len(in.Password) > 72 {
 		return bad("Use a username of 2–80 characters and a password of at least 12 characters (maximum 72 bytes).")
+	}
+	if err := s.throttle(w, r); err != nil {
+		return err
+	}
+	if !s.checkSetupCode(in.SetupCode) {
+		return problem{403, "Enter the one-time setup code from the server log to create the owner account."}
 	}
 	tx, err := s.Store.DB.BeginTx(r.Context(), nil)
 	if err != nil {
@@ -88,6 +105,10 @@ func (s *Server) setup(w http.ResponseWriter, r *http.Request, _ int) error {
 		return err
 	}
 	if _, err = tx.ExecContext(r.Context(), "INSERT INTO owners(id,username,password_hash) VALUES(1,$1,$2)", in.Username, hash); err != nil {
+		return err
+	}
+	client, _ := clientKey(r)
+	if _, err = tx.ExecContext(r.Context(), "DELETE FROM login_attempts WHERE client=$1", client); err != nil {
 		return err
 	}
 	return s.finishLogin(w, r, tx, 1)
@@ -113,20 +134,14 @@ func (s *Server) login(w http.ResponseWriter, r *http.Request, _ int) error {
 	if err := decode(w, r, &in); err != nil {
 		return err
 	}
-	// This personal deployment has one account. An installation-wide budget also
-	// covers proxy deployments without trusting client-supplied forwarding headers.
-	var attempts int
-	err := s.Store.DB.QueryRowContext(r.Context(), `INSERT INTO login_budget VALUES(1,now(),1)
-	ON CONFLICT (id) DO UPDATE SET attempts=CASE WHEN login_budget.window_start<now()-interval '10 minutes' THEN 1 ELSE least(login_budget.attempts+1,11) END,
-	window_start=CASE WHEN login_budget.window_start<now()-interval '10 minutes' THEN now() ELSE login_budget.window_start END RETURNING attempts`).Scan(&attempts)
-	if err != nil {
+	// Attempts are counted per client: a remote client is locked out after ten
+	// failures, while this machine is only slowed down, so the owner can always
+	// sign in locally.
+	if err := s.throttle(w, r); err != nil {
 		return err
 	}
-	if attempts > 10 {
-		w.Header().Set("Retry-After", "600")
-		return problem{429, "Too many sign-in attempts. Try again in ten minutes."}
-	}
 	var owner int
+	var err error
 	var name string
 	var hash []byte
 	err = s.Store.DB.QueryRowContext(r.Context(), "SELECT id,username,password_hash FROM owners WHERE id=1").Scan(&owner, &name, &hash)
@@ -142,6 +157,10 @@ func (s *Server) login(w http.ResponseWriter, r *http.Request, _ int) error {
 	}
 	defer tx.Rollback()
 	if _, err = tx.ExecContext(r.Context(), "DELETE FROM login_budget WHERE id=1"); err != nil {
+		return err
+	}
+	client, _ := clientKey(r)
+	if _, err = tx.ExecContext(r.Context(), "DELETE FROM login_attempts WHERE client=$1", client); err != nil {
 		return err
 	}
 	return s.finishLogin(w, r, tx, owner)

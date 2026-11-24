@@ -74,11 +74,11 @@ Status: `[x]` done with proof · `[ ]` open · `[h]` handoff, prepared with next
 - [x] **D4** Key hierarchy: records are encrypted under a data key (migration 011); the installation key wraps it and a separate random receipt key, so rotation re-wraps two keys in one transaction and never rewrites records; an older installation keeps its original key as the data key and gets an independent receipt key once. Files: `internal/store/store.go`, `maintenance.go`. Proof: `TestReceiptKeyIndependent`, the existing rotation test in `TestChatGPT*`.
 - [x] **D5** Secrets passed as files: the database reads its password from a Compose secret file by default; `compose.secrets.yaml` with `scripts/secret_files.py` passes the installation key and password to the read-only app and backup containers as files (Compose allows only file secrets in read-only services, and the app stays read-only); `main` and `backup.sh` read `*_FILE`. Document and speech readers (the speech reader previously inherited the whole environment) run through `internal/sandbox` with a fixed minimal environment and, on Linux where allowed, a private network namespace; the installation safety panel reports which isolation is in effect, because Docker's default profile blocks namespaces. Proof: `TestReaderEnvironment`, `tests/test_compose_secrets.py`.
 - [x] **D6** `scripts/upgrade.py` takes and verifies a pre-upgrade snapshot before changing anything, keeps the previous image, and `--rollback` restores both; docs give the desktop rollback path and a PostgreSQL major-version plan. Proof: `tests/test_upgrade.py`, `docs/operations.md`.
-- [ ] **X1** Login throttling that can't lock the owner out. Proof: `TestLoginThrottlePostgres`.
-- [ ] **X2** One-time setup token for public-origin installs. Proof: `TestSetupTokenPostgres`.
-- [ ] **X3** Idle session timeout, sign out everywhere, re-authentication for export, share, delete and provider change. Proof: `TestSessionPolicyPostgres`.
-- [ ] **X4** CPU, memory and time limits on subprocesses; rate limits on upload and voice. Proof: unit tests.
-- [ ] **X5** Dependabot, govulncheck and npm audit in CI. Proof: workflow + local `govulncheck` run.
+- [x] **X1** Sign-in throttling per client (migration 012): another client is locked out after ten failures in ten minutes, a loopback connection is only slowed down, and `CLINICAL_TRUSTED_PROXY` gives each client behind a reverse proxy its own budget. Files: `internal/server/sessions.go`, `auth.go`. Proof: `TestLoginThrottlePostgres`; the original lockout assertion in `TestAuthenticatedPatientJourneyPostgres` still holds.
+- [x] **X2** A public-origin installation needs a one-time setup code, printed once to the server log, before the owner account can be created; the sign-in form asks for it. Proof: `TestSetupTokenPostgres`.
+- [x] **X3** Sessions end after an idle period (`CLINICAL_IDLE_MINUTES`, default 60), "Sign out everywhere" ends every session, and export, FHIR download, sharing, deletion and provider changes need a password entered in the last ten minutes; the app asks for it and retries the request. Files: `internal/server/sessions.go`, `web/src/reauth.tsx`, `web/src/api.ts`. Proof: `TestSessionPolicyPostgres`.
+- [x] **X4** Every reader runs with time, CPU and address-space limits, and uploads and dictation are rate-limited per owner. Files: `internal/sandbox/sandbox.go`, `internal/server/ratelimit.go`. Proof: `TestReaderLimits`, `TestUploadAndVoiceRateLimits`.
+- [x] **X5** Dependabot (`.github/dependabot.yml`) and a CI job that runs `govulncheck` v1.9.0 and `npm audit --audit-level=high`. Proof: the workflow. The local `govulncheck` run was blocked by this session's permission check and is listed under H7 with the exact command.
 - [ ] **R1** Prebuilt, digest-pinned images for desktop users; pinned speech-model revision. Proof: launcher test + Dockerfile check.
 - [ ] **R2** Retire the legacy `windows-*` tag release channel. Proof: workflow diff.
 - [ ] **R3** Launcher Stop, Delete, Logs and Uninstall; restore stops the old stack. Proof: `scripts/verify_desktop.py` checks.
@@ -98,7 +98,7 @@ Status: `[x]` done with proof · `[ ]` open · `[h]` handoff, prepared with next
 - [x] **E6** Mutation testing for `internal/clinical`: 14 mutants of safety and control rules, applied with `go test -overlay` so source files are never touched; a mutant that doesn't compile counts as an error, not a kill. The first run found that no test reached the negation word limit; `TestNegationReachesOnlyAFewWords` and six run-on corpus rows now cover it. Proof: `python3 scripts/mutation_check.py` (14 of 14 killed), run by `check_hardening.py`.
 - [ ] **F10** Polish: one date formatter, `autocomplete="off"` on clinical fields, warnings in the journal list, Firefox audio resampling, smaller components, lint and unit tests. Proof: `npm run lint`, `npm test`.
 - [ ] **D7** Time-based backup retention and loud failure logs. Proof: `tests/test_backup_script.py`.
-- [ ] **X6** Trusted Types in the CSP; healthcheck port read from config. Proof: `TestSecurityHeaders`.
+- [x] **X6** Trusted Types in the CSP (`require-trusted-types-for 'script'`; the app writes no markup from strings), and the health check reads its address from `CLINICAL_LISTEN`. Proof: `TestSecurityHeaders`, `TestHealthURLFollowsListenAddress`, browser suite under Chromium.
 - [ ] **R4** Update notice without the app contacting any server. Proof: unit test.
 - [ ] **R5** Better default dictation model; `go build ./...` works locally. Proof: Dockerfile check + `go build ./...`.
 
@@ -110,6 +110,7 @@ Status: `[x]` done with proof · `[ ]` open · `[h]` handoff, prepared with next
 - [h] **H4** Code signing and notarization for macOS and Windows.
 - [h] **H5** Regulatory and license review.
 - [h] **H6** Backup and restore test on real Windows.
+- [h] **H7** Local dependency scan (blocked by this session's permission check).
 
 Next steps for each handoff item are filled in as the work that prepares it lands.
 

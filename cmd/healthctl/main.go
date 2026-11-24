@@ -7,6 +7,7 @@ import (
 	"errors"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -31,7 +32,7 @@ func env(k, fallback string) string {
 func main() {
 	if len(os.Args) == 2 && os.Args[1] == "healthcheck" {
 		client := &http.Client{Timeout: 2 * time.Second}
-		resp, err := client.Get("http://127.0.0.1:8080/readyz")
+		resp, err := client.Get(healthURL(env("CLINICAL_LISTEN", "127.0.0.1:8437")))
 		if err != nil {
 			os.Exit(1)
 		}
@@ -161,4 +162,17 @@ func secretFile(name string) (string, bool) {
 		return "", false
 	}
 	return strings.TrimRight(string(b), "\r\n"), true
+}
+
+// healthURL is the readiness address for the configured listen address. An
+// all-interfaces address is checked on this machine's loopback address.
+func healthURL(listen string) string {
+	host, port, err := net.SplitHostPort(listen)
+	if err != nil {
+		host, port = "", "8437"
+	}
+	if host == "" || host == "0.0.0.0" || host == "::" {
+		host = "127.0.0.1"
+	}
+	return "http://" + net.JoinHostPort(host, port) + "/readyz"
 }

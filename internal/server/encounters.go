@@ -112,6 +112,10 @@ func (s *Server) action(w http.ResponseWriter, r *http.Request, owner int) error
 		return bad("A revision and submission identifier are required.")
 	}
 	if in.Action == "change_provider" {
+		// Sending a history to a different destination needs a recent password.
+		if time.Since(authenticatedAt(r.Context())) > recentAuth {
+			return errReauth
+		}
 		if err := s.validateModelChoice(r, owner, provider.Config(in.Provider)); err != nil {
 			return bad(err.Error())
 		}

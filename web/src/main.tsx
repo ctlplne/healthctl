@@ -32,9 +32,10 @@ import { EvidenceLookup } from './evidence'
 import { Operator } from './operator'
 import { setLocale } from './types'
 import type { Region } from './records'
-import { api, RequestError, SIGNED_OUT, updateToken } from './api'
+import { api, RequestError, setReauthHandler, SIGNED_OUT, updateToken } from './api'
 import { isAppPath, parseRoute, routePath, type Page } from './route'
 import { schedule } from './poll'
+import { ReauthDialog } from './reauth'
 import { Auth, IntakeForm, Journal, ProviderEditor } from './forms'
 import { EncounterPage } from './encounter'
 import { Brand, Notice } from './shared'
@@ -215,6 +216,12 @@ function App() {
       open(startRoute.encounterId)
     }
   }, [session?.authenticated])
+  // A sensitive action asks for the password again, then continues.
+  const [reauth, setReauth] = useState<((ok: boolean) => void) | null>(null)
+  useEffect(() => {
+    setReauthHandler(() => new Promise<boolean>((resolve) => setReauth(() => resolve)))
+    return () => setReauthHandler(null)
+  }, [])
   // An ended session asks the user to sign in again; saved history is safe.
   useEffect(() => {
     const signedOut = () => {
@@ -531,9 +538,31 @@ function App() {
               <LogOut size={17} />
               Sign out
             </button>
+            <button
+              className="rail-link"
+              disabled={busy}
+              onClick={() =>
+                run(async () => {
+                  await api('/logout-everywhere', 'POST', {})
+                  setSession((s) => (s ? { ...s, authenticated: false } : s))
+                  setEncounter(null)
+                })
+              }
+            >
+              <LogOut size={17} />
+              Sign out everywhere
+            </button>
           </div>
         </aside>
         <div className="workspace-body">
+          {reauth && (
+            <ReauthDialog
+              onDone={(ok) => {
+                reauth(ok)
+                setReauth(null)
+              }}
+            />
+          )}
           <header className="topbar">
             <span>
               <BookOpen size={16} /> Personal workspace

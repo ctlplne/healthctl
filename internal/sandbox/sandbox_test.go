@@ -5,6 +5,7 @@ import (
 	"os/exec"
 	"strings"
 	"testing"
+	"time"
 )
 
 // TestReaderEnvironment checks that a reader never sees the app's secrets.
@@ -15,7 +16,9 @@ func TestReaderEnvironment(t *testing.T) {
 	if _, err := exec.LookPath("env"); err != nil {
 		t.Skip("no env command")
 	}
-	out, err := Command(context.Background(), "env").Output()
+	cmd, cancel := Command(context.Background(), DocumentLimits, "env")
+	defer cancel()
+	out, err := cmd.Output()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -34,5 +37,23 @@ func TestReaderEnvironment(t *testing.T) {
 	status := Status()
 	if status["networkIsolated"] != NetworkIsolated() || status["network"] == "" {
 		t.Fatalf("the owner must be told the real isolation: %v", status)
+	}
+}
+
+func TestReaderLimits(t *testing.T) {
+	if _, err := exec.LookPath("sleep"); err != nil {
+		t.Skip("no sleep command")
+	}
+	start := time.Now()
+	cmd, cancel := Command(context.Background(), Limits{Time: 200 * time.Millisecond}, "sleep", "5")
+	defer cancel()
+	if err := cmd.Run(); err == nil || time.Since(start) > 4*time.Second {
+		t.Fatalf("the time limit did not stop the reader (%v after %s)", err, time.Since(start))
+	}
+	busy, stop := Command(context.Background(), Limits{Time: 20 * time.Second, CPUSeconds: 1}, "/bin/sh", "-c", "while :; do :; done")
+	defer stop()
+	start = time.Now()
+	if err := busy.Run(); err == nil || time.Since(start) > 15*time.Second {
+		t.Fatalf("the CPU limit did not stop the reader (%v after %s)", err, time.Since(start))
 	}
 }

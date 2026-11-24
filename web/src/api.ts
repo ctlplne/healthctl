@@ -24,6 +24,15 @@ export type RequestOptions = {
   timeoutMs?: number
   // retried marks the one retry after a CSRF token refresh.
   retried?: boolean
+  // reauthed marks the one retry after the user entered the password again.
+  reauthed?: boolean
+}
+
+// A sensitive action needs a password entered recently. The app registers a
+// handler that asks for it; the request is then sent once more.
+let reauthHandler: (() => Promise<boolean>) | null = null
+export function setReauthHandler(handler: (() => Promise<boolean>) | null) {
+  reauthHandler = handler
 }
 
 const defaultTimeout = (method: string, body?: Fields | FormData | Blob) =>
@@ -94,6 +103,9 @@ export async function api<T>(
   }
   if (!response.ok) {
     const error = await response.json().catch(() => ({}))
+    if (response.status === 403 && error.reauth && reauthHandler && !options.reauthed && (await reauthHandler())) {
+      return api<T>(path, method, body, { ...options, reauthed: true })
+    }
     throw new RequestError(
       response.status,
       typeof error.error === 'string'

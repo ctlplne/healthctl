@@ -80,7 +80,8 @@ func (s *Server) voice(w http.ResponseWriter, r *http.Request, _ int) error {
 			return err
 		}
 		// The speech reader gets no secrets and, where possible, no network.
-		cmd := sandbox.Command(ctx, cli, "-m", model, "-f", input, "-l", "en", "-t", "2", "-nt", "-otxt", "-of", out)
+		cmd, cancel := sandbox.Command(ctx, sandbox.SpeechLimits, cli, "-m", model, "-f", input, "-l", "en", "-t", "2", "-nt", "-otxt", "-of", out)
+		defer cancel()
 		if cmd.Run() != nil {
 			return problem{422, "Local transcription failed. The recording is available to retry or transcribe another way."}
 		}

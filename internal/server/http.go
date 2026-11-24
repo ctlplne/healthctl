@@ -39,7 +39,9 @@ type Server struct {
 
 	jobs        *jobRunner
 	jobsInit    sync.Once
-	beforeModel func(*clinical.Encounter) // a test hook that runs before each queued model call
+	setup1      setupCode
+	loginDelay  func(attempts int) time.Duration // a test hook for the local slow-down
+	beforeModel func(*clinical.Encounter)        // a test hook that runs before each queued model call
 }
 type object = map[string]any
 type problem struct {
@@ -75,6 +77,8 @@ func (s *Server) respondErr(w http.ResponseWriter, err error) {
 	switch {
 	case errors.As(err, &p):
 		emit(w, p.code, object{"error": p.message})
+	case errors.Is(err, errReauth):
+		emit(w, 403, object{"error": "Enter your password again to continue.", "reauth": true})
 	case errors.Is(err, sql.ErrNoRows):
 		emit(w, 404, object{"error": "This record could not be found."})
 	case errors.Is(err, store.ErrConflict):
@@ -98,7 +102,9 @@ func (s *Server) route(m *http.ServeMux, pattern string, protected bool, fn apiH
 		if protected {
 			var raw string
 			var err error
-			owner, raw, err = s.identity(r)
+			var authenticated time.Time
+			owner, raw, authenticated, err = s.identityAt(r)
+			r = r.WithContext(context.WithValue(r.Context(), authKey{}, authenticated))
 			if err != nil {
 				s.respondErr(w, err)
 				return
@@ -127,21 +133,23 @@ func (s *Server) Handler() http.Handler {
 	s.route(m, "POST /api/setup", false, s.setup)
 	s.route(m, "POST /api/login", false, s.login)
 	s.route(m, "POST /api/logout", true, s.logout)
+	s.route(m, "POST /api/logout-everywhere", true, s.logoutEverywhere)
+	s.route(m, "POST /api/reauth", true, s.reauth)
 	s.route(m, "GET /api/settings", true, s.settings)
-	s.route(m, "PUT /api/settings", true, s.updateSettings)
+	s.route(m, "PUT /api/settings", true, s.sensitive(s.updateSettings))
 	s.route(m, "POST /api/settings/test", true, s.testSettings)
 	s.route(m, "GET /api/encounters", true, s.list)
 	s.route(m, "POST /api/encounters", true, s.create)
 	s.route(m, "GET /api/encounters/{id}", true, s.get)
-	s.route(m, "DELETE /api/encounters/{id}", true, s.remove)
+	s.route(m, "DELETE /api/encounters/{id}", true, s.sensitive(s.remove))
 	s.route(m, "POST /api/encounters/{id}/actions", true, s.action)
-	s.route(m, "GET /api/encounters/{id}/export", true, s.export)
+	s.route(m, "GET /api/encounters/{id}/export", true, s.sensitive(s.export))
 	s.route(m, "GET /api/encounters/{id}/usage", true, s.usage)
 	s.route(m, "GET /api/voice", true, s.voice)
-	s.route(m, "POST /api/voice", true, s.voice)
+	s.route(m, "POST /api/voice", true, limited(voiceLimit, "recordings", s.voice))
 	s.route(m, "GET /api/diary", true, s.diary)
 	s.route(m, "POST /api/diary", true, s.diary)
-	s.route(m, "DELETE /api/diary/{id}", true, s.diary)
+	s.route(m, "DELETE /api/diary/{id}", true, s.sensitive(s.diary))
 	s.documentRoutes(m)
 	s.ehrRoutes(m)
 	s.chatGPTRoutes(m)
@@ -189,7 +197,7 @@ func (s *Server) Handler() http.Handler {
 		w.Header().Set("Referrer-Policy", "no-referrer")
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 		w.Header().Set("X-Frame-Options", "DENY")
-		w.Header().Set("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none'")
+		w.Header().Set("Content-Security-Policy", contentSecurityPolicy)
 		w.Header().Set("Permissions-Policy", "camera=(), microphone=(self), geolocation=()")
 		if s.Secure {
 			w.Header().Set("Strict-Transport-Security", "max-age=31536000")
@@ -224,3 +232,7 @@ func appRoute(p string) bool {
 }
 
 var encounterRouteID = regexp.MustCompile(`^[A-Za-z0-9_-]{1,128}$`)
+
+// contentSecurityPolicy allows only the app's own resources and, with Trusted
+// Types, refuses script-built HTML: the app never writes markup from strings.
+const contentSecurityPolicy = "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none'; require-trusted-types-for 'script'; trusted-types 'none'"

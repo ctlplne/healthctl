@@ -14,9 +14,9 @@ import (
 
 func (s *Server) interchangeRoutes(m *http.ServeMux) {
 	s.route(m, "GET /api/encounters/{id}/brief", true, s.brief)
-	s.route(m, "GET /api/encounters/{id}/fhir", true, s.fhir)
+	s.route(m, "GET /api/encounters/{id}/fhir", true, s.sensitive(s.fhir))
 	s.route(m, "GET /api/encounters/{id}/access", true, s.access)
-	s.route(m, "POST /api/encounters/{id}/access", true, s.access)
+	s.route(m, "POST /api/encounters/{id}/access", true, s.sensitive(s.access))
 	s.route(m, "DELETE /api/encounters/{id}/access", true, s.access)
 	s.route(m, "GET /api/integration/brief", false, s.sharedBrief)
 }
