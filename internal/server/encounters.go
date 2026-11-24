@@ -210,6 +210,29 @@ func (s *Server) finishModel(ctx context.Context, owner int, e *clinical.Encount
 			if m.Settings == nil {
 				m.Settings = map[string]any{}
 			}
+			// Optional stability check: run the assessment a second time and mark
+			// possibilities that appear in only one run. A failed second run
+			// keeps the first result and says so.
+			if err == nil && task == "assessment" && e.StabilityRequested {
+				var second clinical.Proposal
+				var dropped []clinical.Rejection
+				_, m2, err2 := s.Models.Generate(ctx, cfg, task, in, func(b []byte) error {
+					var candidate clinical.Proposal
+					if err := json.Unmarshal(b, &candidate); err != nil {
+						return err
+					}
+					clean, d, err := clinical.Sanitize(in, candidate)
+					second, dropped = clean, d
+					return err
+				})
+				s.recordModelUsage(ctx, owner, cfg, m2, err2, dropped)
+				if err2 == nil {
+					p.Items = clinical.MarkUnstable(p.Items, second.Items)
+					m.Settings["stabilityCheck"] = true
+				} else {
+					m.Settings["stabilityCheck"] = "second run failed"
+				}
+			}
 			m.Settings["validatorVersion"] = clinical.ValidatorVersion
 			if len(rejected) > 0 {
 				m.Settings["rejectedItems"] = clinical.RejectionCounts(rejected)

@@ -105,6 +105,7 @@ type Command struct {
 	UrgentNow            *bool       `json:"urgentNow"`
 	Provider             ProviderRef `json:"provider"`
 	ConfirmedDestination bool        `json:"confirmedDestination"`
+	StabilityCheck       bool        `json:"stabilityCheck,omitempty"`
 }
 
 type Answer struct {
@@ -187,6 +188,12 @@ type Item struct {
 	Supporting   []string `json:"supporting"`
 	Conflicting  []string `json:"conflicting"`
 	Limitations  []string `json:"limitations"`
+	// Set by the app: whether the name is on the app's condition list, the
+	// app's description, and whether the item changed between two runs.
+	Vetted            bool   `json:"vetted,omitempty"`
+	Description       string `json:"description,omitempty"`
+	DescriptionStatus string `json:"descriptionStatus,omitempty"`
+	Unstable          bool   `json:"unstable,omitempty"`
 }
 
 type ModelMeta struct {
@@ -218,6 +225,10 @@ type Assessment struct {
 	Destination     ProviderRef        `json:"destination"`
 	Items           []Item             `json:"items"`
 	Outstanding     []string           `json:"outstanding"`
+	// DontMiss holds the app's fixed lines for dangerous causes the assessment
+	// doesn't include. StabilityChecked records a second run for comparison.
+	DontMiss         []string `json:"dontMiss,omitempty"`
+	StabilityChecked bool     `json:"stabilityChecked,omitempty"`
 }
 
 type Input struct {
@@ -384,6 +395,8 @@ type SourceRecords struct {
 type AssessmentRecord struct {
 	Assessments               []Assessment               `json:"assessments"`
 	AssessmentAcknowledgments []AssessmentAcknowledgment `json:"assessmentAcknowledgments,omitempty"`
+	// StabilityRequested asks for the assessment to be run twice and compared.
+	StabilityRequested bool `json:"stabilityRequested,omitempty"`
 }
 
 type Report struct {

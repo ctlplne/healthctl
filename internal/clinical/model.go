@@ -82,11 +82,13 @@ func (e *Encounter) Accept(task string, p Proposal, meta ModelMeta, emergency st
 				}
 			}
 		}
+		items := renderItems(assessmentItems(in, p))
 		e.Assessments = append(e.Assessments, Assessment{
 			Pathways: in.Pathways, PolicyVersion: PolicyVersion, FactIDs: factIDs, ReviewIDs: inputReviews(in),
 			Version: len(e.Assessments) + 1, HistoryRevision: e.HistoryRevision, CreatedAt: time.Now().UTC(),
 			ReviewStatus: ReviewStatus, Outcome: p.Action, Provider: meta, Destination: e.Provider,
-			Items: assessmentItems(in, p), Outstanding: nonNil(p.Outstanding),
+			Items: items, Outstanding: nonNil(p.Outstanding),
+			DontMiss: dontMissLines(in.Pathways, items), StabilityChecked: meta.Settings["stabilityCheck"] == true,
 		})
 		e.Outstanding = nonNil(p.Outstanding)
 		e.OutstandingReviewIDs = inputReviews(in)

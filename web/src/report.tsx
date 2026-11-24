@@ -101,6 +101,17 @@ export function Estimate({
                 {item.clinicalTerm && item.clinicalTerm !== item.name && (
                   <p className="clinical-term">{item.clinicalTerm}</p>
                 )}
+                {!item.vetted && (
+                  <p className="badge model-suggestion">Not on the app’s condition list · the model’s own suggestion</p>
+                )}
+                {item.unstable && (
+                  <p className="badge unstable">Changed between two runs of the model · treat as uncertain</p>
+                )}
+                {item.description && (
+                  <p className="condition-description">
+                    {item.description} <span className="status">({item.descriptionStatus})</span>
+                  </p>
+                )}
                 <p>{item.explanation}</p>
                 {!!item.supporting?.length && (
                   <>
@@ -145,6 +156,13 @@ export function Estimate({
           <h4>Outstanding questions</h4>
           <BulletList values={a.outstanding} />
         </>
+      )}
+      {!!a.dontMiss?.length && (
+        <aside className="dont-miss" aria-label="Ask your clinician about">
+          <h4>Ask your clinician about</h4>
+          <p className="status">Written by the app for this kind of concern, not a diagnosis. Development content, not clinically reviewed.</p>
+          <BulletList values={a.dontMiss} />
+        </aside>
       )}
     </div>
   )

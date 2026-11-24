@@ -61,8 +61,8 @@ Status: `[x]` done with proof · `[ ]` open · `[h]` handoff, prepared with next
 - [ ] **O4** Reasoning-aware API adapters: effort parameter where supported, output budget, streaming, and accurate timeout messages. Proof: provider tests.
 - [x] **O5** The connection test runs a tiny synthetic interview through the real validator. Files: `internal/server/settings.go`. Proof: `TestClinicalConnectionProbe`; transport errors leave the probe inconclusive, contract failures fail the test with a reason code.
 - [x] **O6** A capability record per provider and model, saved with results. Proof: `TestCapabilityRecorded`.
-- [ ] **A1** App-owned assessment rendering: vetted names, rationale built from fact IDs, reviewed descriptions where available. Proof: `TestAssessmentRendering`.
-- [ ] **A2** "Don't miss" lines per pathway (development content). Proof: `TestDontMissLines`.
+- [x] **A1** App-owned assessment rendering: names on the app's condition list (`conditions.go`, development content) get the app's name, clinical term and description, labeled "development, not clinically reviewed" because no reviewed reference material exists yet; other names stay, labeled as the model's own suggestion; the rationale is built from the cited facts. Files: `internal/clinical/conditions.go`, `model.go`, `web/src/report.tsx`. Proof: `TestAssessmentRendering`.
+- [x] **A2** "Don't miss" lines per pathway (development content): when an assessment leaves out a dangerous cause for an active pathway, the app adds a fixed "Ask your clinician about…" line, never a diagnosis. Proof: `TestDontMissLines`.
 - [ ] **E3** Natural-language user simulator harness, scored by app invariants. Proof: `TestSimulatorHarness`.
 - [x] **E4** Committed scorecards regenerated; CI fails on drift. Proof: `scripts/check_scorecard.py --drift` in CI; the baseline was regenerated in the evaluator image (adaptive questions 39 → 92 since guided background questions).
 - [ ] **F4** URL routing for deep links, Back and reload. Proof: unit test + Playwright.
@@ -94,7 +94,7 @@ Status: `[x]` done with proof · `[ ]` open · `[h]` handoff, prepared with next
 - [x] **M6** Special-case context regexes (possessive relatives, whole-reply denials, past-tense questions, colour denials, conditional and current report wording) moved into the context engine; the fainting rule was removed earlier. A static test parses the package and fails if a regex outside `context.go` decides negation, experiencer, time or hypotheticals. Proof: corpus + `TestNoSpecialCaseRegexes`.
 - [ ] **O7** Deterministic evidence selection near the input budget. Proof: `TestEvidenceSelection`.
 - [ ] **O8** Cost and wait time per encounter shown to the owner. Proof: unit test.
-- [ ] **A3** Optional stability check for assessments. Proof: `TestAssessmentStability`.
+- [x] **A3** Optional stability check: the user can ask for the assessment to run twice; possibilities that appear in only one run are kept and marked uncertain, and a failed second run keeps the first result and says so. Files: `conditions.go`, `internal/server/encounters.go`, `web/src/history.tsx`. Proof: `TestAssessmentStability`.
 - [ ] **E6** Mutation testing for `internal/clinical`. Proof: `scripts/mutation_check.py`.
 - [ ] **F10** Polish: one date formatter, `autocomplete="off"` on clinical fields, warnings in the journal list, Firefox audio resampling, smaller components, lint and unit tests. Proof: `npm run lint`, `npm test`.
 - [ ] **D7** Time-based backup retention and loud failure logs. Proof: `tests/test_backup_script.py`.

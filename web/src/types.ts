@@ -107,8 +107,14 @@ export type Item = {
   supporting: string[]
   conflicting: string[]
   limitations: string[]
+  vetted?: boolean
+  description?: string
+  descriptionStatus?: string
+  unstable?: boolean
 }
 export type Assessment = {
+  dontMiss?: string[]
+  stabilityChecked?: boolean
   literature?: (import('./evidence').SearchResult & { itemIndex: number })[]
   corpusVersion?: string
   version: number

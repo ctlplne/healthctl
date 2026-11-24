@@ -217,6 +217,7 @@ export function AssessmentRequest({ notice, retry, busy, onAction, onOpenReport 
   onOpenReport: () => void
 }) {
   const [acknowledged, setAcknowledged] = useState(false)
+  const [stability, setStability] = useState(false)
   return (
     <div className="assessment-request">
       <h2>Before you request an AI assessment</h2>
@@ -229,9 +230,17 @@ export function AssessmentRequest({ notice, retry, busy, onAction, onOpenReport 
           onChange={(ev) => setAcknowledged(ev.target.checked)} />
         {notice.choice}
       </label>
+      {!retry && (
+        <label className="check">
+          <input type="checkbox" checked={stability} disabled={busy}
+            onChange={(ev) => setStability(ev.target.checked)} />
+          Run the assessment twice and mark possibilities that change between runs (uses two model calls)
+        </label>
+      )}
       <div className="actions">
         <button className="primary" disabled={busy || !acknowledged} onClick={() => void onAction({
           action: retry ? 'retry' : 'assess',
+          ...(!retry && stability ? { stabilityCheck: true } : {}),
           assessmentAcknowledged: acknowledged,
           assessmentNoticeVersion: notice.version,
         })}>

@@ -352,6 +352,7 @@ func (e *Encounter) Apply(c Command, emergency string) error {
 		}
 		e.State = "assessing"
 		e.Pending = "assessment"
+		e.StabilityRequested = c.StabilityCheck
 		e.Failure = ""
 		e.FailedTask = ""
 	case "retry":

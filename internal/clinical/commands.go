@@ -34,7 +34,7 @@ var commandFields = map[string][]string{
 	"reuse_fact":          {"sourceEncounterId", "factId", "date", "text", "category", "reconciliationStatus"},
 	"review":              {},
 	"confirm":             {},
-	"assess":              {},
+	"assess":              {"stabilityCheck"},
 	"retry":               {},
 	"focus_interview":     {},
 	"continue":            {},
