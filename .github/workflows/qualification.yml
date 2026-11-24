@@ -80,7 +80,7 @@ jobs:
           ARCH: ${{ matrix.arch }}
         run: |
           ./scripts/bundle-desktop-images.sh build/resources
-          cp desktop/manage.sh desktop/desktop.yaml compose.yaml build/resources/
+          cp desktop/manage.sh desktop/verify-images.sh desktop/desktop.yaml compose.yaml build/resources/
           go build -o build/resources/archive ./cmd/healthctl-archive
           read -r app db _ < build/resources/images.txt
           test "$(docker image inspect --format '{{.Architecture}}' "$app")" = "$ARCH"

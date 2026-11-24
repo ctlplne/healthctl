@@ -54,6 +54,21 @@ class PackagedSources(unittest.TestCase):
         self.assertEqual(self.missing(block.replace("\\", " ").split()), [], "scripts/build-desktop.sh leaves these out of its source archive")
 
 
+class DesktopBundle(unittest.TestCase):
+    """Every helper file manage.sh runs from its resources is copied wherever a
+    desktop bundle is assembled: the Mac build and the qualification job."""
+
+    def test_bundles_include_the_helpers_manage_runs(self):
+        manage = (ROOT / "desktop/manage.sh").read_text()
+        helpers = sorted({m for m in re.findall(r"\$resources/([\w.-]+)", manage) if (ROOT / "desktop" / m).is_file()})
+        self.assertIn("verify-images.sh", helpers)
+        qualification = re.search(r"cp desktop/manage\.sh[^\n]*build/resources/", (ROOT / ".github/workflows/qualification.yml").read_text()).group(0)
+        mac = re.search(r"cp compose\.yaml desktop/desktop\.yaml[^\n]*", (ROOT / "scripts/build-desktop.sh").read_text()).group(0)
+        for helper in helpers:
+            self.assertIn("desktop/" + helper, qualification, "the qualification bundle lacks " + helper)
+            self.assertIn("desktop/" + helper, mac, "the Mac bundle lacks " + helper)
+
+
 class DesktopImages(unittest.TestCase):
     def run_check(self, ids, expected):
         with tempfile.TemporaryDirectory() as d:
