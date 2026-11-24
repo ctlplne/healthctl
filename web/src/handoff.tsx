@@ -478,6 +478,7 @@ export function AfterVisit({
         <label>
           What happened?
           <textarea
+ autoComplete="off"
             required
             maxLength={2000}
             value={text}

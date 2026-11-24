@@ -605,6 +605,7 @@ export function EncounterPage({
                         <label>
                           Your answer
                           <textarea
+ autoComplete="off"
                             ref={textarea}
                             maxLength={4000}
                             rows={2}

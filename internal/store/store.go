@@ -239,6 +239,8 @@ type Entry struct {
 	UpdatedAt       time.Time            `json:"updatedAt"`
 	Provider        clinical.ProviderRef `json:"provider"`
 	Demo            bool                 `json:"demo"`
+	// Warning is "emergency" or "check" when the encounter has an active warning.
+	Warning string `json:"warning,omitempty"`
 }
 
 func (s *Store) List(ctx context.Context, owner int) ([]Entry, error) {
@@ -258,7 +260,13 @@ func (s *Store) List(ctx context.Context, owner int) ([]Entry, error) {
 		if err != nil {
 			return nil, err
 		}
-		out = append(out, Entry{e.Pending, e.ID, e.Concern, e.State, e.Revision, e.HistoryRevision, e.CreatedAt, e.UpdatedAt, e.Provider, e.Demo})
+		warning := ""
+		for _, w := range e.Warnings {
+			if w.Active && (w.Level == "" || warning == "") {
+				warning = map[bool]string{true: "emergency", false: "check"}[w.Level == ""]
+			}
+		}
+		out = append(out, Entry{e.Pending, e.ID, e.Concern, e.State, e.Revision, e.HistoryRevision, e.CreatedAt, e.UpdatedAt, e.Provider, e.Demo, warning})
 	}
 	return out, rows.Err()
 }

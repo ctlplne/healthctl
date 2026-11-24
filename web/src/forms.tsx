@@ -289,6 +289,11 @@ export function Journal({
                 </span>
                 <span className="row-tags">
                   {(row.demo || row.provider?.kind === 'demo') && <DemoTag />}
+                  {row.warning && (
+                    <span className={'tag warning-tag ' + row.warning}>
+                      {row.warning === 'emergency' ? 'Urgent warning' : 'Get checked promptly'}
+                    </span>
+                  )}
                   <span className="tag">
                     {row.pending && <LoaderCircle size={13} className="spin" aria-hidden="true" />}
                     {row.pending ? 'Waiting for model' : stateName(row.state)}
@@ -685,6 +690,7 @@ export function IntakeForm({
               ? 'What would you like to understand?'
               : 'Chief concern'}
             <textarea
+ autoComplete="off"
               required
               maxLength={4000}
               rows={3}

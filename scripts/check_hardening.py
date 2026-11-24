@@ -52,6 +52,14 @@ def go_vet():
     return out.returncode == 0, "clean" if out.returncode == 0 else tail(out.stderr + out.stdout)
 
 
+def go_build():
+    # build/ holds scratch output; a go.mod there keeps stray Go files out.
+    if (ROOT / "build").is_dir() and not (ROOT / "build" / "go.mod").exists():
+        (ROOT / "build" / "go.mod").write_text("// Scratch output, kept out of the main module.\nmodule healthctl.local/build\n\ngo 1.26\n")
+    out = run(["go", "build", "./..."])
+    return out.returncode == 0, "go build ./... ok" if out.returncode == 0 else tail(out.stderr + out.stdout)
+
+
 def go_test_race():
     out = run(["go", "test", "-race", "-count=1", *PACKAGES], timeout=1800)
     ok_lines = [l for l in out.stdout.splitlines() if l.startswith("ok ")]
@@ -101,6 +109,9 @@ def web_checks():
         build = run(["npx", "vite", "build", "--outDir", out_dir, "--emptyOutDir"], cwd=WEB)
     if build.returncode != 0:
         return False, "vite build: " + tail(build.stdout + build.stderr)
+    lint = run(["npm", "run", "lint", "--silent"], cwd=WEB)
+    if lint.returncode != 0:
+        return False, "web lint: " + tail(lint.stdout + lint.stderr)
     tests = run(["npm", "test", "--silent"], cwd=WEB)
     if tests.returncode != 0:
         return False, "web unit tests: " + tail(tests.stdout + tests.stderr)
@@ -211,6 +222,7 @@ def main():
     args = parser.parse_args()
     os.chdir(ROOT)
     check("go vet ./cmd/... ./internal/... ./evaluation/...", go_vet)
+    check("go build ./...", go_build)
     check("go test -race ./cmd/... ./internal/... ./evaluation/...", go_test_race)
     check("PostgreSQL integration tests", postgres_tests)
     check("web tsc, vite build and unit tests", web_checks)

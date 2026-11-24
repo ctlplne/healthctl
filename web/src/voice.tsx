@@ -2,6 +2,23 @@ import { useEffect, useRef, useState } from 'react'
 import { ScreenAlert, type ScreenResult } from './screen'
 import { api } from './api'
 
+// resample converts captured audio to the 16 kHz the transcriber expects.
+// Firefox records at the device rate and won't connect a 16 kHz context to
+// the microphone, so the app averages down to 16 kHz itself.
+export function resample(input: Float32Array, from: number, to = 16000): Float32Array {
+  if (from === to) return input
+  const ratio = from / to
+  const out = new Float32Array(Math.floor(input.length / ratio))
+  for (let i = 0; i < out.length; i++) {
+    const start = Math.floor(i * ratio)
+    const end = Math.min(input.length, Math.max(start + 1, Math.floor((i + 1) * ratio)))
+    let sum = 0
+    for (let j = start; j < end; j++) sum += input[j]
+    out[i] = sum / (end - start)
+  }
+  return out
+}
+
 export function encodeWav(chunks: Float32Array[]) {
   const length = chunks.reduce((sum, chunk) => sum + chunk.length, 0)
   const bytes = new ArrayBuffer(44 + 2 * length)
@@ -144,6 +161,16 @@ export function VoiceInput({
         return
       }
       ctx = new AudioContext({ sampleRate: 16000 })
+      let src: MediaStreamAudioSourceNode
+      try {
+        src = ctx.createMediaStreamSource(stream)
+      } catch {
+        // Firefox: record at the device rate and resample each chunk.
+        await ctx.close()
+        ctx = new AudioContext()
+        src = ctx.createMediaStreamSource(stream)
+      }
+      const rate = ctx.sampleRate
       await ctx.audioWorklet.addModule('/voice-worklet.js')
       if (!alive.current) {
         stream.getTracks().forEach((t) => t.stop())
@@ -151,8 +178,7 @@ export function VoiceInput({
         return
       }
       const node = new AudioWorkletNode(ctx, 'healthctl-microphone')
-      const src = ctx.createMediaStreamSource(stream),
-        mute = ctx.createGain()
+      const mute = ctx.createGain()
       mute.gain.value = 0
       src.connect(node)
       node.connect(mute)
@@ -175,7 +201,7 @@ export function VoiceInput({
         }
       }
       node.port.onmessage = ({ data }: { data: Float32Array }) => {
-        const part = data.subarray(0, 1440000 - samples)
+        const part = resample(data, rate).subarray(0, 1440000 - samples)
         chunks.push(part)
         samples += part.length
         if (samples >= 1440000) stop.current?.(true)
@@ -305,6 +331,7 @@ export function VoiceInput({
               <label>
                 Transcript to review
                 <textarea
+ autoComplete="off"
                   value={draft}
                   onChange={(e) => {
                     setDraft(e.target.value)

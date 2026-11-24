@@ -344,6 +344,7 @@ export function EvidenceManager({ busy, run }: { busy: boolean; run: Run }) {
         <label>
           Licensed collection pack (JSON)
           <textarea
+ autoComplete="off"
             required
             rows={4}
             value={pack}

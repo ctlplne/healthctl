@@ -300,7 +300,9 @@ func (s *Server) export(w http.ResponseWriter, r *http.Request, owner int) error
 	}
 	w.Header().Set("Content-Disposition", `attachment; filename="healthctl.json"`)
 	s.refreshEvidence(r.Context(), owner, e)
-	emit(w, 200, e.Report())
+	report := e.Report()
+	report.Installation = s.installationSettings()
+	emit(w, 200, report)
 	return nil
 }
 func (s *Server) remove(w http.ResponseWriter, r *http.Request, owner int) error {

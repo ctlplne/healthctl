@@ -25,7 +25,7 @@ for (const [path, pkg] of Object.entries(lock)) {
   add(name, pkg.version, pkg.resolved, pkg.license || 'NOASSERTION')
 }
 add('whisper.cpp', '1.9.5', 'https://github.com/ggml-org/whisper.cpp/tree/v1.9.5', 'MIT', digest('/usr/local/bin/whisper-cli'))
-add('ggml-tiny.en-q5_1.bin', 'tiny.en-q5_1', 'https://huggingface.co/ggerganov/whisper.cpp', 'MIT', digest('/usr/share/healthctl/whisper.bin'))
+add('ggml-base.en-q5_1.bin', 'base.en-q5_1', 'https://huggingface.co/ggerganov/whisper.cpp', 'MIT', digest('/usr/share/healthctl/whisper.bin'))
 const path = '/usr/share/licenses/clinical-history/starter.json'
 const evidence = JSON.parse(fs.readFileSync(root + path))
 add(evidence.id, evidence.version, 'https://github.com/ctlplne/healthctl', 'NOASSERTION', digest(path))

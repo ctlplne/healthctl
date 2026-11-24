@@ -47,6 +47,7 @@ function AnswerEditor({
         <label>
           Corrected answer
           <textarea
+ autoComplete="off"
             required
             rows={3}
             maxLength={4000}
@@ -96,6 +97,7 @@ function FactEditor({
       <label>
         Corrected wording
         <textarea
+ autoComplete="off"
           required
           rows={2}
           maxLength={4000}

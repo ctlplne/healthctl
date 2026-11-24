@@ -196,6 +196,7 @@ export function SourceReview({
               <label>
                 Report text
                 <textarea
+ autoComplete="off"
                   required
                   maxLength={250000}
                   rows={6}
@@ -357,6 +358,7 @@ function RowEditor({
       <label>
         Exact passage for this entry
         <textarea
+ autoComplete="off"
           required
           rows={2}
           maxLength={4000}
@@ -879,6 +881,7 @@ function DocumentReview({
             <label>
               Original wording
               <textarea
+ autoComplete="off"
                 required
                 value={passage}
                 onChange={(ev) => setPassage(ev.target.value)}

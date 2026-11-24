@@ -410,9 +410,11 @@ type AssessmentRecord struct {
 }
 
 type Report struct {
-	PolicyReview               PolicyRecord `json:"policyReview"`
-	OutdatedAssessmentVersions []int        `json:"outdatedAssessmentVersions"`
-	CurrentAssessmentVersion   int          `json:"currentAssessmentVersion,omitempty"`
+	// Installation holds the regional settings in effect when it was exported.
+	Installation               map[string]string `json:"installation,omitempty"`
+	PolicyReview               PolicyRecord      `json:"policyReview"`
+	OutdatedAssessmentVersions []int             `json:"outdatedAssessmentVersions"`
+	CurrentAssessmentVersion   int               `json:"currentAssessmentVersion,omitempty"`
 	Encounter
 	PreviewNotice string    `json:"previewNotice"`
 	ModelGuidance string    `json:"modelGuidance"`

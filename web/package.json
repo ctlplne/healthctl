@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "test:e2e": "playwright test",
-    "test": "vitest run"
+    "test": "vitest run",
+    "lint": "tsc --noEmit -p . && node scripts/lint.mjs"
   },
   "dependencies": {
     "@fontsource/geist": "5.2.8",

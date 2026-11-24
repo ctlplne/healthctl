@@ -37,7 +37,7 @@ def verify(package, wav_source, resources_only=False):
             res = app / "Contents/Resources"
         notices = res / "notices"
         source_archive = res / "healthctl-source.tar.gz"
-        image_packages = {"app": {"poppler-utils", "tesseract-ocr", "whisper.cpp", "ggml-tiny.en-q5_1.bin", "nih-adult-reference", "react"},
+        image_packages = {"app": {"poppler-utils", "tesseract-ocr", "whisper.cpp", "ggml-base.en-q5_1.bin", "nih-adult-reference", "react"},
                           "db": {"postgresql", "musl"}}
         for name, required in ({} if source_archive.exists() else image_packages).items():
             inventory = json.loads((notices / (name + ".spdx.json")).read_bytes())

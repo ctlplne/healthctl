@@ -110,6 +110,7 @@ function ReconcileForm({
       <label>
         How does this apply now?
         <textarea
+ autoComplete="off"
           required
           maxLength={1000}
           value={text}

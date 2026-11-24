@@ -1,3 +1,4 @@
+import { date } from './types'
 import { useState } from 'react'
 import type { Encounter, Fields } from './types'
 import type { Run } from './forms'
@@ -51,7 +52,7 @@ export function ObservationPhotos({ e, busy, run, refresh, act }: Props) {
             rel="noreferrer"
           >
             View saved photo · {photo.area} ·{' '}
-            {new Date(photo.createdAt).toLocaleDateString()}
+            {date(photo.createdAt)}
           </a>{' '}
           {remove?.id === photo.id ? (
             <>
@@ -183,6 +184,7 @@ export function ObservationPhotos({ e, busy, run, refresh, act }: Props) {
           <label>
             Describe the visible change in your own words
             <textarea
+ autoComplete="off"
               rows={2}
               maxLength={2000}
               required

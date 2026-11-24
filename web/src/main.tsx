@@ -36,6 +36,7 @@ import { api, RequestError, setReauthHandler, SIGNED_OUT, updateToken } from './
 import { isAppPath, parseRoute, routePath, type Page } from './route'
 import { schedule } from './poll'
 import { ReauthDialog } from './reauth'
+import { RELEASE, updateNotice } from './release'
 import { Auth, IntakeForm, Journal, ProviderEditor } from './forms'
 import { EncounterPage } from './encounter'
 import { Brand, Notice } from './shared'
@@ -555,6 +556,12 @@ function App() {
           </div>
         </aside>
         <div className="workspace-body">
+          {updateNotice(new Date()) && (
+            <p className="update-notice" role="note">
+              {updateNotice(new Date())}{' '}
+              <a href={RELEASE.page} target="_blank" rel="noreferrer">Release page (opens in a new tab)</a>
+            </p>
+          )}
           {reauth && (
             <ReauthDialog
               onDone={(ok) => {

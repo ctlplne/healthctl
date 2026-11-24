@@ -87,7 +87,7 @@ Status: `[x]` done with proof · `[ ]` open · `[h]` handoff, prepared with next
 
 ## P2: maintainability and polish
 
-- [ ] **S10** Emergency-contact and locale settings validated at startup and shown in exports. Proof: `TestStartupConfig`.
+- [x] **S10** The emergency contact and care destination are validated at startup (plain one-line text; the contact must include a number), the locale and units already were, and every JSON export carries the settings in effect (`installation`). Files: `internal/server/startup.go`, `cmd/healthctl/main.go`. Proof: `TestStartupConfig`.
 - [x] **V11** Controlled vocabulary for concepts (plain term plus an ICD-10-CM code where well established, development content); facts carry the term and code, and contradictions compare terms. Files: `internal/clinical/vocabulary.go`, `encounter.go`. Proof: `TestConceptVocabulary`.
 - [x] **C4** "Why this question?" written by the app: intent questions use the catalog reason, free-text and report questions a fixed app sentence, and the model's own note is kept separately and shown only as a labeled suggestion. Files: `question_source.go`, `web/src/encounter.tsx`. Proof: `TestQuestionReasonAppAuthored`.
 - [x] **M5** No display-time "patient"→"user" rewriting: the version 1→2 migration rewrites stored model wording once, and `ForDisplay` returns the record as stored. The two existing wording tests now read through the migration with unchanged assertions. Proof: `TestStoredWordingMigrated`, `TestRoleLabelsInOlderModelText`.
@@ -96,11 +96,11 @@ Status: `[x]` done with proof · `[ ]` open · `[h]` handoff, prepared with next
 - [x] **O8** Cost and wait time per encounter shown to the owner: model calls are linked to their encounter (migration 009), `GET /api/encounters/{id}/usage` adds them up, and the encounter details show calls, tokens, waiting time and a cost only when every call reported a price. Proof: `web/src/usage.test.ts`, `TestEncounterUsagePostgres`.
 - [x] **A3** Optional stability check: the user can ask for the assessment to run twice; possibilities that appear in only one run are kept and marked uncertain, and a failed second run keeps the first result and says so. Files: `conditions.go`, `internal/server/encounters.go`, `web/src/history.tsx`. Proof: `TestAssessmentStability`.
 - [x] **E6** Mutation testing for `internal/clinical`: 14 mutants of safety and control rules, applied with `go test -overlay` so source files are never touched; a mutant that doesn't compile counts as an error, not a kill. The first run found that no test reached the negation word limit; `TestNegationReachesOnlyAFewWords` and six run-on corpus rows now cover it. Proof: `python3 scripts/mutation_check.py` (14 of 14 killed), run by `check_hardening.py`.
-- [ ] **F10** Polish: one date formatter, `autocomplete="off"` on clinical fields, warnings in the journal list, Firefox audio resampling, smaller components, lint and unit tests. Proof: `npm run lint`, `npm test`.
-- [ ] **D7** Time-based backup retention and loud failure logs. Proof: `tests/test_backup_script.py`.
+- [x] **F10** Polish: every date goes through one formatter, clinical text areas have `autocomplete="off"`, the journal shows warning tags, dictation resamples to 16 kHz when Firefox won't open a 16 kHz context, and `npm run lint` enforces these rules plus no HTML from strings. Component splitting went only as far as the new pieces (`redflags`, `reauth`, `usage`, `release`); the large `encounter.tsx` and `documents.tsx` remain. Proof: `npm run lint`, `npm test` (29 tests).
+- [x] **D7** Backups are kept by age (`CLINICAL_BACKUP_KEEP_DAYS`, default 30) with a floor of the newest `CLINICAL_BACKUP_KEEP`; every failure prints `backup: FAILED` and a one-shot run exits non-zero. Proof: `tests/test_backup_script.py`.
 - [x] **X6** Trusted Types in the CSP (`require-trusted-types-for 'script'`; the app writes no markup from strings), and the health check reads its address from `CLINICAL_LISTEN`. Proof: `TestSecurityHeaders`, `TestHealthURLFollowsListenAddress`, browser suite under Chromium.
-- [ ] **R4** Update notice without the app contacting any server. Proof: unit test.
-- [ ] **R5** Better default dictation model; `go build ./...` works locally. Proof: Dockerfile check + `go build ./...`.
+- [x] **R4** An update reminder computed in the browser from the release date, shown after 90 days with a link to the release page; the app never contacts a server to check. Files: `web/src/release.ts`. Proof: `web/src/release.test.ts`.
+- [x] **R5** The default dictation model is Whisper `base.en` (q5_1, pinned by commit and SHA-256) instead of `tiny.en`; `go build ./...` works because a `go.mod` in the scratch `build/` folder keeps stray Go files out (the older files there were left in place). Proof: `tests/test_release_pins.py`, the `go build ./...` check in `check_hardening.py`.
 
 ## HANDOFF (needs a person)
 

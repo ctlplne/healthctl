@@ -1,3 +1,4 @@
+import { date } from './types'
 import { useState } from 'react'
 import previewNotice from '../../internal/clinical/preview.txt?raw'
 import { VoiceInput } from './voice'
@@ -17,10 +18,10 @@ export function detailLine(a: Answer) {
   const d = a.detail
   if (!d) return ''
   return [
-    d.onset && 'Started ' + new Date(d.onset).toLocaleString(),
-    d.end && 'Ended ' + new Date(d.end).toLocaleString(),
+    d.onset && 'Started ' + date(d.onset, true),
+    d.end && 'Ended ' + date(d.end, true),
     d.approximate && 'Approximate times',
-    d.firstRecorded && 'Recorded ' + new Date(d.firstRecorded).toLocaleString(),
+    d.firstRecorded && 'Recorded ' + date(d.firstRecorded, true),
     d.feedbackFrom &&
       'Earlier feedback from ' + d.feedbackFrom + ' · ' + d.feedbackText,
     d.printed && 'Printed label · ' + d.printed,
@@ -36,7 +37,7 @@ function downloadInvitation(e: Encounter, purpose: string) {
     throw Error('Open a saved encounter first.')
   const witness = purpose === 'witness',
     title = witness ? 'Witness observation' : 'Feedback on the visit brief'
-  const html = `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; form-action 'none'; base-uri 'none'"><title>${title}</title><style>body{font:18px system-ui;max-width:38rem;margin:5vh auto;padding:1rem}label,textarea,select,input,button{display:block;width:100%;margin:1rem 0;font:inherit}textarea{height:8rem}</style><h1>${title}</h1><p>${previewNotice} Return the response file to the person who sent you this form. They decide whether to include it.</p><label>Your name or relationship<input id="speaker" maxlength="80"></label>${witness ? '' : '<label>Feedback category<select id="category"><option value="retake">Had to ask again</option><option value="incorrect">Something was incorrect</option><option value="changed_question">Changed my next question</option></select></label>'}<label>${witness ? 'In your own words, what did you personally observe?' : 'Which detail, and what would you change?'}<textarea id="words" maxlength="2500"></textarea></label><button id="save">Save response file</button><p id="message" role="status"></p><script>document.getElementById('save').onclick=()=>{const val=id=>document.getElementById(id).value.trim();if(!val('speaker')||!val('words')){document.getElementById('message').textContent='Add your name or relationship and your account.';return}const reply={format:'healthctl-contribution-1',purpose:'${purpose}',encounter:'${e.id}',revision:${e.historyRevision},speaker:val('speaker'),text:val('words'),category:${witness ? "''" : "val('category')"}};const u=URL.createObjectURL(new Blob([JSON.stringify(reply)],{type:'application/json'}));const a=document.createElement('a');a.href=u;a.download='healthctl-response.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),5000);document.getElementById('message').textContent='Response prepared. Return it privately to the person who sent you this form.'}</script></html>`
+  const html = `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; form-action 'none'; base-uri 'none'"><title>${title}</title><style>body{font:18px system-ui;max-width:38rem;margin:5vh auto;padding:1rem}label,textarea,select,input,button{display:block;width:100%;margin:1rem 0;font:inherit}textarea{height:8rem}</style><h1>${title}</h1><p>${previewNotice} Return the response file to the person who sent you this form. They decide whether to include it.</p><label>Your name or relationship<input id="speaker" maxlength="80"></label>${witness ? '' : '<label>Feedback category<select id="category"><option value="retake">Had to ask again</option><option value="incorrect">Something was incorrect</option><option value="changed_question">Changed my next question</option></select></label>'}<label>${witness ? 'In your own words, what did you personally observe?' : 'Which detail, and what would you change?'}<textarea autoComplete="off" id="words" maxlength="2500"></textarea></label><button id="save">Save response file</button><p id="message" role="status"></p><script>document.getElementById('save').onclick=()=>{const val=id=>document.getElementById(id).value.trim();if(!val('speaker')||!val('words')){document.getElementById('message').textContent='Add your name or relationship and your account.';return}const reply={format:'healthctl-contribution-1',purpose:'${purpose}',encounter:'${e.id}',revision:${e.historyRevision},speaker:val('speaker'),text:val('words'),category:${witness ? "''" : "val('category')"}};const u=URL.createObjectURL(new Blob([JSON.stringify(reply)],{type:'application/json'}));const a=document.createElement('a');a.href=u;a.download='healthctl-response.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),5000);document.getElementById('message').textContent='Response prepared. Return it privately to the person who sent you this form.'}</script></html>`
   const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }))
   const link = document.createElement('a')
   link.href = url
@@ -332,6 +333,7 @@ export function VisitPrep({
                   ? 'Feedback for your review'
                   : 'What happened during this episode?'}
           <textarea
+ autoComplete="off"
             required
             maxLength={2500}
             value={text}

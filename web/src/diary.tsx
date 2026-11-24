@@ -1,3 +1,4 @@
+import { date } from './types'
 import { useEffect, useState } from 'react'
 import { api } from './api'
 import { VoiceInput } from './voice'
@@ -98,6 +99,7 @@ export function Diary({ onClose, onVisit }: { onClose: () => void; onVisit?: (id
         <label>
           What happened?
           <textarea
+ autoComplete="off"
             required
             maxLength={3000}
             value={text}
@@ -155,9 +157,9 @@ export function Diary({ onClose, onVisit }: { onClose: () => void; onVisit?: (id
           {x.warning && <p className={'diary-warning ' + x.warning.level}>{x.warning.level === 'check' ? 'Check promptly' : 'Urgent warning'} · {x.warning.message}</p>}
           <p>{x.text}</p>
           <small>
-            Started {new Date(x.onset).toLocaleString()}
+            Started {date(x.onset, true)}
             {x.approximate ? ' (approximate)' : ''} · Recorded{' '}
-            {new Date(x.recordedAt).toLocaleString()}
+            {date(x.recordedAt, true)}
           </small>
           {onVisit && <button className="secondary" onClick={() => onVisit(x.id)}>Start a visit with this episode</button>}
           <button
@@ -260,7 +262,7 @@ export function ReturnPicker({
             .filter((x) => !x.demo)
             .map((r) => (
               <option key={r.id} value={r.id}>
-                {r.concern} · {new Date(r.createdAt).toLocaleDateString()}
+                {r.concern} · {date(r.createdAt)}
               </option>
             ))}
         </select>
@@ -452,7 +454,7 @@ export function ReturnPicker({
             checked={value.diaryIds.includes(d.id)}
             onChange={() => toggle('diaryIds', d.id)}
           />
-          {new Date(d.onset).toLocaleString()} · {d.text}
+          {date(d.onset, true)} · {d.text}
         </label>
       ))}
       {(value.source || value.diaryIds.length > 0) && (

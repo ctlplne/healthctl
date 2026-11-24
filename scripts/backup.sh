@@ -4,9 +4,12 @@ set -eu
 # The database password arrives as a Compose secret file.
 if [ -n "${PGPASSWORD_FILE:-}" ] && [ -r "$PGPASSWORD_FILE" ] && [ -z "${PGPASSWORD:-}" ]; then PGPASSWORD=$(cat "$PGPASSWORD_FILE"); export PGPASSWORD; fi
 umask 077
-cd /var/lib/postgresql/data
-fail_config() { echo "backup: $1" >&2; exit 2; }
+cd "${BACKUP_DIR:-/var/lib/postgresql/data}"
+fail_config() { echo "backup: FAILED: $1" >&2; exit 2; }
+BACKUP_KEEP_DAYS="${BACKUP_KEEP_DAYS:-30}"
 case "${BACKUP_KEEP:-}" in ''|*[!0-9]*) fail_config "BACKUP_KEEP must be a whole number";; esac
+case "$BACKUP_KEEP_DAYS" in ''|*[!0-9]*) fail_config "BACKUP_KEEP_DAYS must be a whole number";; esac
+[ "$BACKUP_KEEP_DAYS" -ge 1 ] && [ "$BACKUP_KEEP_DAYS" -le 3650 ] || fail_config "BACKUP_KEEP_DAYS must be 1 to 3650"
 case "${BACKUP_INTERVAL_HOURS:-}" in ''|*[!0-9]*) fail_config "BACKUP_INTERVAL_HOURS must be a whole number";; esac
 [ "$BACKUP_KEEP" -ge 1 ] && [ "$BACKUP_KEEP" -le 365 ] || fail_config "BACKUP_KEEP must be 1 to 365"
 [ "$BACKUP_INTERVAL_HOURS" -ge 1 ] && [ "$BACKUP_INTERVAL_HOURS" -le 8760 ] || fail_config "BACKUP_INTERVAL_HOURS must be 1 to 8760"
@@ -39,16 +42,22 @@ while :; do
     if pg_dump -Fc --no-owner --no-acl --exclude-table-data=public.sessions --exclude-table-data=public.brief_access --exclude-table-data=public.chatgpt_vault > "$tmp" && pg_restore --list "$tmp" >/dev/null; then
         mv "$tmp" "clinical-$stamp.dump"
         trap - EXIT HUP INT TERM
-        # Only files created by this scheduler have this fixed name format.
-        ls -1r clinical-????????T??????Z.dump | tail -n "+$((BACKUP_KEEP + 1))" | while IFS= read -r oldest; do rm -f "./$oldest"; done
+        # Retention by age: a snapshot is removed only when it is older than
+        # BACKUP_KEEP_DAYS and not among the newest BACKUP_KEEP. Only files
+        # created by this scheduler have this fixed name format.
+        ls -1r clinical-????????T??????Z.dump | tail -n "+$((BACKUP_KEEP + 1))" | while IFS= read -r candidate; do
+            if [ -n "$(find "./$candidate" -mtime "+$BACKUP_KEEP_DAYS" 2>/dev/null)" ]; then rm -f "./$candidate"; fi
+        done
         echo "Backup completed $stamp"
         status ok
+        rc=0
     else
         rm -f "$tmp"
         trap - EXIT HUP INT TERM
-        echo "backup: FAILED at $stamp; the previous snapshots are unchanged" >&2
+        echo "backup: FAILED at $stamp: pg_dump or its verification failed; the previous snapshots are unchanged" >&2
         status dump_failed
+        rc=1
     fi
-    [ "${1:-}" != once ] || exit 0
+    [ "${1:-}" != once ] || exit "$rc"
     sleep "$((BACKUP_INTERVAL_HOURS * 3600))"
 done

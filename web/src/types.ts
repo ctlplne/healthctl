@@ -141,6 +141,7 @@ export type EncounterRow = {
   updatedAt: string
   provider: Provider
   demo?: boolean
+  warning?: 'emergency' | 'check'
 }
 export type SafetyCheck = {
   historyRevision: number
