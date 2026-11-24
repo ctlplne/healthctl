@@ -14,7 +14,7 @@ import (
 	"github.com/ctlplne/healthctl/internal/store"
 )
 
-func TestReceiptKeyIndependent(t *testing.T) {
+func TestReceiptKeyIndependentPostgres(t *testing.T) {
 	db, dsn, key := isolatedStore(t, true)
 	ctx := t.Context()
 	value := object{"action": "review"}

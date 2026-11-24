@@ -19,7 +19,9 @@ services:
       context: .
       target: server
     profiles: [verify]
-    command: ["go","test","-race","-count=1","-timeout=180s","-v","./..."]
+    # The PostgreSQL suite runs for about four minutes under the race detector
+    # (bcrypt sign-ins dominate); the limit still stops a hung test.
+    command: ["go","test","-race","-count=1","-timeout=600s","-v","./..."]
     depends_on:
       db: {condition: service_healthy}
     environment:

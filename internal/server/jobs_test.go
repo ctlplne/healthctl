@@ -88,7 +88,7 @@ func waitFor(t *testing.T, what string, ok func() bool) {
 	t.Fatalf("timed out waiting for %s", what)
 }
 
-func TestSupersededCallCancelled(t *testing.T) {
+func TestSupersededCallCancelledPostgres(t *testing.T) {
 	db, _, _ := testStore(t)
 	var cancelled, concurrent, peak atomic.Int32
 	started, release := make(chan struct{}, 8), make(chan struct{})

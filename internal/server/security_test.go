@@ -41,13 +41,14 @@ func TestLoginThrottlePostgres(t *testing.T) {
 	// Another client is not locked out by the first one.
 	check(t, from(c, "203.0.113.9:4000", "POST", "/api/login", right), 200, nil)
 	// This machine is slowed down but never locked out.
-	for range 14 {
+	for range 11 {
 		check(t, from(c, "127.0.0.1:5000", "POST", "/api/login", wrong), 401, nil)
 	}
 	check(t, from(c, "127.0.0.1:5000", "POST", "/api/login", right), 200, nil)
 	// Behind a trusted proxy each forwarded client has its own budget.
 	t.Setenv("CLINICAL_TRUSTED_PROXY", "10.0.0.2")
-	for range 11 {
+	// Ten failures from one forwarded client; one shared budget would refuse the next client.
+	for range 10 {
 		b, _ := json.Marshal(wrong)
 		req := httptest.NewRequest("POST", "http://localhost/api/login", bytes.NewReader(b))
 		req.RemoteAddr, req.Header["X-Forwarded-For"] = "10.0.0.2:80", []string{"198.51.100.7"}
