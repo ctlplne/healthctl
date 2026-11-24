@@ -8,7 +8,7 @@ import (
 )
 
 // ValidatorVersion identifies the rules that accepted or rejected a proposal.
-const ValidatorVersion = "validator-2"
+const ValidatorVersion = "validator-3"
 
 // Reason codes name every way the validator can reject part of a proposal.
 // They are fixed application strings with no user or model text, so they are

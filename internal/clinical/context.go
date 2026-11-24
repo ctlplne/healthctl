@@ -382,6 +382,53 @@ func historyAt(text string, at int, cues []cueSpan) int {
 }
 
 // otherAt decides whether the words at a span describe someone other than the user.
+// theyWords are the third-person pronouns patients also use for their own
+// symptoms: "They have become more frequent" about headaches.
+var theyWords = map[string]bool{"they": true, "they're": true, "they've": true, "they'd": true, "them": true, "themselves": true}
+
+// personWords name people who aren't relatives.
+var personWords = map[string]bool{"people": true, "person": true, "doctor": true, "doctors": true, "nurse": true, "nurses": true, "staff": true,
+	"everyone": true, "everybody": true, "others": true, "paramedic": true, "paramedics": true, "pharmacist": true, "team": true, "folks": true}
+
+// namesPerson reports whether text names or points to a person other than
+// the user: a relative, someone, he or she, or a word such as "people".
+func namesPerson(toks []token) bool {
+	for _, t := range toks {
+		w := strings.TrimSuffix(t.word, "'s")
+		if relativeNouns[w] || someonePronouns[t.word] || personWords[w] || (thirdPronouns[t.word] && !theyWords[t.word] && t.word != "their") {
+			return true
+		}
+	}
+	return false
+}
+
+// theyMeansSymptom reports whether a span in the user's own answer looks like
+// someone else's only because of "they" or "them", with no person named
+// before it in the answer or in the question it answers. Then the pronoun is
+// read as the user's own symptoms. Only the check of the model's findings
+// uses this; screening for warnings keeps reading "they" as someone else.
+func theyMeansSymptom(a Answer, start, end int) bool {
+	if sourceOf(a) != fromUser || namesPerson(tokenize(a.Question)) {
+		return false
+	}
+	cs, ce := clauseRange(a.Text, start)
+	if len(spans(familyHistoryCue, a.Text, cs, ce)) > 0 {
+		return false
+	}
+	var before []token
+	they := false
+	for _, t := range tokenize(a.Text) {
+		if t.start >= end {
+			break
+		}
+		before = append(before, t)
+		if theyWords[t.word] && t.start >= cs {
+			they = true
+		}
+	}
+	return they && !namesPerson(before)
+}
+
 func otherAt(text string, toks []token, start, end int, src textSource) bool {
 	cs, ce := clauseRange(text, start)
 	if len(spans(familyHistoryCue, text, cs, ce)) > 0 {

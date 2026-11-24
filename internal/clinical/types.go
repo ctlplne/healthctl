@@ -232,9 +232,12 @@ type Assessment struct {
 	Items           []Item             `json:"items"`
 	Outstanding     []string           `json:"outstanding"`
 	// DontMiss holds the app's fixed lines for dangerous causes the assessment
-	// doesn't include. StabilityChecked records a second run for comparison.
+	// doesn't include. StabilityChecked records a second run for comparison;
+	// StabilityFailed records a requested second run that failed, so nothing
+	// could be compared.
 	DontMiss         []string `json:"dontMiss,omitempty"`
 	StabilityChecked bool     `json:"stabilityChecked,omitempty"`
+	StabilityFailed  bool     `json:"stabilityFailed,omitempty"`
 }
 
 type Input struct {

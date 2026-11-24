@@ -408,12 +408,18 @@ func (e *Encounter) answerRedFlag(c Command, emergency string) error {
 	if len(e.Answers) >= 256 {
 		return errors.New("This encounter has reached its input limit")
 	}
+	// Count before the answer is saved: saving screens it, which can add the
+	// warning itself.
+	before := e.urgentWarnings()
 	e.changed()
 	e.appendAnswer("reply", due[i].Question, text, "", emergency)
 	stored := &e.Answers[len(e.Answers)-1]
 	stored.QuestionSource = &QuestionSource{Key: due[i].Key, Pathway: due[i].Pathway, Reason: redFlagReason(due[i].Pathway)}
 	e.recordRedFlag(*stored, emergency)
-	if e.ScopeReason == "" && e.hasWarning() {
+	// A new urgent warning interrupts the review. A no or not sure while an
+	// earlier warning is active keeps the review open, so the next safety
+	// question can be answered without another history extraction.
+	if e.ScopeReason == "" && e.urgentWarnings() > before {
 		e.State, e.Question, e.Choices, e.QuestionSource, e.Pending = "interrupted_for_safety", "", []string{}, nil, ""
 	}
 	return nil

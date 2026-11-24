@@ -193,6 +193,27 @@ func TestRedFlagCoverage(t *testing.T) {
 	if e.State != "interrupted_for_safety" || !e.hasWarning() {
 		t.Fatal("a yes on the review screen must interrupt for safety")
 	}
+
+	// With an earlier urgent warning, a no keeps the review open, so the next
+	// safety question needs no second history extraction; a yes still interrupts.
+	e = intake(t, "I have a cough and yesterday my face drooped.", false)
+	if e.State != "interrupted_for_safety" {
+		t.Fatalf("the intake warning must interrupt first: %s", e.State)
+	}
+	apply(t, e, Command{Action: "review", ForRevision: e.Revision})
+	turn(t, e, Proposal{Action: "review"})
+	if e.State != "history_review" || len(e.RedFlagsDue) != 2 {
+		t.Fatalf("the review must list the safety questions: %s %+v", e.State, e.RedFlagsDue)
+	}
+	warnings := e.urgentWarnings()
+	apply(t, e, Command{Action: "red_flag", Category: e.RedFlagsDue[0].Key, Status: "no"})
+	if e.State != "history_review" || e.Pending != "" || e.urgentWarnings() != warnings {
+		t.Fatalf("a no must keep the review open and the warning active: %s pending=%q", e.State, e.Pending)
+	}
+	apply(t, e, Command{Action: "red_flag", Category: e.RedFlagsDue[0].Key, Status: "yes"})
+	if e.State != "interrupted_for_safety" || e.urgentWarnings() != warnings+1 {
+		t.Fatalf("a yes must add a warning and interrupt: %s", e.State)
+	}
 }
 
 func TestQuestionBudget(t *testing.T) {

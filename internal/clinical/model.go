@@ -87,6 +87,7 @@ func (e *Encounter) Accept(task string, p Proposal, meta ModelMeta, emergency st
 			ReviewStatus: ReviewStatus, Outcome: p.Action, Provider: meta, Destination: e.Provider,
 			Items: items, Outstanding: nonNil(p.Outstanding),
 			DontMiss: dontMissLines(in.Pathways, items), StabilityChecked: meta.Settings["stabilityCheck"] == true,
+			StabilityFailed: meta.Settings["stabilityCheck"] == "second run failed",
 		})
 		e.Outstanding = nonNil(p.Outstanding)
 		e.OutstandingReviewIDs = inputReviews(in)
@@ -340,6 +341,7 @@ func quoteContext(a Answer, f FindingProposal) (spanContext, bool) {
 	if len(targets) == 0 {
 		c := analyzeSpan(a.Text, at, end, src)
 		c.Negated = c.Negated || negatedInside(a.Text, at, end)
+		c.Other = c.Other && !theyMeansSymptom(a, at, end)
 		return c, false
 	}
 	var out spanContext
@@ -354,6 +356,7 @@ func quoteContext(a Answer, f FindingProposal) (spanContext, bool) {
 		out.Hypothetical = out.Hypothetical && c.Hypothetical
 	}
 	out.Negated = negated
+	out.Other = out.Other && !theyMeansSymptom(a, at, end)
 	return out, true
 }
 

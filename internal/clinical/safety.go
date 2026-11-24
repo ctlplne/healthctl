@@ -333,6 +333,17 @@ func (e *Encounter) hasWarning() bool {
 	return false
 }
 
+// urgentWarnings counts the active warnings that interrupt the interview.
+func (e *Encounter) urgentWarnings() int {
+	n := 0
+	for _, w := range e.Warnings {
+		if w.Active && w.Level != warningCheck {
+			n++
+		}
+	}
+	return n
+}
+
 // hasAnyWarning includes "check this" warnings that don't interrupt.
 func (e *Encounter) hasAnyWarning() bool {
 	for _, w := range e.Warnings {

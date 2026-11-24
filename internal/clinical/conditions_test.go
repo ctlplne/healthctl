@@ -81,7 +81,20 @@ func TestAssessmentStability(t *testing.T) {
 		t.Fatal(err)
 	}
 	a := e.Assessments[len(e.Assessments)-1]
-	if !a.StabilityChecked || !a.Items[0].Unstable {
+	if !a.StabilityChecked || a.StabilityFailed || !a.Items[0].Unstable {
 		t.Fatalf("the assessment must record the comparison and keep the marks: %+v", a)
+	}
+
+	// A failed second run is recorded, so the app can say nothing was compared
+	// instead of looking like two runs that agreed.
+	if err := apply(e, Command{Action: "assess", StabilityCheck: true}); err != nil {
+		t.Fatal(err)
+	}
+	if err := e.Accept("assessment", Proposal{Action: "differential", Items: []Item{{Name: "Common cold", Supporting: []string{e.Facts[0].ID}, Limitations: []string{"Unknown course."}, Explanation: "This condition can cause a cough."}}}, ModelMeta{Settings: map[string]any{"stabilityCheck": "second run failed"}}, ""); err != nil {
+		t.Fatal(err)
+	}
+	a = e.Assessments[len(e.Assessments)-1]
+	if a.StabilityChecked || !a.StabilityFailed {
+		t.Fatalf("a failed second run must be recorded: %+v", a)
 	}
 }
