@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import secrets
+import socket
 import subprocess
 import tempfile
 import wave
@@ -179,8 +180,24 @@ def verify(package, wav_source, resources_only=False):
             for record in (report, recovered):
                 record.pop("exportedAt")
             assert report == recovered
+            # Restore stopped the previous workspace; the original port no longer answers.
+            old_port = int(original.rstrip("/").rsplit(":", 1)[1])
+            with socket.socket() as probe:
+                probe.settimeout(2)
+                assert probe.connect_ex(("127.0.0.1", old_port)) != 0, "restore left the previous workspace running"
+            logs = work / "launcher-logs.txt"
+            manage("logs", logs)
+            assert logs.stat().st_size > 0 and b"Synthetic diary observation" not in logs.read_bytes(), "logs missing or carrying clinical text"
+            manage("stop")
+            with socket.socket() as probe:
+                probe.settimeout(2)
+                assert probe.connect_ex(("127.0.0.1", int(restored.rstrip("/").rsplit(":", 1)[1]))) != 0, "stop left the workspace running"
+            manage("delete")
+            assert not (state / "active").exists(), "delete kept the active workspace"
+            manage("uninstall")
+            assert not state.exists(), "uninstall kept workspace data"
             print(
-                "Verified bundled startup, real offline speech, encrypted backup, wrong-passphrase recovery, restored diary and demo assessment equality, platform key configuration and fresh login."
+                "Verified bundled startup, real offline speech, encrypted backup, wrong-passphrase recovery, restored diary and demo assessment equality, platform key configuration, fresh login, restore stopping the previous workspace, logs, stop, delete and uninstall."
             )
         finally:
             for folder in state.glob("healthctl-desktop-*"):

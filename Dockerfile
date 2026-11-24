@@ -36,7 +36,7 @@ FROM debian:bookworm-slim@sha256:734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d
 RUN apt-get update && apt-get install -y --no-install-recommends cmake g++ make ca-certificates curl
 RUN curl -fsSL --retry 3 https://codeload.github.com/ggml-org/whisper.cpp/tar.gz/refs/tags/v1.9.5 -o /tmp/source.tgz && echo "ff1a9053feb509ff9d7729703355541ae9690073a6b1c40eb692c962e0dc1720  /tmp/source.tgz" | sha256sum -c - && mkdir /src && tar -xzf /tmp/source.tgz --strip-components=1 -C /src
 RUN cmake -S /src -B /tmp/build -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DGGML_NATIVE=OFF -DGGML_OPENMP=OFF -DWHISPER_BUILD_TESTS=OFF && cmake --build /tmp/build --target whisper-cli -j 3
-RUN curl -fsSL --retry 3 https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.en-q5_1.bin -o /model.bin && echo "c77c5766f1cef09b6b7d47f21b546cbddd4157886b3b5d6d4f709e91e66c7c2b  /model.bin" | sha256sum -c -
+RUN curl -fsSL --retry 3 https://huggingface.co/ggerganov/whisper.cpp/resolve/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-tiny.en-q5_1.bin -o /model.bin && echo "c77c5766f1cef09b6b7d47f21b546cbddd4157886b3b5d6d4f709e91e66c7c2b  /model.bin" | sha256sum -c -
 FROM server AS go-notices
 COPY scripts/go-notices.sh /go-notices.sh
 RUN sh /go-notices.sh /notices /app

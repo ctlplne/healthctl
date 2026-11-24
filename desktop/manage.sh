@@ -18,16 +18,21 @@ if [[ "${HEALTHCTL_DESKTOP_LOCKED:-}" != yes ]]; then
  export HEALTHCTL_DESKTOP_LOCKED=yes
  exec /usr/bin/perl -MFcntl=:flock -e 'open my $lock, ">>", shift or die "Cannot lock workspace\n"; flock($lock, LOCK_EX|LOCK_NB) or die "Another desktop task is running\n"; $^F=fileno($lock); $lock->fcntl(Fcntl::F_SETFD(),0); exec @ARGV or die "Cannot start desktop helper\n"' "$state/operation.lock" "$0" "$@"
 fi
-read -r appimage dbimage < "$resources/images.txt"
+read -r appimage dbimage appid dbid < "$resources/images.txt"
 export HEALTHCTL_APP_IMAGE="$appimage" HEALTHCTL_DB_IMAGE="$dbimage"
 unset CLINICAL_PORT CLINICAL_DATA_KEY POSTGRES_PASSWORD CLINICAL_PUBLIC_ORIGIN OPENAI_API_KEY
-if [[ -f "$resources/healthctl-source.tar.gz" ]]; then
+# Prebuilt images come first; a source build is only a fallback for bundles
+# without them. Prebuilt images must match the IDs recorded at release.
+if [[ -f "$resources/images.tar.gz" ]]; then
+ docker image inspect "$appimage" "$dbimage" >/dev/null 2>&1 || docker load -i "$resources/images.tar.gz" >/dev/null
+ "$resources/verify-images.sh" "$appimage" "$appid" "$dbimage" "$dbid" || fail "The bundled images don't match this release. Reinstall healthctl."
+elif [[ -f "$resources/healthctl-source.tar.gz" ]]; then
  if ! docker image inspect "$appimage" >/dev/null 2>&1; then
   docker build --tag "$appimage" - < "$resources/healthctl-source.tar.gz" >&2
  fi
  if ! docker image inspect "$dbimage" >/dev/null 2>&1; then docker pull "$dbimage" >&2; fi
-elif ! docker image inspect "$appimage" "$dbimage" >/dev/null 2>&1; then
- docker load -i "$resources/images.tar.gz" >/dev/null
+else
+ fail "This healthctl bundle has no images."
 fi
 compose(){ docker compose --env-file "$folder/settings.env" -p "$instance" -f "$resources/compose.yaml" -f "$resources/desktop.yaml" "$@"; }
 allocate(){
@@ -64,8 +69,25 @@ case "${1:-}" in
  ln "$tmp" "$target" || fail "The backup could not be installed at that location."
  # Let the journal show when the last backup was made. A failure here never undoes the backup.
  compose exec -T db psql -U clinicalhistory -d clinicalhistory -q -c "INSERT INTO backup_status(id,last_attempt,last_success,last_error,destination_kind) VALUES(1,now(),now(),'','desktop_manual') ON CONFLICT (id) DO UPDATE SET last_attempt=now(),last_success=now(),last_error='',destination_kind='desktop_manual'" </dev/null >/dev/null 2>&1 || true;;
+ stop)
+ active; compose stop >&2;;
+ logs)
+ active; target="${2:?Choose a log filename}"; [[ ! -e "$target" ]] || fail "Choose a new log filename."
+ # Service logs carry events, never clinical text.
+ compose logs --no-color --tail 300 app db backup > "$target" 2>/dev/null || fail "The logs could not be saved.";;
+ delete)
+ active; compose down -v --remove-orphans >&2; rm -rf "$folder"; rm -f "$state/active";;
+ uninstall)
+ for found in "$state"/healthctl-desktop-*; do
+  [[ -d "$found" ]] || continue
+  folder="$found"; instance="$(basename "$found" | tr '[:upper:]' '[:lower:]')"
+  compose down -v --remove-orphans >&2 || true
+ done
+ docker image rm "$appimage" "$dbimage" >/dev/null 2>&1 || true
+ rm -rf "$state";;
  restore)
  file="${2:?Choose a backup}";[[ -f "$file" ]] || fail "Backup missing."
+ previous=""; if [[ -r "$state/active" ]]; then read -r previous < "$state/active" || true; fi
  allocate
  # Restore only into the newly allocated workspace. Failure keeps the previous selection.
  cleanup_stage(){ if [[ "$restored" != yes ]];then compose down -v >/dev/null 2>&1 || true;fi; }
@@ -83,6 +105,10 @@ case "${1:-}" in
  start
  compose run --rm -T --no-deps app check-key </dev/null >&2
  select_workspace;restored=yes
+ # The previous workspace stops so only the restored one is running. Its data is kept.
+ if [[ "$previous" =~ ^healthctl-desktop-[[:alnum:]]+$ && -d "$state/$previous" ]]; then
+  ( folder="$state/$previous"; instance="$(echo "$previous" | tr '[:upper:]' '[:lower:]')"; compose stop >&2 ) || true
+ fi
  printf 'http://127.0.0.1:%s/\n' "$port";;
  *) fail "Unknown desktop action.";;
 esac

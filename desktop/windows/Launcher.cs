@@ -204,6 +204,62 @@ internal sealed class Workspace
             return "http://127.0.0.1:" + settings[1] + "/";
         }
     }
+
+    // Manage finds Docker and an existing workspace, then runs one compose
+    // command for it under the same lock as Start. It never creates a workspace.
+    private string Manage(string arguments, string failure)
+    {
+        var release = Package.Manifest();
+        docker = FindDocker();
+        if (!File.Exists(Path.Combine(root, "workspace.conf"))) throw new IOException("There is no workspace yet. Open the journal first.");
+        FileStream locked;
+        try { locked = new FileStream(Path.Combine(root, "launcher.lock"), FileMode.OpenOrCreate, FileAccess.Write, FileShare.None); }
+        catch (IOException) { throw new IOException("Another launcher operation is running. Wait for it to finish."); }
+        using (locked)
+        {
+            work = Path.Combine(root, "releases", release[0]);
+            if (!Directory.Exists(work)) throw new IOException("Open the journal once before managing the workspace.");
+            var settings = Settings();
+            environment["HEALTHCTL_APP_IMAGE"] = "healthctl-local/app:" + release[0];
+            environment["HEALTHCTL_DB_IMAGE"] = release[1];
+            environment["CLINICAL_PORT"] = settings[1];
+            environment["CLINICAL_DATA_KEY"] = settings[2];
+            environment["POSTGRES_PASSWORD"] = settings[3];
+            return Run("compose -p " + settings[0] + " -f compose.yaml -f desktop.yaml " + arguments, failure);
+        }
+    }
+
+    internal string Stop()
+    {
+        Manage("stop", "The workspace could not be stopped. Check Docker Desktop.");
+        return "Workspace stopped. Your history is kept.";
+    }
+
+    internal string Logs()
+    {
+        // Service logs carry events, never clinical text.
+        string text = Manage("logs --no-color --tail 300 app db", "The logs could not be read. Check Docker Desktop.");
+        string file = Path.Combine(root, "healthctl-logs-" + DateTime.UtcNow.ToString("yyyyMMddHHmmss") + ".txt");
+        File.WriteAllText(file, text);
+        return "Logs saved to " + file;
+    }
+
+    internal string Delete()
+    {
+        Manage("down -v --remove-orphans", "The workspace could not be deleted. Check Docker Desktop.");
+        File.Delete(Path.Combine(root, "workspace.conf"));
+        return "Workspace deleted. Opening the journal creates a new, empty one.";
+    }
+
+    internal string Uninstall()
+    {
+        var release = Package.Manifest();
+        if (File.Exists(Path.Combine(root, "workspace.conf"))) Delete();
+        docker = FindDocker();
+        Run("image rm healthctl-local/app:" + release[0], "", true);
+        if (Directory.Exists(root)) Directory.Delete(root, true);
+        return "healthctl's workspace and images were removed. You can now delete the launcher.";
+    }
 }
 
 internal static class Launcher
@@ -227,9 +283,33 @@ internal static class Launcher
                 using (var reader = new StreamReader(Package.Open("preview.txt"))) preview = reader.ReadToEnd().Trim();
                 var note = new Label { AutoSize = true, MaximumSize = new Size(440, 0), Text = preview };
                 var open = new Button { Text = "Open journal or try the demo", AutoSize = true, Padding = new Padding(6) };
+                var stop = new Button { Text = "Stop the workspace", AutoSize = true };
+                var logs = new Button { Text = "Save logs", AutoSize = true };
+                var delete = new Button { Text = "Delete this workspace…", AutoSize = true };
+                var uninstall = new Button { Text = "Remove all healthctl data…", AutoSize = true };
                 var docs = new LinkLabel { Text = "Set up Docker Desktop for Windows", AutoSize = true };
                 var status = new Label { MaximumSize = new Size(440, 0), AutoSize = true, Text = "Start Docker Desktop using Linux containers, then open the journal." };
-                panel.Controls.AddRange(new Control[] { title, note, open, docs, status });
+                panel.Controls.AddRange(new Control[] { title, note, open, stop, logs, delete, uninstall, docs, status });
+                var manage = new Button[] { open, stop, logs, delete, uninstall };
+                Func<Func<Workspace, string>, Task> perform = async delegate(Func<Workspace, string> action) {
+                    foreach (var b in manage) b.Enabled = false;
+                    var report = new Progress<string>(message => status.Text = message);
+                    try { status.Text = await Task.Run(() => action(new Workspace(((IProgress<string>)report).Report))); }
+                    catch (Exception ex) { status.Text = ex.Message; }
+                    finally { foreach (var b in manage) b.Enabled = true; }
+                };
+                stop.Click += async delegate { await perform(w => w.Stop()); };
+                logs.Click += async delegate { await perform(w => w.Logs()); };
+                delete.Click += async delegate {
+                    if (MessageBox.Show("Every encounter, diary entry and upload in this workspace is deleted and can't be recovered. Back it up first if you may need it.",
+                        "Delete this workspace permanently?", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
+                        await perform(w => w.Delete());
+                };
+                uninstall.Click += async delegate {
+                    if (MessageBox.Show("The workspace, its records and the app image are deleted and can't be recovered.",
+                        "Remove all healthctl data?", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
+                        await perform(w => w.Uninstall());
+                };
                 window.Controls.Add(panel);
                 docs.LinkClicked += delegate { Process.Start(new ProcessStartInfo("https://docs.docker.com/desktop/setup/install/windows-install/") { UseShellExecute = true }); };
                 window.FormClosing += delegate(object sender, FormClosingEventArgs e) { if (!open.Enabled) e.Cancel = true; };

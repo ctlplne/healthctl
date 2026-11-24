@@ -12,7 +12,8 @@ dbref="$(awk '/image: postgres:/{print $2;exit}' compose.yaml)"
 docker image inspect "$dbref" >/dev/null 2>&1 || docker pull "$dbref"
 dbimage="healthctl-local/db:${dbref#*@sha256:}"; dbimage="${dbimage:0:35}"
 docker tag healthctl:desktop-build "$appimage"; docker tag "$dbref" "$dbimage"
-printf '%s %s\n' "$appimage" "$dbimage" > "$res/images.txt"
+# The launcher refuses to start images whose IDs differ from these.
+printf '%s %s %s %s\n' "$appimage" "$dbimage" "$(cat "$temp/image-id")" "$(docker image inspect --format '{{.Id}}' "$dbimage")" > "$res/images.txt"
 # Capture notices from the exact app image and catalog the database archive.
 res="$(cd "$res" && pwd)"
 mkdir -p "$res/notices/application"

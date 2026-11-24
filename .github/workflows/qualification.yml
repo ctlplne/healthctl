@@ -82,7 +82,7 @@ jobs:
           ./scripts/bundle-desktop-images.sh build/resources
           cp desktop/manage.sh desktop/desktop.yaml compose.yaml build/resources/
           go build -o build/resources/archive ./cmd/healthctl-archive
-          read -r app db < build/resources/images.txt
+          read -r app db _ < build/resources/images.txt
           test "$(docker image inspect --format '{{.Architecture}}' "$app")" = "$ARCH"
           test "$(docker image inspect --format '{{.Architecture}}' "$db")" = "$ARCH"
           docker image rm "$app" "$db"

@@ -28,6 +28,8 @@ final class Launcher: NSObject, NSApplicationDelegate {
         stack.addArrangedSubview(NSTextField(wrappingLabelWithString: preview.trimmingCharacters(in: .whitespacesAndNewlines)))
         for (label, action) in [("Open journal or try the demo", #selector(openJournal)), ("Connect a model", #selector(settings)),
                                 ("Set or clear an OpenAI API key…", #selector(platformKey)), ("Back up workspace…", #selector(backup)), ("Restore a backup into a new workspace…", #selector(restore)),
+                                ("Stop the workspace", #selector(stop)), ("Save logs…", #selector(logs)),
+                                ("Delete this workspace…", #selector(deleteWorkspace)), ("Remove all healthctl data…", #selector(uninstall)),
                                 ("Get Docker Desktop", #selector(dockerLink))] {
             let button = NSButton(title: label, target: self, action: action)
             buttons.append(button)
@@ -57,6 +59,30 @@ final class Launcher: NSObject, NSApplicationDelegate {
     }
     @objc private func openJournal() { run(["start"], message: startupMessage) }
     @objc private func settings() { run(["start"], message: startupMessage, settings: true) }
+    @objc private func stop() { run(["stop"], message: "Stopping the local workspace…") }
+    @objc private func logs() {
+        let panel = NSSavePanel()
+        panel.nameFieldStringValue = "healthctl-logs-\(Int(Date().timeIntervalSince1970)).txt"
+        guard panel.runModal() == .OK, let path = panel.url?.path else { return }
+        run(["logs", path], message: "Saving the service logs…")
+    }
+    private func confirm(_ title: String, _ detail: String, _ action: String) -> Bool {
+        let alert = NSAlert()
+        alert.messageText = title
+        alert.informativeText = detail
+        alert.alertStyle = .critical
+        alert.addButton(withTitle: action)
+        alert.addButton(withTitle: "Cancel")
+        return alert.runModal() == .alertFirstButtonReturn
+    }
+    @objc private func deleteWorkspace() {
+        guard confirm("Delete this workspace permanently?", "Every encounter, diary entry and upload in the active workspace is deleted and can't be recovered. Back it up first if you may need it.", "Delete permanently") else { return }
+        run(["delete"], message: "Deleting the workspace…")
+    }
+    @objc private func uninstall() {
+        guard confirm("Remove all healthctl data from this Mac?", "Every workspace, its records and the app's Docker images are deleted and can't be recovered. Back up anything you need first. Afterwards you can move healthctl to the Trash.", "Remove everything") else { return }
+        run(["uninstall"], message: "Removing healthctl's workspaces and images…")
+    }
     @objc private func dockerLink() { NSWorkspace.shared.open(URL(string: "https://www.docker.com/products/docker-desktop/")!) }
     private func passphrase(creating: Bool) -> String? {
         let prompt = NSAlert()
@@ -131,7 +157,14 @@ final class Launcher: NSObject, NSApplicationDelegate {
                 let data = output.fileHandleForReading.readDataToEndOfFile()
                 task.waitUntilExit()
                 if task.terminationStatus == 0 {
-                    result = args[0] == "backup" ? "Encrypted backup saved." : "Local workspace ready."
+                    switch args[0] {
+                    case "backup": result = "Encrypted backup saved."
+                    case "stop": result = "Workspace stopped. Your history is kept."
+                    case "logs": result = "Logs saved."
+                    case "delete": result = "Workspace deleted. Opening the journal creates a new, empty one."
+                    case "uninstall": result = "healthctl's workspaces and images were removed. You can now move the app to the Trash."
+                    default: result = "Local workspace ready."
+                    }
                     let line = String(decoding: data, as: UTF8.self).trimmingCharacters(in: .whitespacesAndNewlines)
                     if let url = URL(string: line + (settings ? "?desktop=settings" : "")), url.host == "127.0.0.1", url.scheme == "http" { address = url }
                 } else {

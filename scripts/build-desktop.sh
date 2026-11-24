@@ -16,7 +16,7 @@ if [[ -n "${HEALTHCTL_TESTED_DESKTOP_APP:-}" ]]; then
 else
   mkdir -p "$bin" "$res"
   cp desktop/Info.plist "$app/Contents/Info.plist"
-  cp compose.yaml desktop/desktop.yaml desktop/manage.sh LICENSE THIRD_PARTY_NOTICES.md docs/use-notice.md internal/clinical/preview.txt "$res/"
+  cp compose.yaml desktop/desktop.yaml desktop/manage.sh desktop/verify-images.sh LICENSE THIRD_PARTY_NOTICES.md docs/use-notice.md internal/clinical/preview.txt "$res/"
   swiftc -O -target "$(uname -m)-apple-macos13.0" -module-cache-path "$dest/swift-cache" desktop/Launcher.swift -o "$bin/healthctl"
   go build -trimpath -ldflags="-s -w" -o "$res/archive" ./cmd/healthctl-archive
   if [[ "$mode" == --build-on-first-use ]]; then
