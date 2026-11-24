@@ -217,10 +217,24 @@ internal sealed class Workspace
         catch (IOException) { throw new IOException("Another launcher operation is running. Wait for it to finish."); }
         using (locked)
         {
-            work = Path.Combine(root, "releases", release[0]);
-            if (!Directory.Exists(work)) throw new IOException("Open the journal once before managing the workspace.");
+            // After a launcher update the new release folder exists only once the
+            // journal has been opened; manage the workspace from the newest
+            // release that was unpacked instead.
+            string version = release[0];
+            work = Path.Combine(root, "releases", version);
+            if (!Directory.Exists(work))
+            {
+                var unpacked = Directory.Exists(Path.Combine(root, "releases"))
+                    ? new DirectoryInfo(Path.Combine(root, "releases")).GetDirectories()
+                        .Where(d => File.Exists(Path.Combine(d.FullName, "compose.yaml")))
+                        .OrderByDescending(d => d.LastWriteTimeUtc).FirstOrDefault()
+                    : null;
+                if (unpacked == null) throw new IOException("Open the journal once before managing the workspace.");
+                version = unpacked.Name;
+                work = unpacked.FullName;
+            }
             var settings = Settings();
-            environment["HEALTHCTL_APP_IMAGE"] = "healthctl-local/app:" + release[0];
+            environment["HEALTHCTL_APP_IMAGE"] = "healthctl-local/app:" + version;
             environment["HEALTHCTL_DB_IMAGE"] = release[1];
             environment["CLINICAL_PORT"] = settings[1];
             environment["CLINICAL_DATA_KEY"] = settings[2];
