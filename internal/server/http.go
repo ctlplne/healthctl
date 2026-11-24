@@ -41,7 +41,8 @@ type Server struct {
 	jobsInit    sync.Once
 	setup1      setupCode
 	loginDelay  func(attempts int) time.Duration // a test hook for the local slow-down
-	beforeModel func(*clinical.Encounter)        // a test hook that runs before each queued model call
+	loginGate   loginGate
+	beforeModel func(*clinical.Encounter) // a test hook that runs before each queued model call
 }
 type object = map[string]any
 type problem struct {
@@ -144,6 +145,7 @@ func (s *Server) Handler() http.Handler {
 	s.route(m, "DELETE /api/encounters/{id}", true, s.sensitive(s.remove))
 	s.route(m, "POST /api/encounters/{id}/actions", true, s.action)
 	s.route(m, "GET /api/encounters/{id}/export", true, s.sensitive(s.export))
+	s.route(m, "GET /api/encounters/{id}/report", true, s.report)
 	s.route(m, "GET /api/encounters/{id}/usage", true, s.usage)
 	s.route(m, "GET /api/voice", true, s.voice)
 	s.route(m, "POST /api/voice", true, limited(voiceLimit, "recordings", s.voice))

@@ -121,14 +121,40 @@ func (s *Server) throttle(w http.ResponseWriter, r *http.Request) error {
 		if delay == nil {
 			delay = func(n int) time.Duration { return time.Duration(min(n-10, 5)) * time.Second }
 		}
-		select {
-		case <-time.After(delay(attempts)):
-		case <-r.Context().Done():
+		// Slowed attempts from this machine wait their turn one at a time, so
+		// sending them in parallel doesn't multiply the rate. A tunnel or
+		// proxy that connects over loopback shares this one queue.
+		if !s.loginGate.wait(r.Context(), delay(attempts)) {
+			return r.Context().Err()
 		}
 		return nil
 	}
 	w.Header().Set("Retry-After", "600")
 	return problem{429, "Too many sign-in attempts. Try again in ten minutes."}
+}
+
+// loginGate lets one slowed local sign-in attempt through per delay.
+type loginGate struct {
+	once sync.Once
+	turn chan struct{}
+}
+
+// wait holds the gate for d, so the next slowed attempt starts only after
+// this one's delay. It reports false if the request ended while waiting.
+func (g *loginGate) wait(ctx context.Context, d time.Duration) bool {
+	g.once.Do(func() { g.turn = make(chan struct{}, 1) })
+	select {
+	case g.turn <- struct{}{}:
+	case <-ctx.Done():
+		return false
+	}
+	defer func() { <-g.turn }()
+	select {
+	case <-time.After(d):
+		return true
+	case <-ctx.Done():
+		return false
+	}
 }
 
 func (s *Server) clearAttempts(r *http.Request) {

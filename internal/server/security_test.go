@@ -9,6 +9,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/ctlplne/healthctl/internal/clinical"
 )
 
 // from sends a request as a given client address.
@@ -107,6 +109,10 @@ func TestSessionPolicyPostgres(t *testing.T) {
 	c := caller{h: s.Handler()}
 	c.signup(t)
 	check(t, c.call("GET", "/api/settings", nil), 200, nil)
+	demo := clinical.ProviderRef{Kind: "demo", Model: "synthetic", Structured: "auto"}
+	selectProvider(t, c, demo)
+	var e struct{ ID string }
+	check(t, c.call("POST", "/api/encounters", intake(demo, clinical.DemoConcern)), 200, &e)
 
 	// Sensitive actions need a password entered in the last few minutes.
 	if _, err := db.DB.Exec("UPDATE sessions SET authenticated_at=now()-interval '1 hour'"); err != nil {
@@ -117,6 +123,14 @@ func TestSessionPolicyPostgres(t *testing.T) {
 	if !reauth.Reauth {
 		t.Fatal("the refusal must ask for the password again")
 	}
+	// Downloading needs the password again; viewing the same report on screen
+	// doesn't, because the owner can already see all of it.
+	check(t, c.call("GET", "/api/encounters/"+e.ID+"/export", nil), 403, &reauth)
+	if !reauth.Reauth {
+		t.Fatal("a download must ask for the password again")
+	}
+	check(t, c.call("GET", "/api/encounters/"+e.ID+"/fhir", nil), 403, nil)
+	check(t, c.call("GET", "/api/encounters/"+e.ID+"/report", nil), 200, nil)
 	check(t, c.call("POST", "/api/reauth", object{"password": "not it"}), 401, nil)
 	check(t, c.call("POST", "/api/reauth", object{"password": "A synthetic owner password!"}), 200, nil)
 	check(t, c.call("PUT", "/api/settings", object{"provider": object{"kind": "demo", "model": "synthetic", "endpoint": "", "structured": "auto"}}), 200, nil)
