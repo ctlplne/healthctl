@@ -449,6 +449,18 @@ export function ProviderEditor({
                     <option value="prompt">Constrained prompt</option>
                   </select>
                 </label>
+                {(config.kind === 'openai' || config.kind === 'anthropic') && (
+                  <label className="check">
+                    <input
+                      type="checkbox"
+                      checked={config.reasoning === 'effort'}
+                      onChange={(e) => update({ reasoning: e.target.checked ? 'effort' : '' })}
+                    />
+                    This is a reasoning model: send a reasoning effort for each task (low for interview
+                    questions, high for an assessment) and stream the answer. Test the connection after
+                    changing this.
+                  </label>
+                )}
                 {config.kind === 'anthropic' && (
                   <p className="metadata">
                     Claude consumer subscriptions are unsupported here. This

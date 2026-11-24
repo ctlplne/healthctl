@@ -30,6 +30,14 @@ type Config struct {
 	Model      string `json:"model"`
 	Endpoint   string `json:"endpoint"`
 	Structured string `json:"structured"`
+	// Reasoning is "effort" when the app should send a reasoning effort by
+	// task, stream the call and allow a longer time limit.
+	Reasoning string `json:"reasoning,omitempty"`
+}
+
+// streams reports whether a call uses server-sent events.
+func (c Config) streams() bool {
+	return c.Kind == "chatgpt" || c.Reasoning == "effort" && (c.Kind == "openai" || c.Kind == "anthropic")
 }
 
 type Metadata struct {
@@ -151,6 +159,15 @@ func (cfg Config) native() bool {
 func (c *Client) Validate(cfg Config) error {
 	if c.remoteOnly && (cfg.Kind == "demo" || (cfg.Kind == "compatible" && !strings.HasPrefix(cfg.Endpoint, "https://"))) {
 		return errors.New("a remote HTTPS model API is required for the live evaluation")
+	}
+	switch cfg.Reasoning {
+	case "":
+	case "effort":
+		if cfg.Kind != "openai" && cfg.Kind != "anthropic" {
+			return errors.New("Reasoning effort can be sent to OpenAI and Anthropic models only")
+		}
+	default:
+		return errors.New("Choose whether to send a reasoning effort")
 	}
 	switch cfg.Structured {
 	case "", "auto", "native", "prompt":
@@ -279,7 +296,7 @@ func networkClient(allowPrivate, privateOnly bool) *http.Client {
 		Proxy:                  nil,
 		TLSClientConfig:        &tls.Config{MinVersion: tls.VersionTLS12},
 		TLSHandshakeTimeout:    8 * time.Second,
-		ResponseHeaderTimeout:  50 * time.Second,
+		ResponseHeaderTimeout:  requestDeadline,
 		MaxResponseHeaderBytes: 32 << 10,
 		MaxIdleConns:           8, IdleConnTimeout: 60 * time.Second,
 		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {

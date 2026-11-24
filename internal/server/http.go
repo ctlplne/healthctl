@@ -17,8 +17,10 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
+	"github.com/ctlplne/healthctl/internal/clinical"
 	"github.com/ctlplne/healthctl/internal/provider"
 	"github.com/ctlplne/healthctl/internal/store"
 )
@@ -33,6 +35,10 @@ type Server struct {
 	Locale, Units, CareDestination        string
 	Secure                                bool
 	Logger                                *log.Logger
+
+	jobs        *jobRunner
+	jobsInit    sync.Once
+	beforeModel func(*clinical.Encounter) // a test hook that runs before each queued model call
 }
 type object = map[string]any
 type problem struct {
@@ -111,6 +117,10 @@ func (s *Server) route(m *http.ServeMux, pattern string, protected bool, fn apiH
 	})
 }
 func (s *Server) Handler() http.Handler {
+	// A running server resumes queued and interrupted model calls at start.
+	if s.Lifetime != nil && s.Store != nil {
+		s.startWorkers()
+	}
 	m := http.NewServeMux()
 	s.route(m, "GET /api/session", false, s.session)
 	s.route(m, "POST /api/setup", false, s.setup)

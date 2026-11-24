@@ -108,7 +108,7 @@ func TestConfiguredProtocolsAndProvenance(t *testing.T) {
 				if tc.kind == "openai" && b["store"] != false {
 					t.Fatal("response storage was not disabled")
 				}
-				if b["max_tokens"] != float64(maxOutputTokens) && b["max_output_tokens"] != float64(maxOutputTokens) {
+				if b["max_tokens"] != float64(outputBudget(tc.kind)) && b["max_output_tokens"] != float64(outputBudget(tc.kind)) {
 					t.Fatal("missing output budget")
 				}
 				wire, _ := json.Marshal(b)

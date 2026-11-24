@@ -33,6 +33,9 @@ type ProviderRef struct {
 	Model      string `json:"model"`
 	Endpoint   string `json:"endpoint"`
 	Structured string `json:"structured"`
+	// Reasoning is "effort" when the app should send a reasoning effort by
+	// task, stream the call and allow a longer time limit.
+	Reasoning string `json:"reasoning,omitempty"`
 }
 
 type Intake struct {

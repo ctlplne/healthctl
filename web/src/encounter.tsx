@@ -280,7 +280,7 @@ export function EncounterPage({
     provider &&
     !e.demo &&
     provider.kind !== 'demo' &&
-    ['kind', 'model', 'endpoint', 'structured'].some(
+    ['kind', 'model', 'endpoint', 'structured', 'reasoning'].some(
       (k) => provider[k as keyof Provider] !== e.provider[k as keyof Provider],
     )
   return (

@@ -13,6 +13,7 @@ export type Provider = {
   model: string
   endpoint: string
   structured: 'auto' | 'native' | 'prompt'
+  reasoning?: '' | 'effort'
 }
 export type Settings = {
   provider: Provider | null

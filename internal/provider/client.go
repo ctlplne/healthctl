@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"strconv"
 	"strings"
@@ -14,12 +15,16 @@ import (
 )
 
 const (
-	maxInputBytes        = 48 << 10
-	maxProposalBytes     = 32 << 10
-	maxEnvelopeBytes     = 256 << 10
-	maxOutputTokens      = 4096
-	requestDeadline      = 75 * time.Second
-	PlanClinicalDeadline = 4 * time.Minute
+	maxInputBytes    = 48 << 10
+	maxProposalBytes = 32 << 10
+	maxEnvelopeBytes = 256 << 10
+	maxOutputTokens  = 4096
+	// reasoningOutputTokens is the output ceiling for OpenAI and Anthropic.
+	// Their output limit includes reasoning tokens, which current models use by
+	// default; the answer itself stays bounded by maxProposalBytes.
+	reasoningOutputTokens = 16000
+	requestDeadline       = 75 * time.Second
+	PlanClinicalDeadline  = 4 * time.Minute
 )
 
 func (c *Client) Test(ctx context.Context, cfg Config) error {
@@ -60,7 +65,11 @@ func (c *Client) Generate(ctx context.Context, cfg Config, mode string, input an
 	if len(data) > maxInputBytes {
 		return nil, zero, errors.New("history exceeds the model input budget; the saved history can still be exported")
 	}
-	p := call{task: mode, system: instructions + "\nApplication-selected task: " + mode + ".", input: string(data), schema: taskSchema(mode), maxTokens: maxOutputTokens}
+	p := call{task: mode, system: instructions + "\nApplication-selected task: " + mode + ".", input: string(data), schema: taskSchema(mode), maxTokens: outputBudget(cfg.Kind)}
+	if cfg.Reasoning == "effort" {
+		p.reasoningEffort = apiEffort[mode]
+	}
+	p.stream = cfg.streams()
 	return c.run(ctx, cfg, p, validate, true)
 }
 
@@ -80,7 +89,8 @@ func (c *Client) run(parent context.Context, cfg Config, p call, validate func([
 		meta.Settings["usage"] = usage
 	}()
 	deadline := requestDeadline
-	if cfg.Kind == "chatgpt" && mayRepair {
+	if cfg.streams() && mayRepair {
+		// A streamed reasoning call can legitimately take minutes.
 		deadline = PlanClinicalDeadline
 	}
 	ctx, cancel := context.WithTimeout(parent, deadline)
@@ -140,7 +150,10 @@ func (c *Client) run(parent context.Context, cfg Config, p call, validate func([
 				settings["apiVersion"] = anthropicVersion
 			}
 			// What this configuration actually used, saved with every result.
-			settings["capabilities"] = map[string]any{"provider": cfg.Kind, "structuredOutput": format, "streaming": cfg.Kind == "chatgpt", "reasoningEffort": p.reasoningEffort, "requestedOutputTokens": p.maxTokens, "repairAvailable": validate != nil}
+			if cfg.Kind != "chatgpt" && p.reasoningEffort != "" {
+				settings["reasoningEffort"] = p.reasoningEffort
+			}
+			settings["capabilities"] = map[string]any{"provider": cfg.Kind, "structuredOutput": format, "streaming": p.stream, "reasoningEffort": p.reasoningEffort, "requestedOutputTokens": p.maxTokens, "repairAvailable": validate != nil}
 			return reply, Metadata{Provider: cfg.Kind, Endpoint: cfg.Destination(), RequestedModel: cfg.Model, ReturnedModel: returned, PromptVersion: "clinical-v9", SchemaVersion: "proposal-v2-" + p.task, AppVersion: appVersion, Settings: settings}, nil
 		}
 		if !mayRepair || (!errors.Is(err, errInvalid) && !errors.Is(err, errEnvelope)) {
@@ -176,7 +189,7 @@ func failureReason(err error) string {
 	switch {
 	case errors.As(err, &rc):
 		return rc.ReasonCode()
-	case errors.Is(err, context.DeadlineExceeded):
+	case errors.Is(err, context.DeadlineExceeded), errors.Is(err, errNoAnswerYet):
 		return "timeout"
 	case errors.Is(err, context.Canceled):
 		return "cancelled"
@@ -222,10 +235,17 @@ func (c *Client) request(ctx context.Context, cfg Config, key string, body []byt
 			}
 		}
 		usage.Requests++
+		if p := streamKind(cfg); p != "" {
+			req.Header.Set("Accept", "text/event-stream")
+		}
 		resp, err := httpClient.Do(req)
 		if err != nil {
 			if ctx.Err() != nil {
 				return nil, "", ctx.Err()
+			}
+			var netErr net.Error
+			if errors.As(err, &netErr) && netErr.Timeout() {
+				return nil, "", errNoAnswerYet
 			}
 			return nil, "", errors.New("provider connection failed; check the configured endpoint, network and TLS")
 		}
@@ -243,6 +263,14 @@ func (c *Client) request(ctx context.Context, cfg Config, key string, body []byt
 				}
 			}
 			return nil, "", responseError(resp.StatusCode)
+		}
+		switch streamKind(cfg) {
+		case "openai":
+			defer resp.Body.Close()
+			return readResponsesStream(resp.Body, "", maxOutputTokens, usage, "openai")
+		case "anthropic":
+			defer resp.Body.Close()
+			return readMessagesStream(resp.Body, usage)
 		}
 		data, err := io.ReadAll(io.LimitReader(resp.Body, maxEnvelopeBytes+1))
 		resp.Body.Close()

@@ -13,6 +13,12 @@ const maxPlanStreamBytes = 2 << 20
 // Consume a complete Responses SSE event. No tokens, fragments, reasoning, or
 // remote error messages become patient-visible output before validation.
 func readPlanStream(r io.Reader, requestID string, budget int, usage *Usage) ([]byte, string, error) {
+	return readResponsesStream(r, requestID, budget, usage, "chatgpt")
+}
+
+// readResponsesStream reads a Responses API event stream for the ChatGPT plan
+// or the OpenAI API. Only the ChatGPT plan has its own error type.
+func readResponsesStream(r io.Reader, requestID string, budget int, usage *Usage, kind string) ([]byte, string, error) {
 	reader := &io.LimitedReader{R: r, N: maxPlanStreamBytes + 1}
 	buffered := bufio.NewReader(reader)
 	if prefix, _ := buffered.Peek(3); bytes.Equal(prefix, []byte{0xef, 0xbb, 0xbf}) {
@@ -30,8 +36,14 @@ func readPlanStream(r io.Reader, requestID string, budget int, usage *Usage) ([]
 			buffered.Discard(1)
 			continue
 		case '<':
+			if kind != "chatgpt" {
+				return nil, "", errEnvelope
+			}
 			return nil, "", &ChatGPTError{HTTPStatus: 200, BodyShape: "html", message: "The ChatGPT endpoint returned an HTML page. Check the network connection and retry the test."}
 		case '{', '[':
+			if kind != "chatgpt" {
+				return nil, "", errEnvelope
+			}
 			var result struct{ Error *planWireError }
 			if json.NewDecoder(io.LimitReader(buffered, 16<<10)).Decode(&result) == nil && result.Error != nil {
 				return nil, "", planError(200, "error", result.Error.Code, result.Error.Param, requestID)
@@ -105,7 +117,7 @@ func readPlanStream(r io.Reader, requestID string, budget int, usage *Usage) ([]
 				return nil, "", errIncomplete
 			}
 		case "response.refusal.delta", "response.refusal.done", "response.incomplete":
-			usage.add("chatgpt", event.Response)
+			usage.add(kind, event.Response)
 			return nil, "", errIncomplete
 		case "error", "response.failed":
 			issue := planWireError{Code: event.Code, Param: event.Param}
@@ -118,15 +130,19 @@ func readPlanStream(r io.Reader, requestID string, budget int, usage *Usage) ([]
 			if json.Unmarshal(event.Response, &failure) == nil && failure.Error != nil {
 				issue = *failure.Error
 			}
-			usage.add("chatgpt", event.Response)
+			usage.add(kind, event.Response)
+			if kind != "chatgpt" {
+				return nil, "", errIncomplete
+			}
 			return nil, "", planError(200, event.Type, issue.Code, issue.Param, requestID)
 		case "response.completed":
-			usage.add("chatgpt", event.Response)
+			usage.add(kind, event.Response)
 			if !withinPlanAnswerBudget(event.Response, budget) {
 				return nil, "", errIncomplete
 			}
 			out, model, err := unpack("openai", event.Response)
-			if err != nil || !validSubscriptionSlug(model) || delta.Len() > 0 && delta.String() != string(out) {
+			badModel := kind == "chatgpt" && !validSubscriptionSlug(model) || kind != "chatgpt" && model != "" && !validModel(model)
+			if err != nil || badModel || delta.Len() > 0 && delta.String() != string(out) {
 				return nil, "", errIncomplete
 			}
 			return out, model, nil

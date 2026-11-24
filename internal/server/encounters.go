@@ -11,7 +11,6 @@ import (
 
 	"github.com/ctlplne/healthctl/internal/clinical"
 	"github.com/ctlplne/healthctl/internal/provider"
-	"github.com/ctlplne/healthctl/internal/store"
 )
 
 var requestID = regexp.MustCompile(`^[a-zA-Z0-9_-]{8,96}$`)
@@ -165,24 +164,21 @@ func (s *Server) action(w http.ResponseWriter, r *http.Request, owner int) error
 }
 func (s *Server) deliver(w http.ResponseWriter, r *http.Request, owner int, e *clinical.Encounter, fresh bool) error {
 	task := e.PendingTask()
+	if fresh {
+		// A new revision supersedes any model call still working on an older one.
+		s.supersede(r.Context(), e.ID, e.Revision)
+	}
 	if task != "" && !e.Demo && r.Header.Get("Prefer") == "respond-async" {
-		// Create/Apply has already committed this revision. Encode the snapshot
-		// before the worker takes ownership of it. Replayed receipts only read it.
+		// Create/Apply has already committed this revision. The model call is a
+		// durable job; replayed receipts only read the snapshot.
+		if fresh {
+			if err := s.enqueue(r.Context(), owner, e, task, s.localPlanOrigin(r) != ""); err != nil {
+				return err
+			}
+		}
 		w.Header().Set("Preference-Applied", "respond-async")
 		w.Header().Set("Location", "/api/encounters/"+e.ID)
 		emit(w, http.StatusAccepted, e.ForDisplay())
-		if fresh {
-			localPlan := s.localPlanOrigin(r) != ""
-			ctx := s.Lifetime
-			if ctx == nil {
-				ctx = context.Background()
-			}
-			go func() {
-				if err := s.finishModel(ctx, owner, e, task, localPlan); err != nil && !errors.Is(err, store.ErrConflict) && s.Logger != nil {
-					s.Logger.Print("event=encounter_completion_unavailable")
-				}
-			}()
-		}
 		return nil
 	}
 	if fresh && task != "" {

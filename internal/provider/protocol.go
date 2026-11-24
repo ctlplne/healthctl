@@ -9,6 +9,7 @@ const anthropicVersion = "2026-10-21"
 
 type call struct {
 	task            string // interview, assessment, or probe
+	stream          bool
 	reasoningEffort string
 	system          string
 	input           string
@@ -38,6 +39,12 @@ func (p call) body(cfg Config) ([]byte, error) {
 		} else {
 			body["input"] = p.input
 			body["max_output_tokens"] = p.maxTokens
+			if p.stream {
+				body["stream"] = true
+			}
+			if p.reasoningEffort != "" {
+				body["reasoning"] = map[string]string{"effort": p.reasoningEffort}
+			}
 		}
 		if cfg.native() {
 			body["text"] = map[string]any{"format": map[string]any{"type": "json_schema", "name": "clinical_history_result", "strict": true, "schema": p.schema}}
@@ -46,8 +53,18 @@ func (p call) body(cfg Config) ([]byte, error) {
 		body["system"] = system
 		body["messages"] = []map[string]string{textContent("user", p.input)}
 		body["max_tokens"] = p.maxTokens
+		if p.stream {
+			body["stream"] = true
+		}
+		output := map[string]any{}
 		if cfg.native() {
-			body["output_config"] = map[string]any{"format": map[string]any{"type": "json_schema", "schema": p.schema}}
+			output["format"] = map[string]any{"type": "json_schema", "schema": p.schema}
+		}
+		if p.reasoningEffort != "" {
+			output["effort"] = p.reasoningEffort
+		}
+		if len(output) > 0 {
+			body["output_config"] = output
 		}
 	case "compatible":
 		body["messages"] = []map[string]string{textContent("system", system), textContent("user", p.input)}
