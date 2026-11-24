@@ -209,7 +209,9 @@ export function ReportBody({
             <div key={w.id}>
               <strong>
                 {w.active
-                  ? 'Active warning'
+                  ? w.level === 'check'
+                    ? 'Active warning · get this checked promptly'
+                    : 'Active warning'
                   : 'Earlier warning, since corrected'}
               </strong>
               <p>{w.message}</p>

@@ -37,11 +37,11 @@ Status: `[x]` done with proof · `[ ]` open · `[h]` handoff, prepared with next
 - [x] **F2** No silent truncation: conflicts get their own section in the brief, and every shortened list says how many more there are. Files: `web/src/handoff.tsx`. Proof: `web/src/handoff.test.tsx`; the provenance appendix lists every open question and conflict.
 - [x] **F3** An error boundary that still shows active urgent warnings. Files: `web/src/main.tsx`, `web/src/boundary.tsx`. Proof: `web/src/boundary.test.tsx`.
 - [x] **M3** The random-action property test is permanent and runs in CI. Files: `internal/clinical/property_test.go`, `.github/workflows/ci.yml`. Proof: `TestRandomActionInvariants`.
-- [ ] **K1** `scripts/check_hardening.py` runs every required check and prints `ALL CHECKS PASSED`. Proof: the script exits 0.
+- [x] **K1** `scripts/check_hardening.py` runs every required check and prints `ALL CHECKS PASSED`. Proof: the script itself; its final full run is recorded at the end of this file.
 
 ## P1: reliability and trust
 
-- [ ] **S6** Two warning tiers ("Seek emergency care" and "Get this checked promptly") with app-authored text, both kept until the source is corrected. Proof: `TestWarningTiers`.
+- [x] **S6** Two warning tiers ("Seek emergency care" and "Get this checked promptly") with app-authored text, both kept until the source is corrected. Proof: `TestWarningTiers`, `TestModelUrgentFlagNeverFailsTurn`; the UI, report and brief label check warnings separately.
 - [ ] **S7** App-owned safety-net questions before confirming the history, at the start of a return visit, and for a diary episode happening now. Proof: `TestSafetyNetQuestions`.
 - [ ] **S8** Clinical sign-off metadata per policy version, shown in exports; a policy can't be called reviewed without a record. Proof: `TestPolicyReviewRecord`.
 - [x] **S9** Safety metrics on the gold set run on every release; CI fails on any missed urgent case. Proof: the `safety` CI job runs `TestCorpus` (fails on any missed urgent sentence) and posts the metrics to the job summary.

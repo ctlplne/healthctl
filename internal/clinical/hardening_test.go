@@ -179,3 +179,25 @@ func TestReasonCodes(t *testing.T) {
 		t.Fatal("denial without negation must name its reason")
 	}
 }
+
+func TestWarningTiers(t *testing.T) {
+	e := intake(t, "I passed out at home last week.", false)
+	if !e.hasAnyWarning() || e.hasWarning() {
+		t.Fatal("a recent past event must raise a check warning that doesn't interrupt")
+	}
+	w := e.Warnings[len(e.Warnings)-1]
+	if w.Level != warningCheck || !strings.Contains(w.Message, "checked promptly") || e.State == "interrupted_for_safety" {
+		t.Fatalf("check warning has the wrong level, wording or state: %+v %s", w, e.State)
+	}
+	if !e.Report().Warnings[len(e.Warnings)-1].Active {
+		t.Fatal("the export lost the check warning")
+	}
+	apply(t, e, Command{Action: "correct_answer", AnswerID: e.Answers[0].ID, Text: "I passed out years ago, never since."})
+	if e.hasAnyWarning() {
+		t.Fatal("correcting the source must resolve its warning")
+	}
+	now := intake(t, "I passed out at home an hour ago.", false)
+	if !now.hasWarning() || now.State != "interrupted_for_safety" {
+		t.Fatal("a current event must raise an interrupting warning")
+	}
+}

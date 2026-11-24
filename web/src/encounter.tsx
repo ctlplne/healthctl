@@ -298,7 +298,7 @@ export function EncounterPage({
           </p>
         </div>
         {activeWarnings.map((w) => (
-          <Callout key={w.id} title="Urgent warning" alert>
+          <Callout key={w.id} title={w.level === 'check' ? 'Get this checked promptly' : 'Urgent warning'} alert>
             <p>{w.message}</p>
             <p>
               Share these findings with the healthcare professional who

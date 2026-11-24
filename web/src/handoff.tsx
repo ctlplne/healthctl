@@ -170,7 +170,7 @@ export function BriefBody({
       </aside>
       {!!active.length && (
         <div className="report-alert-summary">
-          <strong>Active urgent warning</strong>
+          <strong>{active.some((w) => w.level !== 'check') ? 'Active urgent warning' : 'Active warning · get this checked promptly'}</strong>
           {[...new Set(active.map((w) => w.message))].map((m) => (
             <p key={m}>{m}</p>
           ))}
