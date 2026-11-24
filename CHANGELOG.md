@@ -4,6 +4,14 @@
 
 Safety and correctness, then reliability, then polish. [HARDENING.md](HARDENING.md) lists every item with its proof; the [decision records](docs/decisions/README.md) explain the main choices.
 
+### Upgrading
+Keep your workspace and installation key; the records migrate on first start. Check these before you upgrade:
+- **Emergency contact.** If `CLINICAL_EMERGENCY_CONTACT` is set, it must include the local emergency number, such as "Call 911". Otherwise the app refuses to start and says why. Leave it unset for the generic wording.
+- **Sessions.** Signed-in sessions stay signed in, but downloading, sharing, deleting and changing where a history is sent ask for the password again. A session also ends after an hour without activity (`CLINICAL_IDLE_MINUTES`).
+- **Backups.** Scheduled backups are now kept by age as well as count. An archive is removed only when it is older than `CLINICAL_BACKUP_KEEP_DAYS` (default 30) and not among the newest `CLINICAL_BACKUP_KEEP` (default 7).
+- **Reverse proxy.** Sign-in attempts are counted per client. Behind a proxy, set `CLINICAL_TRUSTED_PROXY` to its address.
+- **Key rotation** now re-encrypts every record, so it takes longer on a large installation.
+
 ### Safety
 - One context engine for negation, experiencer, time, hypotheticals and uncertainty; a wider urgent vocabulary (policy `development-5`, development content).
 - Every input path goes through the same screen; witness accounts read "he" and "she" as the user.
