@@ -105,7 +105,11 @@ jobs:
         env:
           ARCH: ${{ matrix.arch }}
         run: |
-          read -r app _ < build/resources/images.txt
+          read -r app _ appid _ < build/resources/images.txt
+          # The desktop drill ends by uninstalling, which removes the image.
+          # Reload the tested bundle and export only that exact image.
+          docker image inspect "$app" >/dev/null 2>&1 || docker load -i build/resources/images.tar.gz >/dev/null
+          test "$(docker image inspect --format '{{.Id}}' "$app")" = "$appid"
           docker tag "$app" "healthctl-release:$GITHUB_SHA-$ARCH"
           docker save "healthctl-release:$GITHUB_SHA-$ARCH" | gzip -1 > "build/healthctl-linux-$ARCH.tar.gz"
         shell: bash
