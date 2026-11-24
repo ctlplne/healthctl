@@ -92,6 +92,7 @@ export function Estimate({
           </>
         )}
       </p>
+      <StabilityNote a={a} />
       {a.items?.length ? (
         <ol className="diagnoses">
           {a.items.map((item, i) => (
@@ -336,5 +337,26 @@ export function ReportBody({
         {e.provider.model && ' · ' + e.provider.model}
       </footer>
     </article>
+  )
+}
+
+// StabilityNote says whether the requested second run happened. Without it a
+// failed second run would look the same as two runs that agreed.
+export function StabilityNote({ a }: { a: Pick<Assessment, 'items' | 'stabilityChecked' | 'stabilityFailed'> }) {
+  if (a.stabilityFailed)
+    return (
+      <p className="badge unstable" role="note">
+        The second run for the stability check failed, so these possibilities couldn’t be compared. Treat them all as
+        uncertain, or request the assessment again.
+      </p>
+    )
+  if (!a.stabilityChecked) return null
+  const changed = (a.items || []).filter((item) => item.unstable).length
+  return (
+    <p className="metadata" role="note">
+      {changed
+        ? `Checked with a second run of the model: ${changed === 1 ? '1 possibility' : changed + ' possibilities'} changed between the runs and ${changed === 1 ? 'is' : 'are'} marked uncertain.`
+        : 'Checked with a second run of the model: every possibility appeared in both runs.'}
+    </p>
   )
 }

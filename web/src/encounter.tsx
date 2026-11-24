@@ -29,6 +29,7 @@ import { AssessmentRequest, History } from './history'
 import { Estimate, ReportBody, UrgencyReminder } from './report'
 import type { Run } from './forms'
 import { api, download } from './api'
+import { groupWarnings } from './warnings'
 import { SourceReview } from './documents'
 import { Destination, PlanUsage, ManageUsage } from './chatgpt'
 import { Timeline } from './timeline'
@@ -295,14 +296,29 @@ export function EncounterPage({
             {e.historyRevision}
           </p>
         </div>
-        {activeWarnings.map((w) => (
-          <Callout key={w.id} title={w.level === 'check' ? 'Get this checked promptly' : 'Urgent warning'} alert>
-            <p>{w.message}</p>
+        {groupWarnings(activeWarnings).map((g) => (
+          <Callout key={g.level} title={g.level === 'check' ? 'Get this checked promptly' : 'Urgent warning'} alert>
+            {g.messages.map((m) => (
+              <p key={m}>{m}</p>
+            ))}
             <p>
               Share these findings with the healthcare professional who
               evaluates you.
             </p>
-            <small>Reported wording: “{w.quote}”</small>
+            {g.quotes.length === 1 ? (
+              <small>Reported wording: “{g.quotes[0]}”</small>
+            ) : (
+              <>
+                <small>Reported wording:</small>
+                <ul className="reported-wording">
+                  {g.quotes.map((q) => (
+                    <li key={q}>
+                      <small>“{q}”</small>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
           </Callout>
         ))}
         {activeWarnings.length > 0 && careDestination && (

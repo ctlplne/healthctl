@@ -119,6 +119,7 @@ export type Item = {
 export type Assessment = {
   dontMiss?: string[]
   stabilityChecked?: boolean
+  stabilityFailed?: boolean
   literature?: (import('./evidence').SearchResult & { itemIndex: number })[]
   corpusVersion?: string
   version: number
