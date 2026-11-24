@@ -22,6 +22,13 @@ Follow a fictional user from creating the local owner account to reopening a sav
 
 The setup film starts in the local journal and shows the plan permission, model selection, connection test, and destination for a new encounter. It uses an example account and illustrates the private sign-in step.
 
+## Guides
+
+- [User guide](docs/user-guide.md) for using the app
+- [Operator guide](docs/operator-guide.md) for installing and running it
+- [Verification log](docs/verification-log.md), generated from the release scorecard and the safety corpus
+- [Changelog](CHANGELOG.md) and [decision records](docs/decisions/README.md)
+
 ## Why we built healthctl
 
 A user might start with “I get tired on the stairs.” A useful next question is “What could you do before this started?” The difference between always pausing and needing to stop for the first time last week is worth bringing to a visit. Users should be able to tell that story without having to know in advance which details matter.
