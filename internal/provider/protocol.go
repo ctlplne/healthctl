@@ -8,6 +8,7 @@ import (
 const anthropicVersion = "2026-10-21"
 
 type call struct {
+	task            string // interview, assessment, or probe
 	reasoningEffort string
 	system          string
 	input           string

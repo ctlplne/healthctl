@@ -499,9 +499,11 @@ export function PlanSettings({
                 </p>
               ) : null}
               <p className="metadata">
-                This connection requests the highest recognized reasoning effort
-                advertised by the selected model. When the model lists no
-                supported effort, its default applies.
+                healthctl chooses the reasoning effort for each task from the
+                levels the selected model advertises: medium for interview
+                questions, so answers come back quickly, and the highest level
+                for assessments. When the model lists no supported effort, its
+                default applies.
               </p>
               <PlanUsage />
             </>

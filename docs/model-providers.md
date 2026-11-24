@@ -6,7 +6,7 @@ Each encounter pins its provider configuration. The application controls the int
 
 In the authenticated provider settings, select a kind and enter a model identifier from your deployment or provider account. The application has no default live model. Test the connection before beginning an encounter. The test sends a fixed, nonclinical request for a small JSON response.
 
-Use the best model you have access to and select its highest available reasoning effort. Choose the model in provider settings. Where the endpoint supports a reasoning-effort setting, configure it through the serving deployment. The app displays this recommendation throughout the workspace and in exported reports. For ChatGPT plan requests, healthctl requests the highest recognized effort the selected account model advertises and records the requested value with accepted results. Other adapters use the serving deployment’s configuration.
+Use the best model you have access to. healthctl sets the reasoning effort for each task where it can. Choose the model in provider settings. Where the endpoint supports a reasoning-effort setting, configure it through the serving deployment. The app displays this recommendation throughout the workspace and in exported reports. For ChatGPT plan requests, healthctl chooses the effort for each task from the levels the selected account model advertises: medium for interview questions and the connection test, so answers come back quickly, and the highest level for assessments. It records the requested value with accepted results. Other adapters use the serving deployment’s configuration.
 
 | Kind | Destination and protocol | Server credential |
 |---|---|---|

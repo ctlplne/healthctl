@@ -29,7 +29,7 @@ Status: `[x]` done with proof · `[ ]` open · `[h]` handoff, prepared with next
 - [x] **V3** Targeted repair: a retry carries app-authored reason codes and item indexes, never rejected text. Files: `internal/provider/client.go`. Proof: `TestRepairCarriesReasonCodes`.
 - [x] **V4** The advice filter checks instructions only in statements, so questions such as "Did you start taking…?" pass. Files: `model.go`. Proof: `TestAdviceFilterAllowsQuestions`.
 - [x] **V5** Digits inside names (COVID-19, B12, type 2) are not numeric claims. Files: `model.go`. Proof: `TestGroundedNumbersIgnoresNames`.
-- [ ] **O1** Reasoning effort is chosen by task: medium or lower for interview turns, highest for assessment. Files: `internal/provider/chatgpt.go`. Proof: `TestEffortByTask`.
+- [x] **O1** Reasoning effort is chosen by task: medium or lower for interview turns, highest for assessment. Files: `internal/provider/chatgpt.go`. Proof: `TestEffortByTask`.
 - [ ] **D1** `init.py` refuses to create a new key when installation data already exists, and explains recovery. Files: `scripts/init.py`. Proof: `python3 -m unittest tests.test_init`.
 - [ ] **D2** Recovery kit: a script writes a private recovery sheet; the app shows a banner until the owner confirms the kit's fingerprint. Files: `scripts/recovery_kit.py`, `internal/server/recovery.go`, `web/src/*`. Proof: `TestRecoveryKitFingerprint`, `tests/test_recovery_kit.py`.
 - [ ] **D3** Backups on by default to a host folder, with last success shown in the app. Files: `compose.yaml`, `scripts/backup.sh`, `scripts/init.py`, store migration, server, web. Proof: `TestBackupStatusPostgres`, compose config check.

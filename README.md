@@ -126,7 +126,7 @@ Your installation stores the encounter and original uploads. You choose where in
 | OpenAI or Anthropic API | A server-side API key and a supported model ID |
 | ChatGPT plan | An eligible ChatGPT account linked from **Model settings** on a personal loopback installation |
 
-Use the best model you have access to and select its highest available reasoning effort. A cloud connection sends relevant history and approved report extracts directly from your installation to the selected provider. Moving an existing encounter to another provider or endpoint requires your confirmation. [Model setup](docs/model-providers.md) · [Architecture and data boundaries](docs/architecture.md)
+Use the best model you have access to. healthctl sets the reasoning effort for each task where it can. A cloud connection sends relevant history and approved report extracts directly from your installation to the selected provider. Moving an existing encounter to another provider or endpoint requires your confirmation. [Model setup](docs/model-providers.md) · [Architecture and data boundaries](docs/architecture.md)
 
 ## Verification and releases
 

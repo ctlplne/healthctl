@@ -74,7 +74,11 @@ func TestChatGPTPlanSocketModelCatalogAndInference(t *testing.T) {
 					t.Errorf("unsupported field %s", key)
 				}
 			}
-			if len(req) != 6 || string(req["reasoning"]) != `{"effort":"high"}` || string(req["store"]) != "false" || string(req["stream"]) != "true" || string(req["model"]) != `"plan-fixture"` || strings.Contains(string(req["instructions"]), "NEVER_USE_CATALOG_INSTRUCTIONS") {
+			want := `{"effort":"medium"}`
+			if strings.Contains(string(req["instructions"]), "Application-selected task: assessment.") {
+				want = `{"effort":"high"}`
+			}
+			if len(req) != 6 || string(req["reasoning"]) != want || string(req["store"]) != "false" || string(req["stream"]) != "true" || string(req["model"]) != `"plan-fixture"` || strings.Contains(string(req["instructions"]), "NEVER_USE_CATALOG_INSTRUCTIONS") {
 				t.Error("incorrect preview route request body")
 			}
 			var input []struct{ Role, Content string }
@@ -128,8 +132,12 @@ func TestChatGPTPlanSocketModelCatalogAndInference(t *testing.T) {
 		t.Fatal(err)
 	}
 	result, meta, err := c.Generate(t.Context(), cfg, "interview", map[string]string{"concern": "synthetic disclosed history"}, func([]byte) error { return nil })
-	if err != nil || string(result) != proposal || meta.Provider != "chatgpt" || meta.Endpoint != accountOne || meta.ReturnedModel != "exact-returned-model" || meta.Usage.OutputTokens != 7 || meta.Usage.EstimatedUSD != nil || meta.Settings["billing"] != "chatgpt_plan" || meta.Settings["reasoningEffort"] != "high" || meta.Settings["maxOutputTokens"] != nil {
+	if err != nil || string(result) != proposal || meta.Provider != "chatgpt" || meta.Endpoint != accountOne || meta.ReturnedModel != "exact-returned-model" || meta.Usage.OutputTokens != 7 || meta.Usage.EstimatedUSD != nil || meta.Settings["billing"] != "chatgpt_plan" || meta.Settings["reasoningEffort"] != "medium" || meta.Settings["maxOutputTokens"] != nil {
 		t.Fatalf("invalid validated result or provenance %v", err)
+	}
+	result, meta, err = c.Generate(t.Context(), cfg, "assessment", map[string]string{"concern": "synthetic disclosed history"}, func([]byte) error { return nil })
+	if err != nil || string(result) != proposal || meta.Settings["reasoningEffort"] != "high" {
+		t.Fatalf("an assessment must use the highest advertised effort %v %v", err, meta.Settings["reasoningEffort"])
 	}
 	cfg.Endpoint = accountTwo
 	if err := c.Test(t.Context(), cfg); err == nil || strings.Contains(err.Error(), "SENTINEL") {
@@ -140,7 +148,8 @@ func TestChatGPTPlanSocketModelCatalogAndInference(t *testing.T) {
 	if err := c.Test(t.Context(), cfg); err == nil {
 		t.Fatal("accepted nonselectable model")
 	}
-	if inference.Load() != 2 || catalog.Load() != 4 {
+	// Probe, interview and assessment inference; four catalog reads plus the assessment's.
+	if inference.Load() != 3 || catalog.Load() != 5 {
 		t.Fatal("unexpected network operation count")
 	}
 }
@@ -326,20 +335,31 @@ func TestChatGPTCompletedProposalRequiresDomainValidation(t *testing.T) {
 }
 
 func TestChatGPTUsesOnlyAdvertisedResponsesReasoningEffort(t *testing.T) {
-	for _, tc := range []struct {
+	type effortCase struct {
 		name     string
+		task     string
 		levels   []string
 		want     string
 		declined bool
+	}
+	var cases []effortCase
+	for _, tc := range []struct {
+		name               string
+		levels             []string
+		assessment, interv string
+		declined           bool
 	}{
-		{"absent", nil, "", false},
-		{"unknown only", []string{"custom"}, "", false},
-		{"sole none", []string{"none"}, "none", false},
-		{"minimal", []string{"none", "minimal"}, "minimal", false},
-		{"unranked list", []string{"low", "custom", "xhigh", "high"}, "xhigh", false},
-		{"max", []string{"medium", "max", "xhigh"}, "max", false},
-		{"declined", []string{"high", "low"}, "high", true},
+		{"absent", nil, "", "", false},
+		{"unknown only", []string{"custom"}, "", "", false},
+		{"sole none", []string{"none"}, "none", "none", false},
+		{"minimal", []string{"none", "minimal"}, "minimal", "minimal", false},
+		{"unranked list", []string{"low", "custom", "xhigh", "high"}, "xhigh", "high", false},
+		{"max", []string{"medium", "max", "xhigh"}, "max", "medium", false},
+		{"declined", []string{"high", "low"}, "high", "high", true},
 	} {
+		cases = append(cases, effortCase{tc.name + " assessment", "assessment", tc.levels, tc.assessment, tc.declined}, effortCase{tc.name + " interview", "interview", tc.levels, tc.interv, tc.declined})
+	}
+	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			c := NewWithChatGPT(func(context.Context, string) (string, error) { return "opaque-plan-token", nil })
 			posts := 0
@@ -376,7 +396,7 @@ func TestChatGPTUsesOnlyAdvertisedResponsesReasoningEffort(t *testing.T) {
 				}
 				return planResponse(planCompletion(proposal, 5)), nil
 			})
-			_, meta, err := c.Generate(t.Context(), planCfg(), "interview", struct{}{}, func([]byte) error { return nil })
+			_, meta, err := c.Generate(t.Context(), planCfg(), tc.task, struct{}{}, func([]byte) error { return nil })
 			if posts != 1 {
 				t.Fatal("unexpected retry on effort rejection")
 			}
@@ -395,5 +415,17 @@ func TestChatGPTUsesOnlyAdvertisedResponsesReasoningEffort(t *testing.T) {
 				t.Fatal("successful provenance differs from actual reasoning request")
 			}
 		})
+	}
+}
+
+func TestEffortByTask(t *testing.T) {
+	levels := []string{"low", "medium", "high", "xhigh"}
+	for task, want := range map[string]string{"interview": "medium", "assessment": "xhigh", "probe": "medium", "unknown": "medium"} {
+		if got := effortFor(task, levels); got != want {
+			t.Errorf("effortFor(%s) = %q, want %q", task, got, want)
+		}
+	}
+	if effortFor("assessment", []string{"custom"}) != "" {
+		t.Fatal("an unadvertised effort must never be requested")
 	}
 }

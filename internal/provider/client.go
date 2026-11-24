@@ -29,7 +29,7 @@ func (c *Client) Test(ctx context.Context, cfg Config) error {
 	if cfg.Kind == "demo" {
 		return nil
 	}
-	p := call{
+	p := call{task: "probe",
 		system: "This is a nonclinical connectivity and output-format test. Respond with the JSON object {\"status\":\"ready\"}.",
 		input:  "Check the configured model connection.", schema: probeSchema, maxTokens: 512,
 	}
@@ -60,7 +60,7 @@ func (c *Client) Generate(ctx context.Context, cfg Config, mode string, input an
 	if len(data) > maxInputBytes {
 		return nil, zero, errors.New("history exceeds the model input budget; the saved history can still be exported")
 	}
-	p := call{system: instructions + "\nApplication-selected task: " + mode + ".", input: string(data), schema: proposalSchema, maxTokens: maxOutputTokens}
+	p := call{task: mode, system: instructions + "\nApplication-selected task: " + mode + ".", input: string(data), schema: proposalSchema, maxTokens: maxOutputTokens}
 	return c.run(ctx, cfg, p, validate, true)
 }
 

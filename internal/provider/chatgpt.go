@@ -127,6 +127,29 @@ func (c *Client) planModels(ctx context.Context, token string) ([]ChatGPTModel, 
 	return out, nil
 }
 
+// The application chooses reasoning effort by task. An interview turn asks one
+// short question, so it prefers a medium effort to keep the wait short. An
+// assessment uses the highest effort the model advertises. Only advertised
+// levels are ever requested.
+var effortOrder = map[string][]string{
+	"assessment": {"max", "xhigh", "high", "medium", "low", "minimal", "none"},
+	"interview":  {"medium", "high", "low", "xhigh", "max", "minimal", "none"},
+	"probe":      {"medium", "low", "minimal", "none", "high", "xhigh", "max"},
+}
+
+func effortFor(task string, levels []string) string {
+	order, ok := effortOrder[task]
+	if !ok {
+		order = effortOrder["interview"]
+	}
+	for _, effort := range order {
+		if slices.Contains(levels, effort) {
+			return effort
+		}
+	}
+	return ""
+}
+
 func (c *Client) chatGPTRequest(ctx context.Context, cfg Config, p *call, usage *Usage) ([]byte, string, error) {
 	token, err := c.planToken(ctx, cfg.Endpoint)
 	if err != nil {
@@ -140,13 +163,7 @@ func (c *Client) chatGPTRequest(ctx context.Context, cfg Config, p *call, usage 
 	if idx < 0 {
 		return nil, "", &ChatGPTError{message: "The selected model is unavailable for this ChatGPT account. Choose a model from its current catalog."}
 	}
-	p.reasoningEffort = ""
-	for _, effort := range []string{"max", "xhigh", "high", "medium", "low", "minimal", "none"} {
-		if slices.Contains(models[idx].ReasoningLevels, effort) {
-			p.reasoningEffort = effort
-			break
-		}
-	}
+	p.reasoningEffort = effortFor(p.task, models[idx].ReasoningLevels)
 	body, err := p.body(cfg)
 	if err != nil {
 		return nil, "", errors.New("could not prepare the ChatGPT inference request")
